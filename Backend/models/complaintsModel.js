@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS complaints (
     ward_number INTEGER,
     status VARCHAR(20) DEFAULT 'pending' 
         CHECK (status IN ('pending','processing','resolved')),
-    created_by UUID NOT NULL,
+   created_by UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_complaint_user 
         FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE

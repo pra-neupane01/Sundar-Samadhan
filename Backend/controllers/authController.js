@@ -68,10 +68,10 @@ const registerController = async (req, res) => {
       token: generateToken(user.id, user.role),
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
+    console.error("REGISTER ERROR:", error);
+    return res.status(500).json({
       success: false,
-      message: "Registration failed",
+      message: error.message,
     });
   }
 };
