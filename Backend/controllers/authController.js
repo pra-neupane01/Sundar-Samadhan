@@ -12,34 +12,67 @@ const generateToken = (id, role) => {
 // REGISTER USER
 const registerController = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, wardNumber } = req.body;
 
+    // 🔹 Basic field validation
+    if (!fullName || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be provided",
+      });
+    }
+
+    // 🔹 Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
+      });
+    }
+
+    // 🔹 Password strength check
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters long",
+      });
+    }
+
+    // 🔹 Check duplicate email
     const userExists = await pool.query(
       "SELECT * FROM users WHERE email = $1",
       [email],
     );
 
     if (userExists.rows.length > 0) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(409).json({
+        success: false,
+        message: "Email already registered",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await pool.query(
-      "INSERT INTO users (full_name, email, password) VALUES ($1, $2, $3) RETURNING id, full_name, email, role",
-      [fullName, email, hashedPassword],
+      "INSERT INTO users (full_name, email, password, ward_number) VALUES ($1, $2, $3, $4) RETURNING id, full_name, email, role",
+      [fullName, email, hashedPassword, wardNumber || null],
     );
 
     const user = newUser.rows[0];
 
     res.status(201).json({
-      message: "successfully Regitered.",
+      success: true,
+      message: "Successfully registered",
       ...user,
-
       token: generateToken(user.id, user.role),
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Registration failed",
+    });
   }
 };
 //LOGIN USER

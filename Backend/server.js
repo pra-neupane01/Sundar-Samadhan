@@ -3,6 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const { userSchema } = require("./models/userSchema");
+const { complaintSchema } = require("./models/complaintsModel");
 
 dotenv.config({ quiet: true });
 
@@ -24,6 +25,7 @@ const PORT = process.env.PORT || 4849;
 const initializeDatabase = async () => {
   try {
     await userSchema();
+    await complaintSchema();
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
