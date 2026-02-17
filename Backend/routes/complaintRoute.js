@@ -28,7 +28,7 @@ router.post(
 
 // // GET ALL COMPLAINTS : GET
 router.get(
-  "/get-all-complaint",
+  "/get-all-complaints",
   authMiddleware,
   roleMiddleware("admin", "municipal"),
   getAllComplaintController,
@@ -36,19 +36,19 @@ router.get(
 
 // GET COMPLAINTS BY WARD : GET
 router.get(
-  "/get-complaint-by-ward/:wardNumber",
+  "/get-complaints-by-ward/:wardNumber",
   authMiddleware,
-  roleMiddleware,
+  roleMiddleware("admin", "municipal"),
   getComplaintByWardController,
 );
 
-// // GET COMPLAINTS BY USER : GET
-// router.get(
-//   "/get-complaint-by-user",
-//   authMiddleware,
-//   roleMiddleware,
-//   getComplaintByUserController,
-// );
+// GET COMPLAINTS BY USER(OWN COMPLAINTS): GET
+router.get(
+  "/my-complaints",
+  authMiddleware,
+  roleMiddleware,
+  getComplaintByUserController,
+);
 
 // // UPDATE COMPLAINT STATUS : PUT
 // router.put(

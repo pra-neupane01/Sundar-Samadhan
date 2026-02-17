@@ -72,6 +72,7 @@ const getAllComplaintController = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Successfully fetched complaints.",
+      complaintCount: complaint.rows.length,
       ...complaintDetails,
     });
   } catch (error) {
@@ -83,7 +84,7 @@ const getAllComplaintController = async (req, res) => {
   }
 };
 
-// GET COMPLAINT BASED ON WARD || ADMIN, MUNICIPAL
+// GET COMPLAINT BASED ON WARD || ADMIN, MUNICIPAL (as param)
 const getComplaintByWardController = async (req, res) => {
   try {
     const wardNumber = req.params.wardNumber;
@@ -96,6 +97,7 @@ const getComplaintByWardController = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Successfully fetched complaint.",
+      complaintCount: complaint.rows.length,
       complaint: complaint.rows,
     });
   } catch (error) {
@@ -106,9 +108,35 @@ const getComplaintByWardController = async (req, res) => {
   }
 };
 
+// GET COMPLAINT BASED ON USER ID || CITIZEN (as)
 const getComplaintByUserController = async (req, res) => {
   try {
-  } catch (error) {}
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).send({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    const complaint = await pool.query(
+      `SELECT * FROM complaints WHERE created_by=$1`,
+      [userId],
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully fetched complaint.",
+      complaintCount: complaint.rows.length,
+      complaint: complaint.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch complaints.",
+    });
+  }
 };
 
 const updateComplaintStatusController = async (req, res) => {
