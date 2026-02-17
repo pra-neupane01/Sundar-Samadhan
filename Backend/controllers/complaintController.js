@@ -183,9 +183,33 @@ const updateComplaintStatusController = async (req, res) => {
   }
 };
 
+//DELETE COMPLAINT STATUS|| ADMIN ONLY
 const deleteComplaintController = async (req, res) => {
   try {
-  } catch (error) {}
+    const complaintId = req.params.id;
+
+    const result = await pool.query(
+      "DELETE FROM complaints WHERE complaint_id = $1 RETURNING *",
+      [complaintId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete complaint",
+    });
+  }
 };
 
 module.exports = {

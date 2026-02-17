@@ -58,14 +58,12 @@ router.put(
   updateComplaintStatusController,
 );
 
-console.log("Complaint routes loaded");
-
-// // DELETE COMPLAINT : DELETE
-// router.delete(
-//   "/delete-complaint",
-//   authMiddleware,
-//   roleMiddleware,
-//   deleteComplaintController,
-// );
+// DELETE COMPLAINT : DELETE BY ADMIN
+router.delete(
+  "/delete-complaint/:id",
+  authMiddleware,
+  roleMiddleware("admin"),
+  deleteComplaintController,
+);
 
 module.exports = router;
