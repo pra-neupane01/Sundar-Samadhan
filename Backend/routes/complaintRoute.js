@@ -30,24 +30,17 @@ router.post(
 router.get(
   "/get-all-complaint",
   authMiddleware,
-  roleMiddleware("ADMIN", "MUNICIPAL"),
+  roleMiddleware("admin", "municipal"),
   getAllComplaintController,
 );
 
-// router.get(
-//   "/get-all-complaint",
-//   authMiddleware,
-//   roleMiddleware,
-//   getAllComplaintController,
-// );
-
-// // GET COMPLAINTS BY WARD : GET
-// router.get(
-//   "/get-complaint-by-ward",
-//   authMiddleware,
-//   roleMiddleware,
-//   getComplaintByWardController,
-// );
+// GET COMPLAINTS BY WARD : GET
+router.get(
+  "/get-complaint-by-ward/:wardNumber",
+  authMiddleware,
+  roleMiddleware,
+  getComplaintByWardController,
+);
 
 // // GET COMPLAINTS BY USER : GET
 // router.get(

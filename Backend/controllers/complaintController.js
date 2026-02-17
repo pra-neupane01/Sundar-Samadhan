@@ -57,6 +57,7 @@ const createComplaintController = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to lodge complaint.",
+      error,
     });
   }
 };
@@ -77,13 +78,32 @@ const getAllComplaintController = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch complaints.",
+      error,
     });
   }
 };
 
+// GET COMPLAINT BASED ON WARD || ADMIN, MUNICIPAL
 const getComplaintByWardController = async (req, res) => {
   try {
-  } catch (error) {}
+    const wardNumber = req.params.wardNumber;
+
+    const complaint = await pool.query(
+      `SELECT * FROM complaints WHERE ward_number=$1`,
+      [wardNumber],
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully fetched complaint.",
+      complaint: complaint.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch complaints.",
+    });
+  }
 };
 
 const getComplaintByUserController = async (req, res) => {
