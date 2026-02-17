@@ -108,7 +108,7 @@ const getComplaintByWardController = async (req, res) => {
   }
 };
 
-// GET COMPLAINT BASED ON USER ID || CITIZEN (as)
+// GET COMPLAINT BASED ON USER ID || CITIZEN
 const getComplaintByUserController = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -139,9 +139,48 @@ const getComplaintByUserController = async (req, res) => {
   }
 };
 
+//UPDATE COMPLAINT STATUS|| MUNICIPAL
 const updateComplaintStatusController = async (req, res) => {
   try {
-  } catch (error) {}
+    const complaintId = req.params.id;
+    const { status } = req.body;
+
+    // Validate status
+    const allowedStatus = ["pending", "processing", "resolved"];
+
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE complaints
+       SET status = $1
+       WHERE complaint_id = $2
+       RETURNING *`,
+      [status, complaintId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Complaint not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint status updated successfully",
+      complaint: result.rows[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update complaint status",
+    });
+  }
 };
 
 const deleteComplaintController = async (req, res) => {

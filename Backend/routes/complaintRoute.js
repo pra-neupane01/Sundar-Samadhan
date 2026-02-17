@@ -50,13 +50,15 @@ router.get(
   getComplaintByUserController,
 );
 
-// // UPDATE COMPLAINT STATUS : PUT
-// router.put(
-//   "/update-complaint-status",
-//   authMiddleware,
-//   roleMiddleware,
-//   updateComplaintStatusController,
-// );
+// UPDATE COMPLAINT STATUS : PUT
+router.put(
+  "/update-status/:id",
+  authMiddleware,
+  roleMiddleware("municipal"),
+  updateComplaintStatusController,
+);
+
+console.log("Complaint routes loaded");
 
 // // DELETE COMPLAINT : DELETE
 // router.delete(
