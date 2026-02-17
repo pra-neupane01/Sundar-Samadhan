@@ -27,6 +27,13 @@ router.post(
 );
 
 // // GET ALL COMPLAINTS : GET
+router.get(
+  "/get-all-complaint",
+  authMiddleware,
+  roleMiddleware("ADMIN", "MUNICIPAL"),
+  getAllComplaintController,
+);
+
 // router.get(
 //   "/get-all-complaint",
 //   authMiddleware,

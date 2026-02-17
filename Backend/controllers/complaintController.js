@@ -9,7 +9,7 @@ const generateToken = (id, role) => {
   });
 };
 
-// CREATE COMPLAINT
+// CREATE COMPLAINT || CITIZEN
 const createComplaintController = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -61,9 +61,24 @@ const createComplaintController = async (req, res) => {
   }
 };
 
+// GET ALL COMPLAINT || ADMIN, MUNICIPAL
 const getAllComplaintController = async (req, res) => {
   try {
-  } catch (error) {}
+    const complaint = await pool.query(`SELECT * FROM complaints`);
+
+    const complaintDetails = complaint.rows;
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully fetched complaints.",
+      ...complaintDetails,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch complaints.",
+    });
+  }
 };
 
 const getComplaintByWardController = async (req, res) => {

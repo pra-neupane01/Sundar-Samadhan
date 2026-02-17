@@ -2,7 +2,7 @@ const {
   registerController,
   loginController,
 } = require("../controllers/authController");
-const authMiddleware = require("../middlewares/authMiddleware");
+
 
 const express = require("express");
 
