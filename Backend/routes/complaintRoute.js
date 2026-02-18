@@ -6,6 +6,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 const express = require("express");
 const roleMiddleware = require("../middlewares/roleMiddleware");
+const upload = require("../middlewares/uploadMiddleware");
 
 const {
   createComplaintController,
@@ -23,6 +24,7 @@ router.post(
   "/create-complaint",
   authMiddleware,
   roleMiddleware("citizen"),
+  upload.single("image"),
   createComplaintController,
 );
 
@@ -65,5 +67,7 @@ router.delete(
   roleMiddleware("admin"),
   deleteComplaintController,
 );
+
+//
 
 module.exports = router;

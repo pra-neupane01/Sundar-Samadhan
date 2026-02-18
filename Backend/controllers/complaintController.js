@@ -12,6 +12,8 @@ const generateToken = (id, role) => {
 // CREATE COMPLAINT || CITIZEN
 const createComplaintController = async (req, res) => {
   try {
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({
@@ -21,8 +23,7 @@ const createComplaintController = async (req, res) => {
     }
     const userRole = req.user?.role;
 
-    const { title, description, image_url, latitude, longitude, ward_number } =
-      req.body;
+    const { title, description, latitude, longitude, ward_number } = req.body;
 
     // 🔹 Basic field validation
     if (!title || !description) {
@@ -33,11 +34,14 @@ const createComplaintController = async (req, res) => {
     }
 
     const complaint = await pool.query(
-      "INSERT INTO complaints (title, description, image_url, latitude, longitude, ward_number, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      `INSERT INTO complaints 
+  (title, description, image_url, latitude, longitude, ward_number, created_by) 
+  VALUES ($1, $2, $3, $4, $5, $6, $7) 
+  RETURNING *`,
       [
         title,
         description,
-        image_url || null,
+        imagePath,
         latitude || null,
         longitude || null,
         ward_number || null,
