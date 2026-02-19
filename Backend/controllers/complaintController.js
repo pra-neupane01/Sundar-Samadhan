@@ -149,6 +149,9 @@ const updateComplaintStatusController = async (req, res) => {
     const complaintId = req.params.id;
     const { status } = req.body;
 
+    const io = req.app.get("io");
+    io.to(userId).emit("statusUpdated", data);
+
     // Validate status
     const allowedStatus = ["pending", "processing", "resolved"];
 
