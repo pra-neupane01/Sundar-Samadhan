@@ -149,10 +149,6 @@ const updateComplaintStatusController = async (req, res) => {
     const complaintId = req.params.id;
     const { status } = req.body;
 
-    const io = req.app.get("io");
-    io.to(userId).emit("statusUpdated", data);
-
-    // Validate status
     const allowedStatus = ["pending", "processing", "resolved"];
 
     if (!allowedStatus.includes(status)) {
@@ -177,10 +173,22 @@ const updateComplaintStatusController = async (req, res) => {
       });
     }
 
+    const updatedComplaint = result.rows[0];
+
+    // 🔥 Get io instance
+    const io = req.app.get("io");
+
+    // 🔥 Emit notification to complaint creator
+    io.to(updatedComplaint.created_by).emit("statusUpdated", {
+      complaintId: updatedComplaint.complaint_id,
+      status: updatedComplaint.status,
+      message: "Your complaint status has been updated",
+    });
+
     res.status(200).json({
       success: true,
       message: "Complaint status updated successfully",
-      complaint: result.rows[0],
+      complaint: updatedComplaint,
     });
   } catch (error) {
     res.status(500).json({

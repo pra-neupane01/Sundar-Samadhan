@@ -44,12 +44,17 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("🟢 User connected:", socket.id);
 
+  socket.on("joinRoom", (userId) => {
+    socket.join(userId);
+    console.log("User joined room:", userId);
+  });
+
   socket.on("disconnect", () => {
     console.log("🔴 User disconnected:", socket.id);
   });
 });
 
-// Make io globally available (important)
+// Make io globally available
 app.set("io", io);
 
 const PORT = process.env.PORT || 4849;

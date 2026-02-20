@@ -1,3 +1,4 @@
 Backend/uploads/
 node_modules/
 .env
+testSocketClient.js
