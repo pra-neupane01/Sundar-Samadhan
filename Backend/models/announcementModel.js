@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS announcements (
     announcement_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(150) NOT NULL,
     content TEXT NOT NULL,
+    image_url TEXT,
     ward_number INTEGER DEFAULT NULL,
     created_by UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
