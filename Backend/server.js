@@ -7,6 +7,7 @@ const { Server } = require("socket.io");
 
 const { userSchema } = require("./models/userSchema");
 const { complaintSchema } = require("./models/complaintsModel");
+const { announcementSchema } = require("./models/announcementModel");
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/v1/test", require("./routes/testRoute"));
 app.use("/api/v1/auth", require("./routes/authRoute"));
 app.use("/api/v1/complaints", require("./routes/complaintRoute"));
+app.use("/api/v1/announcements", require("./routes/announcementRoute"));
 
 app.get("/", (req, res) => {
   res.status(200).send("Server is running");
@@ -63,6 +65,7 @@ const initializeDatabase = async () => {
   try {
     await userSchema();
     await complaintSchema();
+    await announcementSchema();
 
     server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
