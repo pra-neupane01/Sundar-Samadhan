@@ -10,7 +10,7 @@ const roleMiddleware = require("../middlewares/roleMiddleware");
 const router = express.Router();
 
 // DONATE || POST
-router.post("/donate", createDonationController);
+router.post("/donate", authMiddleware, createDonationController);
 
 // FETCH OWN DONATION LIST || GET
 router.get("/my-donations", authMiddleware, getDonationByUserController);
