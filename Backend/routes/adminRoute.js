@@ -7,6 +7,9 @@ const {
   toggleUserStatusController,
   getAdminStatsController,
 } = require("../controllers/adminController");
+const {
+  getAllDonationsController,
+} = require("../controllers/donationController");
 
 router.get(
   "/all-users",
@@ -27,6 +30,13 @@ router.get(
   authMiddleware,
   roleMiddleware("admin"),
   getAdminStatsController,
+);
+
+router.get(
+  "/all-donations",
+  authMiddleware,
+  roleMiddleware("admin"),
+  getAllDonationsController,
 );
 
 module.exports = router;
