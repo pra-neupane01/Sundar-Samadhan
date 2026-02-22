@@ -1,4 +1,5 @@
 Backend/uploads/
 node_modules/
-.env
 testSocketClient.js
+Backend/.env
+.env
