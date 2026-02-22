@@ -53,4 +53,50 @@ const toggleUserStatusController = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsersController, toggleUserStatusController };
+const getAdminStatsController = async (req, res) => {
+  try {
+    // Total complaints
+    const totalComplaints = await pool.query("SELECT COUNT(*) FROM complaints");
+
+    // Resolved %
+    const resolvedComplaints = await pool.query(
+      "SELECT COUNT(*) FROM complaints WHERE status = 'resolved'",
+    );
+
+    // Active users
+    const activeUsers = await pool.query(
+      "SELECT COUNT(*) FROM users WHERE is_active = TRUE",
+    );
+
+    // Donation summary
+    const donationSummary = await pool.query(
+      "SELECT COUNT(*) as total_donations, SUM(amount) as total_amount FROM donations WHERE status = 'success'",
+    );
+
+    const total = parseInt(totalComplaints.rows[0].count);
+    const resolved = parseInt(resolvedComplaints.rows[0].count);
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalComplaints: total,
+        resolvedPercentage:
+          total === 0 ? 0 : ((resolved / total) * 100).toFixed(2),
+        activeUsers: parseInt(activeUsers.rows[0].count),
+        donationCount: donationSummary.rows[0].total_donations,
+        totalDonationAmount: donationSummary.rows[0].total_amount || 0,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch statistics",
+    });
+  }
+};
+
+module.exports = {
+  getAllUsersController,
+  toggleUserStatusController,
+  getAdminStatsController,
+};

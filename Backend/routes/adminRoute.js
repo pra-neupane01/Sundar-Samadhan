@@ -5,6 +5,7 @@ const roleMiddleware = require("../middlewares/roleMiddleware");
 const {
   getAllUsersController,
   toggleUserStatusController,
+  getAdminStatsController,
 } = require("../controllers/adminController");
 
 router.get(
@@ -21,11 +22,11 @@ router.put(
   toggleUserStatusController,
 );
 
-// router.get(
-//   "/stats",
-//   authMiddleware,
-//   roleMiddleware("admin"),
-//   getAdminStatsController,
-// );
+router.get(
+  "/stats",
+  authMiddleware,
+  roleMiddleware("admin"),
+  getAdminStatsController,
+);
 
 module.exports = router;
