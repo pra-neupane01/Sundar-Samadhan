@@ -21,4 +21,36 @@ const getAllUsersController = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsersController };
+const toggleUserStatusController = async (req, res) => {
+  try {
+    const { user_id } = req.body;
+
+    const result = await pool.query(
+      `UPDATE users 
+       SET is_active = NOT is_active 
+       WHERE id = $1 
+       RETURNING id, full_name, is_active`,
+      [user_id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User status updated",
+      user: result.rows[0],
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update user",
+    });
+  }
+};
+
+module.exports = { getAllUsersController, toggleUserStatusController };

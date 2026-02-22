@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
-const { getAllUsersController } = require("../controllers/adminController");
+const {
+  getAllUsersController,
+  toggleUserStatusController,
+} = require("../controllers/adminController");
 
 router.get(
   "/all-users",
@@ -11,12 +14,12 @@ router.get(
   getAllUsersController,
 );
 
-// router.put(
-//   "/toggle-user-status",
-//   authMiddleware,
-//   roleMiddleware("admin"),
-//   toggleUserStatusController,
-// );
+router.put(
+  "/toggle-user-status",
+  authMiddleware,
+  roleMiddleware("admin"),
+  toggleUserStatusController,
+);
 
 // router.get(
 //   "/stats",
