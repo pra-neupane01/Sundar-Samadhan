@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS users (
     role VARCHAR(20) DEFAULT 'citizen',
     ward_number INTEGER,
     sundar_points INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     is_active BOOLEAN DEFAULT TRUE
 );
 `;
   try {

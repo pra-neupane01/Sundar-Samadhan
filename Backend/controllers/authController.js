@@ -90,6 +90,13 @@ const loginController = async (req, res) => {
 
     const user = result.rows[0];
 
+    if (!user.is_active) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been blocked by admin",
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
