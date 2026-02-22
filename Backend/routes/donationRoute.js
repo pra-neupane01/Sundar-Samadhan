@@ -1,24 +1,23 @@
 const express = require("express");
-const {
-  createDonationController,
-  getDonationByUserController,
-  getAllDonationController,
-} = require("../controllers/donationController");
+const router = express.Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
+const {
+  createDonationController,
+  verifyPaymentController,
+  getDonationByUserController,
+  getAllDonationsController,
+} = require("../controllers/donationController");
 
-const router = express.Router();
-
-// DONATE || POST
-router.post("/donate", authMiddleware, createDonationController);
-
-// FETCH OWN DONATION LIST || GET
+router.post("/create", authMiddleware, createDonationController);
+router.post("/verify", verifyPaymentController);
 router.get("/my-donations", authMiddleware, getDonationByUserController);
 
-// FETCH ALL DONATION LIST || GET (ADMIN)
 router.get(
   "/all-donations",
   authMiddleware,
   roleMiddleware("admin"),
-  getAllDonationController,
+  getAllDonationsController,
 );
+
+module.exports = router;

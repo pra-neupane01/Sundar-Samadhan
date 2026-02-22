@@ -1,13 +1,4 @@
 const pool = require("../config/db");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
-//GENERATE TOKEN
-const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
-};
 
 // CREATE COMPLAINT || CITIZEN
 const createComplaintController = async (req, res) => {
@@ -21,7 +12,6 @@ const createComplaintController = async (req, res) => {
         message: "User not authorized.",
       });
     }
-    const userRole = req.user?.role;
 
     const { title, description, latitude, longitude, ward_number } = req.body;
 

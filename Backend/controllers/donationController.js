@@ -1,50 +1,178 @@
 const pool = require("../config/db");
+const stripe = require("../config/stripe");
 
+/* ===============================
+   CREATE DONATION (Create Stripe Session)
+================================== */
 const createDonationController = async (req, res) => {
   try {
     const userId = req.user.id;
     const { amount, payment_method } = req.body;
 
-    if (!amount || !payment_method) {
+    if (!amount) {
       return res.status(400).json({
         success: false,
-        message: "Amount and payment method required",
+        message: "Amount required",
       });
     }
 
-    const donation = await pool.query(
+    // 1️⃣ Create donation as pending
+    const donationResult = await pool.query(
       `INSERT INTO donations 
-       (user_id, amount, payment_method, status)
-       VALUES ($1, $2, $3, 'pending')
-       RETURNING *`,
+   (user_id, amount, payment_method, status)
+   VALUES ($1, $2, $3, 'pending')
+   RETURNING *`,
       [userId, amount, payment_method],
     );
 
-    res.status(201).json({
+    const donation = donationResult.rows[0];
+
+    // 2️⃣ Create Stripe Checkout Session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Donation - Sundar Samadhan",
+            },
+            unit_amount: amount * 100, // Stripe uses cents
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: "http://localhost:3000/success",
+      cancel_url: "http://localhost:3000/cancel",
+      metadata: {
+        donation_id: donation.donation_id,
+      },
+    });
+
+    res.status(200).json({
       success: true,
-      message: "Donation initiated",
-      donation: donation.rows[0],
+      sessionId: session.id,
+      url: session.url,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
-      message: "Failed to create donation",
+      message: "Error creating donation",
+      error: error.message,
     });
   }
 };
 
-const getDonationByUserController = async (req, res) => {
+/* ===============================
+   VERIFY PAYMENT (Manual simple version)
+================================== */
+const verifyPaymentController = async (req, res) => {
   try {
-  } catch (error) {}
+    const { donation_id } = req.body;
+
+    const donationResult = await pool.query(
+      "SELECT * FROM donations WHERE donation_id = $1",
+      [donation_id],
+    );
+
+    if (donationResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Donation not found",
+      });
+    }
+
+    const donation = donationResult.rows[0];
+
+    if (donation.status === "success") {
+      return res.status(400).json({
+        success: false,
+        message: "Already verified",
+      });
+    }
+
+    // 🔥 In real app use Stripe webhook
+    // For academic project -> simulate success
+
+    await pool.query(
+      `UPDATE donations
+       SET status = 'success'
+       WHERE donation_id = $1`,
+      [donation_id],
+    );
+
+    await pool.query(
+      `UPDATE users
+       SET sundar_points = sundar_points + $1
+       WHERE id = $2`,
+      [donation.amount, donation.user_id],
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Payment verified & points updated",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Verification failed",
+    });
+  }
 };
 
-const getAllDonationController = async (req, res) => {
+/* ===============================
+   GET DONATIONS BY LOGGED USER
+================================== */
+const getDonationByUserController = async (req, res) => {
   try {
-  } catch (error) {}
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      "SELECT * FROM donations WHERE user_id = $1 ORDER BY created_at DESC",
+      [userId],
+    );
+
+    res.status(200).json({
+      success: true,
+      donationCount: result.rows.length,
+      donations: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch donations",
+    });
+  }
+};
+
+// GET ALL DONATIONS (ADMIN ONLY)
+const getAllDonationsController = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT d.*, u.full_name, u.email
+       FROM donations d
+       JOIN users u ON d.user_id = u.id
+       ORDER BY d.created_at DESC`,
+    );
+
+    res.status(200).json({
+      success: true,
+      donationCount: result.rows.length,
+      donations: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch donations",
+    });
+  }
 };
 
 module.exports = {
   createDonationController,
+  verifyPaymentController,
   getDonationByUserController,
-  getAllDonationController,
+  getAllDonationsController,
 };

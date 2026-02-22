@@ -1,13 +1,4 @@
 const pool = require("../config/db");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
-//GENERATE TOKEN
-const generateToken = (id, role) => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
-};
 
 // CREATE ANNOUNCEMENT || (MUNICIPAL, ADMIN)
 const createAnnouncementController = async (req, res) => {
