@@ -19,9 +19,9 @@ ON announcements (ward_number);
 `;
   try {
     await pool.query(query);
-    console.log("✅ Announcements table ensured.");
+    console.log("Announcements table ensured.");
   } catch (err) {
-    console.error("❌ Error creating announcements table:", err);
+    console.error("Error creating announcements table:", err);
   }
 };
 

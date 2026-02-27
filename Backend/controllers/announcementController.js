@@ -98,8 +98,38 @@ const getAnnouncementByWardController = async (req, res) => {
   }
 };
 
+//DELETE ANNOUNCEMENT || ADMIN & MUNICIPALITY
+const deleteAnnouncementController = async (req, res) => {
+  try {
+    const announcementId = req.params.id;
+
+    const result = await pool.query(
+      "DELETE FROM announcements WHERE announcement_id = $1 RETURNING *",
+      [announcementId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Announcement not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Announcement deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete announcement",
+    });
+  }
+};
+
 module.exports = {
   createAnnouncementController,
   getAnnouncementController,
   getAnnouncementByWardController,
+  deleteAnnouncementController,
 };

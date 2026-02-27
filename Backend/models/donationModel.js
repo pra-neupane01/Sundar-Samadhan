@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS donations (
 `;
   try {
     await pool.query(query);
-    console.log("✅ Donations table ensured.");
+    console.log("Donations table ensured.");
   } catch (err) {
-    console.error("❌ Error creating Donations table:", err);
+    console.error("Error creating Donations table:", err);
   }
 };
 

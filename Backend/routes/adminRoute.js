@@ -6,6 +6,7 @@ const {
   getAllUsersController,
   toggleUserStatusController,
   getAdminStatsController,
+  updateUserRoleController,
 } = require("../controllers/adminController");
 const {
   getAllDonationsController,
@@ -37,6 +38,13 @@ router.get(
   authMiddleware,
   roleMiddleware("admin"),
   getAllDonationsController,
+);
+
+router.put(
+  "/update-role",
+  authMiddleware,
+  roleMiddleware("admin"),
+  updateUserRoleController,
 );
 
 module.exports = router;

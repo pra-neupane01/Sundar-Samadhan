@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS complaints (
 `;
   try {
     await pool.query(query);
-    console.log("✅ Complaints table ensured.");
+    console.log("Complaints table ensured.");
   } catch (err) {
-    console.error("❌ Error creating complaints table:", err);
+    console.error("Error creating complaints table:", err);
   }
 };
 

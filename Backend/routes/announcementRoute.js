@@ -7,6 +7,7 @@ const {
   createAnnouncementController,
   getAnnouncementController,
   getAnnouncementByWardController,
+  deleteAnnouncementController,
 } = require("../controllers/announcementController");
 
 const upload = require("../middlewares/uploadMiddleware");
@@ -29,6 +30,13 @@ router.get("/get-announcements", getAnnouncementController);
 router.get(
   "/get-announcements-ward/:wardNumber",
   getAnnouncementByWardController,
+);
+
+router.delete(
+  "/delete-announcement/:announcementId",
+  authMiddleware,
+  roleMiddleware("admin", "municipal"),
+  deleteAnnouncementController,
 );
 
 module.exports = router;

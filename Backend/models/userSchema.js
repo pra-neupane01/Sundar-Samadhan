@@ -16,9 +16,9 @@ CREATE TABLE IF NOT EXISTS users (
 `;
   try {
     await pool.query(query);
-    console.log("✅ Users table ensured.");
+    console.log("Users table ensured.");
   } catch (err) {
-    console.error("❌ Error creating users table:", err);
+    console.error("Error creating users table:", err);
   }
 };
 

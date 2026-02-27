@@ -188,7 +188,7 @@ const updateComplaintStatusController = async (req, res) => {
   }
 };
 
-//DELETE COMPLAINT STATUS|| ADMIN ONLY
+//DELETE COMPLAINT || ADMIN ONLY
 const deleteComplaintController = async (req, res) => {
   try {
     const complaintId = req.params.id;

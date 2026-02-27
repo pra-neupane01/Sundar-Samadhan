@@ -95,8 +95,69 @@ const getAdminStatsController = async (req, res) => {
   }
 };
 
+// UPDATE ROLE -- CITIZEN --> MUNICIPAL
+const updateUserRoleController = async (req, res) => {
+  try {
+    const { user_id, new_role } = req.body;
+
+    // Validate inputs
+    if (!user_id || !new_role) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID and new role are required",
+      });
+    }
+
+    // Allowed roles (strict control)
+    const allowedRoles = ["citizen", "municipal", "admin"];
+
+    if (!allowedRoles.includes(new_role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role value",
+      });
+    }
+
+    // Prevent self role change (optional but recommended)
+    if (req.user.id === user_id) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot change your own role",
+      });
+    }
+
+    const result = await pool.query(
+      `UPDATE users 
+       SET role = $1
+       WHERE id = $2
+       RETURNING id, full_name, email, role`,
+      [new_role, user_id],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User role updated successfully",
+      user: result.rows[0],
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update user role",
+    });
+  }
+};
+
 module.exports = {
   getAllUsersController,
   toggleUserStatusController,
   getAdminStatsController,
+  updateUserRoleController,
 };
