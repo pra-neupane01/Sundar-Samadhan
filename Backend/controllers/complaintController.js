@@ -41,6 +41,14 @@ const createComplaintController = async (req, res) => {
 
     const complaintDetails = complaint.rows[0];
 
+    const io = req.app.get("io");
+    // only municipal of that ward gets it.
+
+    io.to(`ward_${ward_number}`).emit("newWardComplaint", {
+      title,
+      ward_number,
+    });
+
     res.status(201).json({
       success: true,
       message: "Complaint Successfully Lodged.",
@@ -217,6 +225,26 @@ const deleteComplaintController = async (req, res) => {
   }
 };
 
+const checkOverdueComplaints = async (io) => {
+  try {
+    const result = await pool.query(
+      `SELECT complaint_id, ward_number
+       FROM complaints
+       WHERE status = 'pending'
+       AND created_at < NOW() - INTERVAL '3 days'`,
+    );
+
+    result.rows.forEach((complaint) => {
+      io.to(`ward_${complaint.ward_number}`).emit("overdueComplaint", {
+        complaintId: complaint.complaint_id,
+        message: "Complaint pending for more than 3 days",
+      });
+    });
+  } catch (error) {
+    console.error("Overdue check error:", error);
+  }
+};
+
 module.exports = {
   createComplaintController,
   getAllComplaintController,
@@ -224,4 +252,5 @@ module.exports = {
   getComplaintByUserController,
   updateComplaintStatusController,
   deleteComplaintController,
+  checkOverdueComplaints,
 };

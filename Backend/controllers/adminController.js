@@ -40,6 +40,13 @@ const toggleUserStatusController = async (req, res) => {
       });
     }
 
+    if (req.user.id === user_id) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot block your own account",
+      });
+    }
+
     res.status(200).json({
       success: true,
       message: "User status updated",

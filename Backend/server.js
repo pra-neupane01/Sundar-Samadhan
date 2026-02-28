@@ -9,8 +9,7 @@ const { userSchema } = require("./models/userSchema");
 const { complaintSchema } = require("./models/complaintsModel");
 const { announcementSchema } = require("./models/announcementModel");
 const { donationSchema } = require("./models/donationModel");
-
-dotenv.config();
+const { checkOverdueComplaints } = require("./controllers/complaintController");
 
 const app = express();
 
@@ -45,18 +44,20 @@ const io = new Server(server, {
   },
 });
 
-// Basic socket connection
 io.on("connection", (socket) => {
-  console.log("🟢 User connected:", socket.id);
-
-  socket.on("joinRoom", (userId) => {
+  socket.on("joinUser", (userId) => {
     socket.join(userId);
-    console.log("User joined room:", userId);
   });
 
-  socket.on("disconnect", () => {
-    console.log("🔴 User disconnected:", socket.id);
+  socket.on("joinWard", (wardNumber) => {
+    socket.join(`ward_${wardNumber}`);
   });
+
+  socket.on("joinRole", (role) => {
+    socket.join(`${role}_room`);
+  });
+
+  checkOverdueComplaints(io);
 });
 
 // Make io globally available

@@ -66,7 +66,7 @@ const createDonationController = async (req, res) => {
 };
 
 /* ===============================
-   VERIFY PAYMENT (Manual simple version)
+   VERIFY PAYMENT 
 ================================== */
 const verifyPaymentController = async (req, res) => {
   try {
@@ -102,6 +102,13 @@ const verifyPaymentController = async (req, res) => {
        WHERE donation_id = $1`,
       [donation_id],
     );
+
+    if (donation.amount > 1000) {
+      io.to("admin_room").emit("highDonation", {
+        amount: donation.amount,
+        user: donation.user_id,
+      });
+    }
 
     await pool.query(
       `UPDATE users
