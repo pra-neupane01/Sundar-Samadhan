@@ -5,6 +5,10 @@ const roleMiddleware = require("../middlewares/roleMiddleware");
 const upload = require("../middlewares/uploadMiddleware");
 
 const {
+  checkOverdueComplaints,
+} = require("../controllers/complaintController");
+
+const {
   createComplaintController,
   getAllComplaintController,
   getComplaintByWardController,
@@ -12,6 +16,7 @@ const {
   updateComplaintStatusController,
   deleteComplaintController,
 } = require("../controllers/complaintController");
+const { route } = require("./testRoute");
 
 const router = express.Router();
 
@@ -64,6 +69,14 @@ router.delete(
   deleteComplaintController,
 );
 
-//
+// 🔥 Force Overdue Check (for testing)
+router.get("/force-overdue", (req, res) => {
+  const io = req.app.get("io");
+  checkOverdueComplaints(io);
+  res.status(200).json({
+    success: true,
+    message: "Overdue check triggered",
+  });
+});
 
 module.exports = router;

@@ -227,12 +227,15 @@ const deleteComplaintController = async (req, res) => {
 
 const checkOverdueComplaints = async (io) => {
   try {
+    console.log("Running overdue check...");
     const result = await pool.query(
       `SELECT complaint_id, ward_number
-       FROM complaints
-       WHERE status = 'pending'
-       AND created_at < NOW() - INTERVAL '3 days'`,
+   FROM complaints
+   WHERE status = 'pending'
+   AND created_at < NOW() - INTERVAL '3 days'`,
     );
+
+    console.log("Overdue found:", result.rows);
 
     result.rows.forEach((complaint) => {
       io.to(`ward_${complaint.ward_number}`).emit("overdueComplaint", {
