@@ -54,6 +54,7 @@ const createDonationController = async (req, res) => {
       success: true,
       sessionId: session.id,
       url: session.url,
+      donation_id: donation.donation_id,
     });
   } catch (error) {
     console.log(error);
@@ -65,12 +66,16 @@ const createDonationController = async (req, res) => {
   }
 };
 
-/* ===============================
-   VERIFY PAYMENT 
-================================== */
 const verifyPaymentController = async (req, res) => {
   try {
     const { donation_id } = req.body;
+
+    if (!donation_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Donation ID required",
+      });
+    }
 
     const donationResult = await pool.query(
       "SELECT * FROM donations WHERE donation_id = $1",
@@ -93,23 +98,15 @@ const verifyPaymentController = async (req, res) => {
       });
     }
 
-    // 🔥 In real app use Stripe webhook
-    // For academic project -> simulate success
-
+    // ✅ Update donation
     await pool.query(
-      `UPDATE donations
+      `UPDATE donations 
        SET status = 'success'
        WHERE donation_id = $1`,
       [donation_id],
     );
 
-    if (donation.amount > 1000) {
-      io.to("admin_room").emit("highDonation", {
-        amount: donation.amount,
-        user: donation.user_id,
-      });
-    }
-
+    // ✅ Update points
     await pool.query(
       `UPDATE users
        SET sundar_points = sundar_points + $1
@@ -117,11 +114,25 @@ const verifyPaymentController = async (req, res) => {
       [donation.amount, donation.user_id],
     );
 
+    // ✅ GET IO PROPERLY
+    const io = req.app.get("io");
+
+    // 🔔 Notify admin if high donation
+    if (donation.amount > 1000) {
+      io.to("admin_room").emit("highDonation", {
+        amount: donation.amount,
+        user: donation.user_id,
+      });
+
+      console.log("🔥 highDonation emitted");
+    }
+
     res.status(200).json({
       success: true,
       message: "Payment verified & points updated",
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       success: false,
       message: "Verification failed",
