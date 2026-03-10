@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./components/protectedRoute";
 import { AuthContext } from "./context/AuthContext";
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
@@ -14,8 +16,8 @@ const RolePage = ({ title }) => {
         <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
         <p className="mt-2 text-slate-600">Logged in as: {user?.email}</p>
         <p className="mt-1 text-slate-600">Role: {user?.role}</p>
+
         <button
-          type="button"
           onClick={logout}
           className="mt-5 rounded-md bg-slate-900 px-4 py-2 text-white hover:bg-slate-800"
         >
@@ -30,16 +32,21 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* Citizen Dashboard */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <RolePage title="Citizen Dashboard" />
+              <CitizenDashboard />
             </ProtectedRoute>
           }
         />
+
+        {/* Admin */}
         <Route
           path="/admin"
           element={
@@ -48,6 +55,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Municipal */}
         <Route
           path="/municipal"
           element={
@@ -56,6 +65,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Default */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
