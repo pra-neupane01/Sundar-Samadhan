@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS complaints (
     title VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
     image_url TEXT,
+    category VARCHAR(100),
+    address TEXT,
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
     ward_number INTEGER,

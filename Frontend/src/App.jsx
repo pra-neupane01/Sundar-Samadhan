@@ -6,6 +6,7 @@ import { AuthContext } from "./context/AuthContext";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
+import CreateComplaint from "./pages/citizen/CreateComplaint";
 
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
@@ -42,6 +43,16 @@ const App = () => {
           element={
             <ProtectedRoute>
               <CitizenDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Citizen Complaints */}
+        <Route
+          path="/citizen/complaint/create"
+          element={
+            <ProtectedRoute>
+              <CreateComplaint />
             </ProtectedRoute>
           }
         />

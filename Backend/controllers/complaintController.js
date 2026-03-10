@@ -13,7 +13,7 @@ const createComplaintController = async (req, res) => {
       });
     }
 
-    const { title, description, latitude, longitude, ward_number } = req.body;
+    const { title, description, latitude, longitude, ward_number, category, address } = req.body;
 
     // 🔹 Basic field validation
     if (!title || !description) {
@@ -25,17 +25,19 @@ const createComplaintController = async (req, res) => {
 
     const complaint = await pool.query(
       `INSERT INTO complaints 
-  (title, description, image_url, latitude, longitude, ward_number, created_by) 
-  VALUES ($1, $2, $3, $4, $5, $6, $7) 
+  (title, description, image_url, category, latitude, longitude, ward_number, created_by, address) 
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
   RETURNING *`,
       [
         title,
         description,
         imagePath,
+        category || null,
         latitude || null,
         longitude || null,
         ward_number || null,
         userId,
+        address || null,
       ],
     );
 

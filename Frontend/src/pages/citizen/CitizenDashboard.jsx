@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import {
   ClipboardList,
   HeartHandshake,
@@ -36,6 +37,7 @@ ChartJS.register(
 
 const CitizenDashboard = () => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const stats = [
     {
@@ -72,6 +74,7 @@ const CitizenDashboard = () => {
       icon: <PenLine size={28} />,
       buttonText: "Create Now",
       buttonClass: "action-btn-blue",
+      onClick: () => navigate("/citizen/complaint/create"),
     },
     {
       title: "View Complaints",
@@ -291,7 +294,10 @@ const CitizenDashboard = () => {
                 <h3 className="action-title">{action.title}</h3>
                 <p className="action-description">{action.description}</p>
 
-                <button className={`action-btn ${action.buttonClass}`}>
+                <button
+                  className={`action-btn ${action.buttonClass}`}
+                  onClick={action.onClick}
+                >
                   {action.buttonText}
                 </button>
               </div>
