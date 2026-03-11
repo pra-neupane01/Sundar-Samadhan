@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 import {
   ClipboardList,
   HeartHandshake,
@@ -36,31 +37,70 @@ ChartJS.register(
 );
 
 const CitizenDashboard = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const [complaintCount, setComplaintCount] = useState(0);
+  const [donationCount, setDonationCount] = useState(0);
+  const [announcementCount, setAnnouncementCount] = useState(0);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch Complaints
+        const compRes = await api.get("/complaints/my-complaints", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (compRes.data.success) {
+          setComplaintCount(compRes.data.complaintCount || 0);
+        }
+
+        // Fetch Donations
+        const donRes = await api.get("/donations/my-donations", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (donRes.data.success) {
+          setDonationCount(donRes.data.donationCount || donRes.data.donations?.length || 0);
+        }
+
+        // Fetch Announcements
+        const annRes = await api.get("/announcements/get-announcements");
+        if (annRes.data.success) {
+          setAnnouncementCount(annRes.data.announcementCount || annRes.data.announcements?.length || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      }
+    };
+
+    if (token) {
+      fetchStats();
+    }
+  }, [token]);
 
   const stats = [
     {
       title: "My Complaints",
-      value: 5,
+      value: complaintCount,
       icon: <ClipboardList size={28} />,
       colorClass: "stat-card-blue",
+      onClick: () => navigate("/citizen/complaints"),
     },
     {
       title: "My Donations",
-      value: 3,
+      value: donationCount,
       icon: <HeartHandshake size={28} />,
       colorClass: "stat-card-green",
     },
     {
       title: "Sundar Points",
-      value: 120,
+      value: 120, // Keep hardcoded for now or fetch if available
       icon: <Star size={28} />,
       colorClass: "stat-card-yellow",
     },
     {
       title: "Announcements",
-      value: 4,
+      value: announcementCount,
       icon: <Megaphone size={28} />,
       colorClass: "stat-card-purple",
     },
@@ -83,6 +123,7 @@ const CitizenDashboard = () => {
       icon: <ListChecks size={28} />,
       buttonText: "View All",
       buttonClass: "action-btn-green",
+      onClick: () => navigate("/citizen/complaints"),
     },
     {
       title: "Make a Donation",
@@ -240,7 +281,11 @@ const CitizenDashboard = () => {
         {/* Stats Cards */}
         <div className="stats-grid">
           {stats.map((item, index) => (
-            <div key={index} className={`stat-card ${item.colorClass}`}>
+            <div 
+              key={index} 
+              className={`stat-card ${item.colorClass} ${item.onClick ? "clickable" : ""}`}
+              onClick={item.onClick}
+            >
               <div className="stat-card-content">
                 <div className="stat-info">
                   <p className="stat-label">{item.title}</p>

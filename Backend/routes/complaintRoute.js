@@ -49,7 +49,7 @@ router.get(
 router.get(
   "/my-complaints",
   authMiddleware,
-  roleMiddleware,
+  roleMiddleware("citizen", "admin", "municipal"),
   getComplaintByUserController,
 );
 
