@@ -91,6 +91,7 @@ const CitizenDashboard = () => {
       value: donationCount,
       icon: <HeartHandshake size={28} />,
       colorClass: "stat-card-green",
+      onClick: () => navigate("/citizen/donations"),
     },
     {
       title: "Sundar Points",
@@ -131,6 +132,7 @@ const CitizenDashboard = () => {
       icon: <Coins size={28} />,
       buttonText: "Donate Now",
       buttonClass: "action-btn-yellow",
+      onClick: () => navigate("/citizen/donations"), // Update this when donate page is ready
     },
   ];
 

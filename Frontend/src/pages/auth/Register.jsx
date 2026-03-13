@@ -2,7 +2,9 @@ import { useState } from "react";
 import { registerUser } from "../../services/authService";
 import { Link, useNavigate } from "react-router-dom";
 
-const WARD_OPTIONS = Array.from({ length: 33 }, (_, index) => String(index + 1));
+const WARD_OPTIONS = Array.from({ length: 15 }, (_, index) =>
+  String(index + 1),
+);
 
 const Register = () => {
   const navigate = useNavigate();
@@ -30,7 +32,10 @@ const Register = () => {
       await registerUser(form);
       navigate("/login");
     } catch (error) {
-      setErrorMessage(error?.response?.data?.message || "Registration failed. Please try again.");
+      setErrorMessage(
+        error?.response?.data?.message ||
+          "Registration failed. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -42,9 +47,16 @@ const Register = () => {
         onSubmit={handleSubmit}
         className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
       >
-        <h2 className="text-2xl font-semibold text-slate-900 mb-1">Create account</h2>
-        <p className="text-sm text-slate-600 mb-5">Register to access citizen services.</p>
-        <label htmlFor="fullName" className="mb-1 block text-sm font-medium text-slate-700">
+        <h2 className="text-2xl font-semibold text-slate-900 mb-1">
+          Create account
+        </h2>
+        <p className="text-sm text-slate-600 mb-5">
+          Register to access citizen services.
+        </p>
+        <label
+          htmlFor="fullName"
+          className="mb-1 block text-sm font-medium text-slate-700"
+        >
           Full Name
         </label>
         <input
@@ -57,7 +69,10 @@ const Register = () => {
           required
           className="mb-4 w-full rounded-md border border-slate-300 p-2.5 outline-none focus:border-slate-500"
         />
-        <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+        <label
+          htmlFor="email"
+          className="mb-1 block text-sm font-medium text-slate-700"
+        >
           Email
         </label>
         <input
@@ -70,7 +85,10 @@ const Register = () => {
           required
           className="mb-4 w-full rounded-md border border-slate-300 p-2.5 outline-none focus:border-slate-500"
         />
-        <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
+        <label
+          htmlFor="password"
+          className="mb-1 block text-sm font-medium text-slate-700"
+        >
           Password
         </label>
         <input
@@ -84,7 +102,10 @@ const Register = () => {
           minLength={6}
           className="mb-4 w-full rounded-md border border-slate-300 p-2.5 outline-none focus:border-slate-500"
         />
-        <label htmlFor="wardNumber" className="mb-1 block text-sm font-medium text-slate-700">
+        <label
+          htmlFor="wardNumber"
+          className="mb-1 block text-sm font-medium text-slate-700"
+        >
           Ward Number
         </label>
         <select
@@ -102,7 +123,9 @@ const Register = () => {
             </option>
           ))}
         </select>
-        {errorMessage && <p className="mb-3 text-sm text-red-600">{errorMessage}</p>}
+        {errorMessage && (
+          <p className="mb-3 text-sm text-red-600">{errorMessage}</p>
+        )}
         <button
           type="submit"
           disabled={isSubmitting}

@@ -8,6 +8,7 @@ import Register from "./pages/auth/Register";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 import CreateComplaint from "./pages/citizen/CreateComplaint";
 import MyComplaints from "./pages/citizen/MyComplaints";
+import MyDonations from "./pages/citizen/MyDonations";
 
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
@@ -63,6 +64,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <MyComplaints />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/citizen/donations"
+          element={
+            <ProtectedRoute>
+              <MyDonations />
             </ProtectedRoute>
           }
         />
