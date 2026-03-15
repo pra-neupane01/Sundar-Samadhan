@@ -9,6 +9,9 @@ import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 import CreateComplaint from "./pages/citizen/CreateComplaint";
 import MyComplaints from "./pages/citizen/MyComplaints";
 import MyDonations from "./pages/citizen/MyDonations";
+import Donate from "./pages/citizen/Donate";
+import PaymentSuccess from "./pages/payment/PaymentSuccess";
+import PaymentCancel from "./pages/payment/PaymentCancel";
 
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
@@ -73,6 +76,33 @@ const App = () => {
           element={
             <ProtectedRoute>
               <MyDonations />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/citizen/donate"
+          element={
+            <ProtectedRoute>
+              <Donate />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/payment/success"
+          element={
+            <ProtectedRoute>
+              <PaymentSuccess />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/payment/cancel"
+          element={
+            <ProtectedRoute>
+              <PaymentCancel />
             </ProtectedRoute>
           }
         />

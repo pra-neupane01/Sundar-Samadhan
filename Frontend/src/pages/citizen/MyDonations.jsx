@@ -1,14 +1,14 @@
 import { useState, useEffect, useContext, useMemo } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import api from "../../services/api";
-import { 
-  ArrowLeft, 
-  Wallet, 
-  Landmark, 
-  CreditCard, 
-  CheckCircle2, 
-  Clock, 
-  XCircle, 
+import {
+  ArrowLeft,
+  Wallet,
+  Landmark,
+  CreditCard,
+  CheckCircle2,
+  Clock,
+  XCircle,
   HeartHandshake,
   Search,
   Filter,
@@ -51,11 +51,11 @@ const MyDonations = () => {
   const filteredDonations = useMemo(() => {
     return donations.filter((donation) => {
       const matchesStatus = filterStatus === "all" || donation.status === filterStatus;
-      const matchesSearch = 
+      const matchesSearch =
         donation.transaction_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         donation.amount.toString().includes(searchTerm) ||
         donation.payment_method?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       return matchesStatus && matchesSearch;
     });
   }, [donations, filterStatus, searchTerm]);
@@ -64,7 +64,7 @@ const MyDonations = () => {
     const totalAmount = donations
       .filter(d => d.status === "success")
       .reduce((sum, d) => sum + d.amount, 0);
-    
+
     return {
       totalAmount,
       totalCount: donations.filter(d => d.status === "success").length,
@@ -145,9 +145,9 @@ const MyDonations = () => {
         <div className="table-controls">
           <div className="search-box">
             <Search size={18} />
-            <input 
-              type="text" 
-              placeholder="Search transactions..." 
+            <input
+              type="text"
+              placeholder="Search transactions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -183,12 +183,12 @@ const MyDonations = () => {
             </div>
             <h3>No records found</h3>
             <p>
-              {searchTerm || filterStatus !== "all" 
-                ? "Try adjusting your filters or search terms." 
+              {searchTerm || filterStatus !== "all"
+                ? "Try adjusting your filters or search terms."
                 : "You haven't made any donations yet. Join us in making a difference!"}
             </p>
             {!searchTerm && filterStatus === "all" && (
-              <button className="primary-action-btn" onClick={() => navigate("/dashboard")}>
+              <button className="primary-action-btn" onClick={() => navigate("/citizen/donate")}>
                 Make First Donation
               </button>
             )}
@@ -228,7 +228,7 @@ const MyDonations = () => {
                       <span className="value">{donation.amount.toLocaleString()}</span>
                     </td>
                     <td>
-                        <div className="method-tag">
+                      <div className="method-tag">
                         {getPaymentIcon(donation.payment_method)}
                         <span>{donation.payment_method}</span>
                       </div>

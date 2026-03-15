@@ -43,8 +43,8 @@ const createDonationController = async (req, res) => {
           quantity: 1,
         },
       ],
-      success_url: "http://localhost:3000/success",
-      cancel_url: "http://localhost:3000/cancel",
+      success_url: `http://localhost:5173/payment/success?donation_id=${donation.donation_id}`,
+      cancel_url: "http://localhost:5173/payment/cancel",
       metadata: {
         donation_id: donation.donation_id,
       },

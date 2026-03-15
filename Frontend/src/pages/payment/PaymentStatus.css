@@ -1,0 +1,210 @@
+.payment-status-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.status-card {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  padding: 3.5rem 2.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+.status-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.icon-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.success-bg {
+  background: #f0fdf4;
+  color: #22c55e;
+  box-shadow: 0 0 0 12px #f0fdf4;
+}
+
+.error-bg {
+  background: #fef2f2;
+  color: #ef4444;
+  box-shadow: 0 0 0 12px #fef2f2;
+}
+
+.cancel-bg {
+  background: #fffbeb;
+  color: #f59e0b;
+  box-shadow: 0 0 0 12px #fffbeb;
+}
+
+.spinner-icon {
+  color: #3b82f6;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.main-msg {
+  font-size: 1.05rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.reward-box {
+  width: 100%;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-radius: 20px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  color: white;
+  margin: 1rem 0;
+}
+
+.reward-icon {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  border-radius: 12px;
+  color: #fbbf24;
+}
+
+.reward-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.reward-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.reward-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.info-note {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  color: #71717a;
+  border: 1px solid #e2e8f0;
+}
+
+.action-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+}
+
+.primary-btn:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.3);
+}
+
+.primary-btn.retry {
+  background: #0f172a;
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+}
+
+.primary-btn.retry:hover {
+  background: #1e293b;
+}
+
+.secondary-btn {
+  width: 100%;
+  padding: 1rem;
+  background: transparent;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .status-card {
+    padding: 2.5rem 1.5rem;
+    border-radius: 24px;
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+}

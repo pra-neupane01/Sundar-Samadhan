@@ -132,7 +132,7 @@ const CitizenDashboard = () => {
       icon: <Coins size={28} />,
       buttonText: "Donate Now",
       buttonClass: "action-btn-yellow",
-      onClick: () => navigate("/citizen/donations"), // Update this when donate page is ready
+      onClick: () => navigate("/citizen/donate"), // Update this when donate page is ready
     },
   ];
 
