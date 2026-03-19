@@ -108,6 +108,7 @@ const CitizenDashboard = () => {
       value: announcementCount,
       icon: <Megaphone size={28} />,
       colorClass: "stat-card-purple",
+      onClick: () => navigate("/citizen/announcements"),
     },
   ];
 

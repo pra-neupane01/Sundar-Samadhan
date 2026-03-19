@@ -169,6 +169,14 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/citizen/announcements"
+          element={
+            <ProtectedRoute>
+              <ManageAnnouncements />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/login" replace />} />

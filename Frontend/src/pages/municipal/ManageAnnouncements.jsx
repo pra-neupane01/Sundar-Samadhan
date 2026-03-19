@@ -23,7 +23,11 @@ const ManageAnnouncements = () => {
   const fetchAnnouncements = async () => {
     try {
       setFetching(true);
-      const res = await api.get("/announcements/get-announcements");
+      let endpoint = "/announcements/get-announcements";
+      if (user?.role === "citizen" && user?.ward_number) {
+        endpoint = `/announcements/get-announcements-ward/${user.ward_number}`;
+      }
+      const res = await api.get(endpoint);
       if (res.data.success) {
         setAnnouncements(res.data.announcements || []);
       }
@@ -119,7 +123,7 @@ const ManageAnnouncements = () => {
           <span className="brand-text">Sundar Samadhan</span>
         </div>
         <div className="navbar-user-section">
-          <Link to="/municipal" className="back-link">
+          <Link to={user?.role === "citizen" ? "/dashboard" : "/municipal"} className="back-link">
             <ArrowLeft size={18} />
             Back to Dashboard
           </Link>
@@ -127,79 +131,81 @@ const ManageAnnouncements = () => {
       </nav>
 
       <div className="announcements-content">
-        {/* POST FORM */}
-        <div className="form-card">
-          <div className="card-header">
-            <Megaphone size={24} className="header-icon" />
-            <h2>Post Announcement</h2>
-          </div>
-          
-          <form className="announcement-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="title">Announcement Title *</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="e.g. Water Supply Interruption on Monday"
-                required
-              />
+        {/* POST FORM - Only for Municipal/Admin */}
+        {(user?.role === "municipal" || user?.role === "admin") && (
+          <div className="form-card">
+            <div className="card-header">
+              <Megaphone size={24} className="header-icon" />
+              <h2>Post Announcement</h2>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="content">Details *</label>
-              <textarea
-                id="content"
-                name="content"
-                value={formData.content}
-                onChange={handleChange}
-                placeholder="Provide details about the announcement..."
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="ward_number">Target Audience</label>
-              <select
-                id="ward_number"
-                name="ward_number"
-                value={formData.ward_number}
-                onChange={handleChange}
-              >
-                <option value="all">All Wards (Public)</option>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(w => (
-                  <option key={w} value={w}>Ward {w} Only</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Attach Image (Optional)</label>
-              <div className="file-input-wrapper">
+            
+            <form className="announcement-form" onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="title">Announcement Title *</label>
                 <input
-                  type="file"
-                  id="image-upload"
-                  accept="image/*"
-                  onChange={handleFileChange}
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="e.g. Water Supply Interruption on Monday"
+                  required
                 />
               </div>
-            </div>
 
-            <button type="submit" className="submit-btn" disabled={loading}>
-              {loading ? <div className="spinner"></div> : (
-                <>
-                  <Send size={18} style={{ marginRight: '8px' }} />
-                  Post Announcement
-                </>
-              )}
-            </button>
-          </form>
-        </div>
+              <div className="form-group">
+                <label htmlFor="content">Details *</label>
+                <textarea
+                  id="content"
+                  name="content"
+                  value={formData.content}
+                  onChange={handleChange}
+                  placeholder="Provide details about the announcement..."
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="ward_number">Target Audience</label>
+                <select
+                  id="ward_number"
+                  name="ward_number"
+                  value={formData.ward_number}
+                  onChange={handleChange}
+                >
+                  <option value="all">All Wards (Public)</option>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(w => (
+                    <option key={w} value={w}>Ward {w} Only</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Attach Image (Optional)</label>
+                <div className="file-input-wrapper">
+                  <input
+                    type="file"
+                    id="image-upload"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="submit-btn" disabled={loading}>
+                {loading ? <div className="spinner"></div> : (
+                  <>
+                    <Send size={18} style={{ marginRight: '8px' }} />
+                    Post Announcement
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        )}
 
         {/* RECENT ANNOUNCEMENTS */}
-        <div className="list-card">
+        <div className="list-card" style={{ width: (user?.role === "municipal" || user?.role === "admin") ? "" : "100%", maxWidth: (user?.role === "municipal" || user?.role === "admin") ? "" : "800px", margin: (user?.role === "municipal" || user?.role === "admin") ? "" : "0 auto" }}>
           <div className="card-header">
             <ClipboardList size={24} className="header-icon" />
             <h2>Recent Announcements</h2>
