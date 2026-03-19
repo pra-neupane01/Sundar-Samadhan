@@ -14,6 +14,7 @@ import PaymentSuccess from "./pages/payment/PaymentSuccess";
 import PaymentCancel from "./pages/payment/PaymentCancel";
 import MunicipalDashboard from "./pages/municipal/MunicipalDashboard";
 import WardComplaints from "./pages/municipal/WardComplaints";
+import ManageAnnouncements from "./pages/municipal/ManageAnnouncements";
 
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
@@ -133,6 +134,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <WardComplaints />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/municipal/announcements"
+          element={
+            <ProtectedRoute>
+              <ManageAnnouncements />
             </ProtectedRoute>
           }
         />

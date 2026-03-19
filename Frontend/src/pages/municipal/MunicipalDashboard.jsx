@@ -141,7 +141,7 @@ const MunicipalDashboard = () => {
       icon: <Megaphone size={28} />,
       buttonText: "Manage Announcements",
       buttonClass: "action-btn-blue",
-      onClick: () => {}, // Placeholder for future feature
+      onClick: () => navigate("/municipal/announcements"),
     },
   ];
 
