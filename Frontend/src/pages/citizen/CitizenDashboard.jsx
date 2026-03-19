@@ -44,40 +44,43 @@ const CitizenDashboard = () => {
   const [complaintCount, setComplaintCount] = useState(0);
   const [donationCount, setDonationCount] = useState(0);
   const [announcementCount, setAnnouncementCount] = useState(0);
+  const [allComplaints, setAllComplaints] = useState([]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Fetch Complaints
-        const compRes = await api.get("/complaints/my-complaints", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (compRes.data.success) {
-          setComplaintCount(compRes.data.complaintCount || 0);
+    useEffect(() => {
+      const fetchStats = async () => {
+        try {
+          // Fetch Complaints
+          const compRes = await api.get("/complaints/my-complaints", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (compRes.data.success) {
+            const complaints = compRes.data.complaint || [];
+            setComplaintCount(complaints.length);
+            setAllComplaints(complaints);
+          }
+  
+          // Fetch Donations
+          const donRes = await api.get("/donations/my-donations", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (donRes.data.success) {
+            setDonationCount(donRes.data.donationCount || donRes.data.donations?.length || 0);
+          }
+  
+          // Fetch Announcements
+          const annRes = await api.get("/announcements/get-announcements");
+          if (annRes.data.success) {
+            setAnnouncementCount(annRes.data.announcementCount || annRes.data.announcements?.length || 0);
+          }
+        } catch (error) {
+          console.error("Error fetching dashboard stats:", error);
         }
-
-        // Fetch Donations
-        const donRes = await api.get("/donations/my-donations", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (donRes.data.success) {
-          setDonationCount(donRes.data.donationCount || donRes.data.donations?.length || 0);
-        }
-
-        // Fetch Announcements
-        const annRes = await api.get("/announcements/get-announcements");
-        if (annRes.data.success) {
-          setAnnouncementCount(annRes.data.announcementCount || annRes.data.announcements?.length || 0);
-        }
-      } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+      };
+  
+      if (token) {
+        fetchStats();
       }
-    };
-
-    if (token) {
-      fetchStats();
-    }
-  }, [token]);
+    }, [token]);
 
   const stats = [
     {
@@ -96,7 +99,7 @@ const CitizenDashboard = () => {
     },
     {
       title: "Sundar Points",
-      value: 120, // Keep hardcoded for now or fetch if available
+      value: user?.sundar_points || 0,
       icon: <Star size={28} />,
       colorClass: "stat-card-yellow",
     },
@@ -138,12 +141,35 @@ const CitizenDashboard = () => {
   ];
 
   // Mock data for charts
+  // Calculate data from allComplaints
+  const getStatusCounts = () => {
+    let pending = 0, processing = 0, resolved = 0;
+    allComplaints.forEach(c => {
+      if (c.status === "pending") pending++;
+      else if (c.status === "processing") processing++;
+      else if (c.status === "resolved") resolved++;
+    });
+    return [pending, processing, resolved];
+  };
+
+  const getCategoryCounts = () => {
+    const counts = {};
+    allComplaints.forEach(c => {
+      const cat = c.category || "General";
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+    return counts;
+  };
+
+  const statusCounts = getStatusCounts();
+  const categoryCounts = getCategoryCounts();
+
   const statusChartData = {
-    labels: ["Pending", "In Progress", "Resolved", "Rejected"],
+    labels: ["Pending", "In Progress", "Resolved"],
     datasets: [
       {
-        data: [12, 5, 18, 2],
-        backgroundColor: ["#f59e0b", "#3b82f6", "#10b981", "#ef4444"],
+        data: statusCounts,
+        backgroundColor: ["#f59e0b", "#3b82f6", "#10b981"],
         borderWidth: 0,
         hoverOffset: 4,
       },
@@ -151,31 +177,26 @@ const CitizenDashboard = () => {
   };
 
   const trendChartData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
     datasets: [
       {
-        label: "Complaints Submitted",
-        data: [4, 7, 3, 15, 8, 12],
+        label: "My Complaints",
+        data: [0, 0, 0, allComplaints.length], // Simplified for now
         borderColor: "#4f46e5",
         backgroundColor: "rgba(79, 70, 229, 0.1)",
         borderWidth: 2,
         tension: 0.4,
         fill: true,
-        pointBackgroundColor: "#ffffff",
-        pointBorderColor: "#4f46e5",
-        pointBorderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
       },
     ],
   };
 
   const categoryChartData = {
-    labels: ["Roads", "Water", "Electricity", "Waste", "Others"],
+    labels: Object.keys(categoryCounts).length > 0 ? Object.keys(categoryCounts) : ["No Data"],
     datasets: [
       {
         label: "Issues by Category",
-        data: [15, 8, 5, 20, 3],
+        data: Object.values(categoryCounts).length > 0 ? Object.values(categoryCounts) : [0],
         backgroundColor: "rgba(6, 182, 212, 0.85)",
         hoverBackgroundColor: "rgba(6, 182, 212, 1)",
         borderRadius: 4,
