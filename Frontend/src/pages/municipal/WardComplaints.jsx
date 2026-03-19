@@ -21,13 +21,18 @@ const WardComplaints = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [selectedWard, setSelectedWard] = useState("all");
   const [updatingId, setUpdatingId] = useState(null);
 
   useEffect(() => {
     const fetchWardComplaints = async () => {
       try {
-        const wardNumber = user?.ward_number || 1;
-        const response = await api.get(`/complaints/get-complaints-by-ward/${wardNumber}`, {
+        setLoading(true);
+        let endpoint = "/complaints/get-all-complaints";
+        if (selectedWard !== "all") {
+          endpoint = `/complaints/get-complaints-by-ward/${selectedWard}`;
+        }
+        const response = await api.get(endpoint, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data.success) {
@@ -44,7 +49,7 @@ const WardComplaints = () => {
     if (token) {
       fetchWardComplaints();
     }
-  }, [token, user]);
+  }, [token, selectedWard]);
 
   const handleStatusUpdate = async (complaintId, newStatus) => {
     setUpdatingId(complaintId);
@@ -115,10 +120,32 @@ const WardComplaints = () => {
 
       <div className="complaints-content">
         <div className="complaints-container">
-          <header className="page-header">
+          <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="header-text">
-              <h1>Ward {user?.ward_number || 1} Complaints</h1>
-              <p>Manage and update all complaints in your designated ward.</p>
+              <h1>
+                {selectedWard !== "all" ? `Ward ${selectedWard} Complaints` : "All Complaints"}
+              </h1>
+              <p>Manage and update complaints in the selected area.</p>
+            </div>
+            
+            <div className="ward-filter">
+              <select
+                value={selectedWard}
+                onChange={(e) => setSelectedWard(e.target.value)}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  outline: 'none',
+                  minWidth: '150px',
+                  background: 'white',
+                }}
+              >
+                <option value="all">All Wards</option>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(w => (
+                  <option key={w} value={w}>Ward {w}</option>
+                ))}
+              </select>
             </div>
           </header>
 
@@ -159,6 +186,7 @@ const WardComplaints = () => {
                   <tr>
                     <th>Title & Category</th>
                     <th>Date Filed</th>
+                    <th>Ward</th>
                     <th>Citizen ID</th>
                     <th>Current Status</th>
                     <th>Update Status</th>
@@ -180,6 +208,11 @@ const WardComplaints = () => {
                             month: 'short',
                             day: 'numeric'
                           })}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="ward-text" style={{ fontWeight: 600, color: '#3b82f6' }}>
+                          Ward {complaint.ward_number}
                         </span>
                       </td>
                       <td>

@@ -47,12 +47,17 @@ const MunicipalDashboard = () => {
   });
 
   const [categoryData, setCategoryData] = useState({});
+  const [selectedWard, setSelectedWard] = useState("all"); // Default to 'all' or user?.ward_number
 
   useEffect(() => {
     const fetchWardComplaints = async () => {
       try {
-        const wardNumber = user?.ward_number || 1; // Default to 1 if not set for some reason
-        const res = await api.get(`/complaints/get-complaints-by-ward/${wardNumber}`, {
+        let endpoint = "/complaints/get-all-complaints";
+        if (selectedWard !== "all") {
+          endpoint = `/complaints/get-complaints-by-ward/${selectedWard}`;
+        }
+        
+        const res = await api.get(endpoint, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -91,7 +96,7 @@ const MunicipalDashboard = () => {
     if (token) {
       fetchWardComplaints();
     }
-  }, [token, user]);
+  }, [token, selectedWard]);
 
   const dashboardStats = [
     {
@@ -235,7 +240,7 @@ const MunicipalDashboard = () => {
 
         <div className="navbar-user-section">
           <div className="user-welcome">
-            <span className="user-welcome-label">Municipal Officer (Ward {user?.ward_number || 1})</span>
+            <span className="user-welcome-label">Municipal Officer</span>
             <span className="user-welcome-email">
               {user?.email || "Officer"}
             </span>
@@ -246,11 +251,35 @@ const MunicipalDashboard = () => {
       </nav>
 
       <div className="dashboard-content">
-        <div className="dashboard-header mb-8">
-          <h2 className="dashboard-heading">Municipal Dashboard (Ward {user?.ward_number || 1})</h2>
-          <p className="dashboard-subheading">
-            Overview of complaints and activities in your designated ward.
-          </p>
+        <div className="dashboard-header mb-8 flex justify-between items-center" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 className="dashboard-heading">
+              Municipal Dashboard {selectedWard !== "all" ? `(Ward ${selectedWard})` : "(All Wards)"}
+            </h2>
+            <p className="dashboard-subheading">
+              Overview of complaints and activities in the selected area.
+            </p>
+          </div>
+          <div className="ward-selector" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <label htmlFor="wardSelect" style={{ fontWeight: 600, color: '#334155' }}>Select Area:</label>
+            <select
+              id="wardSelect"
+              value={selectedWard}
+              onChange={(e) => setSelectedWard(e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                outline: 'none',
+                minWidth: '150px',
+              }}
+            >
+              <option value="all">All Wards</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(w => (
+                <option key={w} value={w}>Ward {w}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Stats Cards */}
