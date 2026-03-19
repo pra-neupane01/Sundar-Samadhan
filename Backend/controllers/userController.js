@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const bcrypt = require("bcryptjs");
 
 // GET USER PROFILE
 const getUserProfileController = async (req, res) => {
@@ -83,8 +84,47 @@ const getPointsHistoryController = async (req, res) => {
   }
 };
 
+// CHANGE PASSWORD
+const changePasswordController = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
+
+    // 1. Get user
+    const userResult = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
+    const user = userResult.rows[0];
+
+    // 2. Compare old password
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Incorrect old password",
+      });
+    }
+
+    // 3. Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // 4. Update
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [hashedPassword, userId]);
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Error changing password",
+    });
+  }
+};
+
 module.exports = {
   getUserProfileController,
   updateUserProfileController,
   getPointsHistoryController,
+  changePasswordController,
 };

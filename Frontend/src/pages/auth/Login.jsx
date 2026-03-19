@@ -79,12 +79,17 @@ const Login = () => {
           required
           className="mb-4 w-full rounded-md border border-slate-300 p-2.5 outline-none focus:border-slate-500"
         />
-        <label
-          htmlFor="password"
-          className="mb-1 block text-sm font-medium text-slate-700"
-        >
-          Password
-        </label>
+        <div className="flex justify-between items-center mb-1">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-slate-700"
+          >
+            Password
+          </label>
+          <Link to="/forgot-password" style={{ fontSize: '12px', color: '#64748b', textDecoration: 'underline' }}>
+            Forgot password?
+          </Link>
+        </div>
         <input
           id="password"
           type="password"

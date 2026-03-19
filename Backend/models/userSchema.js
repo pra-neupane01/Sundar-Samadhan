@@ -11,8 +11,13 @@ CREATE TABLE IF NOT EXISTS users (
     ward_number INTEGER,
     sundar_points INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-     is_active BOOLEAN DEFAULT TRUE
+    is_active BOOLEAN DEFAULT TRUE,
+    reset_token TEXT,
+    reset_token_expiry TIMESTAMP
 );
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expiry TIMESTAMP;
 `;
   try {
     await pool.query(query);

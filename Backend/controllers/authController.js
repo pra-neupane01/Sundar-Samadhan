@@ -1,6 +1,8 @@
 const pool = require("../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const sendEmail = require("../utils/emailService");
 
 //GENERATE TOKEN
 const generateToken = (id, role) => {
@@ -117,4 +119,79 @@ const loginController = async (req, res) => {
   }
 };
 
-module.exports = { registerController, loginController };
+// FORGOT PASSWORD
+const forgotPasswordController = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    const expiry = new Date(Date.now() + 3600000); // 1 hour
+
+    await pool.query(
+      "UPDATE users SET reset_token = $1, reset_token_expiry = $2 WHERE email = $3",
+      [resetToken, expiry, email]
+    );
+
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    
+    await sendEmail({
+      to: email,
+      subject: "Password Reset Request - Sundar Samadhan",
+      html: `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #eef2f6; border-radius: 16px; background: white;">
+          <h1 style="color: #3b82f6; margin-bottom: 24px; font-size: 24px;">Sundar Samadhan</h1>
+          <p style="color: #334155; font-size: 16px; line-height: 1.6;">You requested a password reset for your account. Please click the button below to set a new password:</p>
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${resetUrl}" style="display: inline-block; padding: 14px 28px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px;">Reset My Password</a>
+          </div>
+          <p style="color: #64748b; font-size: 14px; border-top: 1px solid #f1f5f9; pt: 20px;">This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+        </div>
+      `,
+    });
+
+    res.status(200).json({ success: true, message: "Password reset link sent to your email" });
+  } catch (error) {
+    console.error("FORGOT PASSWORD ERROR:", error);
+    res.status(500).json({ success: false, message: "Error in forgot password request" });
+  }
+};
+
+// RESET PASSWORD
+const resetPasswordController = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    // Find user with valid token and not expired
+    const userResult = await pool.query(
+      "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expiry > NOW()",
+      [token]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    await pool.query(
+      "UPDATE users SET password = $1, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = $2",
+      [hashedPassword, token]
+    );
+
+    res.status(200).json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("RESET PASSWORD ERROR:", error);
+    res.status(500).json({ success: false, message: "Error resetting password" });
+  }
+};
+
+module.exports = { 
+  registerController, 
+  loginController, 
+  forgotPasswordController, 
+  resetPasswordController 
+};

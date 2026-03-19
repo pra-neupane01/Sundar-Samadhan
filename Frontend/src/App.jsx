@@ -6,6 +6,8 @@ import { Toaster } from "react-hot-toast";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 import CreateComplaint from "./pages/citizen/CreateComplaint";
 import MyComplaints from "./pages/citizen/MyComplaints";
@@ -53,6 +55,8 @@ const App = () => {
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Citizen Dashboard */}
         <Route

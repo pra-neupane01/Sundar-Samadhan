@@ -20,6 +20,12 @@ const Profile = () => {
     sundarPoints: user?.sundar_points || 0,
   });
 
+  const [passwords, setPasswords] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -95,6 +101,40 @@ const Profile = () => {
     } catch (error) {
       console.error(error);
       toast.error("Update failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    if (passwords.newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await api.put(
+        "/user/change-password",
+        {
+          oldPassword: passwords.oldPassword,
+          newPassword: passwords.newPassword,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.success) {
+        toast.success("Password changed successfully!");
+        setPasswords({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to change password");
     } finally {
       setSaving(false);
     }
@@ -203,6 +243,54 @@ const Profile = () => {
 
                 <button type="submit" className="save-btn" disabled={saving}>
                   {saving ? "Updating..." : "Save Profile Changes"}
+                </button>
+              </form>
+            </div>
+
+            {/* Security Section */}
+            <div className="main-section">
+              <div className="section-header">
+                <div className="header-icon-box"><Save size={20}/></div>
+                <h3>Security & Password</h3>
+              </div>
+              
+              <form onSubmit={handleChangePassword} className="edit-form" style={{ gridTemplateColumns: '1fr' }}>
+                <div className="form-group">
+                  <label>Current Password</label>
+                  <input 
+                    type="password" 
+                    value={passwords.oldPassword} 
+                    onChange={(e) => setPasswords({...passwords, oldPassword: e.target.value})}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div className="form-group">
+                    <label>New Password</label>
+                    <input 
+                      type="password" 
+                      value={passwords.newPassword} 
+                      onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
+                      placeholder="••••••••"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Confirm New Password</label>
+                    <input 
+                      type="password" 
+                      value={passwords.confirmPassword} 
+                      onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
+                      placeholder="••••••••"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="save-btn" disabled={saving}>
+                  {saving ? "Updating..." : "Update Password"}
                 </button>
               </form>
             </div>
