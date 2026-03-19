@@ -17,6 +17,8 @@ import MunicipalDashboard from "./pages/municipal/MunicipalDashboard";
 import WardComplaints from "./pages/municipal/WardComplaints";
 import ManageAnnouncements from "./pages/municipal/ManageAnnouncements";
 
+import Profile from "./pages/user/Profile";
+
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
@@ -174,6 +176,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <ManageAnnouncements />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />

@@ -12,6 +12,7 @@ import {
   Settings,
   ListChecks,
   Megaphone,
+  User as UserIcon,
 } from "lucide-react";
 import {
   Chart as ChartJS,
@@ -262,13 +263,25 @@ const MunicipalDashboard = () => {
 
         <div className="navbar-user-section">
           <NotificationBell />
-          <div className="user-welcome">
-            <span className="user-welcome-label">Municipal Officer</span>
-            <span className="user-welcome-email">
-              {user?.email || "Officer"}
-            </span>
-          </div>
-
+          <button 
+            className="profile-nav-btn" 
+            onClick={() => navigate("/profile")}
+            title="My Profile"
+            style={{ 
+                marginRight: '12px',
+                padding: '8px',
+                borderRadius: '50%',
+                border: '1px solid #e2e8f0',
+                background: 'white',
+                color: '#64748b',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer'
+            }}
+          >
+            <UserIcon size={20} />
+          </button>
           <button className="logout-btn" onClick={logout}>Logout</button>
         </div>
       </nav>

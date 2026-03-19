@@ -27,6 +27,7 @@ app.use("/api/v1/auth", require("./routes/authRoute"));
 app.use("/api/v1/complaints", require("./routes/complaintRoute"));
 app.use("/api/v1/announcements", require("./routes/announcementRoute"));
 app.use("/api/v1/donations", require("./routes/donationRoute"));
+app.use("/api/v1/user", require("./routes/userRoute"));
 app.use("/api/v1/admin", require("./routes/adminRoute"));
 
 app.get("/", (req, res) => {
