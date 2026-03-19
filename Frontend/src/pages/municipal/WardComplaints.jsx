@@ -122,8 +122,10 @@ const WardComplaints = () => {
   };
 
   const filteredComplaints = complaints.filter((c) => {
-    const matchesSearch = c.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          c.category?.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchTermLower = searchTerm.toLowerCase();
+    const matchesSearch = c.title.toLowerCase().includes(searchTermLower) || 
+                          c.category?.toLowerCase().includes(searchTermLower) ||
+                          c.status.toLowerCase().includes(searchTermLower);
     const matchesFilter = filterStatus === "all" || c.status.toLowerCase() === filterStatus.toLowerCase();
     return matchesSearch && matchesFilter;
   });
