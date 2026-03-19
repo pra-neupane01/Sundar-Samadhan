@@ -32,7 +32,7 @@ export const SocketProvider = ({ children }) => {
       
       // If municipal officer, they can manage ALL wards now, so join all ward rooms to get notifications
       if (user?.role === "municipal" || user?.role === "admin") {
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 15; i++) {
           newSocket.emit("joinWard", i);
         }
       } else if (user?.ward_number) {

@@ -14,11 +14,13 @@ import {
   X,
   MapPin,
   Eye,
+  Image as ImageIcon,
 } from "lucide-react";
 import "./WardComplaints.css";
 
 const WardComplaints = () => {
   const { token, user } = useContext(AuthContext);
+  const { socket } = useContext(SocketContext);
   const navigate = useNavigate();
 
   const [complaints, setComplaints] = useState([]);
@@ -169,7 +171,7 @@ const WardComplaints = () => {
                 }}
               >
                 <option value="all">All Wards</option>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(w => (
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(w => (
                   <option key={w} value={w}>Ward {w}</option>
                 ))}
               </select>
@@ -228,7 +230,10 @@ const WardComplaints = () => {
                       <tr key={complaint.complaint_id}>
                         <td>
                           <div className="complaint-info">
-                            <span className="complaint-title">{complaint.title}</span>
+                            <span className="complaint-title">
+                              {complaint.title}
+                              {complaint.image_url && <ImageIcon size={14} style={{ marginLeft: '8px', color: '#3b82f6', display: 'inline-block', verticalAlign: 'middle' }} title="Has Evidence Image" />}
+                            </span>
                             <span className="complaint-category">{complaint.category || "General"}</span>
                           </div>
                         </td>

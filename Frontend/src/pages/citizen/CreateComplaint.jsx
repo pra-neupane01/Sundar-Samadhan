@@ -7,7 +7,9 @@ import {
   UploadCloud,
   MapPin,
   AlertCircle,
-  CheckCircle2,
+  X,
+  Eye,
+  Image as ImageIcon,
 } from "lucide-react";
 import "./CreateComplaint.css";
 
@@ -195,6 +197,7 @@ const CreateComplaint = () => {
                   placeholder="E.g., 5"
                   required
                   min="1"
+                  max="15"
                 />
               </div>
 
