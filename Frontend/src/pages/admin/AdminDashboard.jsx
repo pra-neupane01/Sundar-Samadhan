@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import NotificationBell from "../../components/NotificationBell";
 import {
   Users,
   ClipboardList,
@@ -108,6 +109,7 @@ const AdminDashboard = () => {
           <span className="brand-text">Sundar Samadhan Admin</span>
         </div>
         <div className="navbar-user-section">
+          <NotificationBell />
           <div className="user-welcome">
             <span className="user-welcome-label">Administrator</span>
             <span className="user-welcome-email">{user?.email}</span>

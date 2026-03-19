@@ -46,6 +46,7 @@ const createComplaintController = async (req, res) => {
     const io = req.app.get("io");
     // only municipal of that ward gets it.
 
+    console.log(`📢 Emit newWardComplaint to ward_${ward_number}: ${title}`);
     io.to(`ward_${ward_number}`).emit("newWardComplaint", {
       title,
       ward_number,
@@ -179,6 +180,7 @@ const updateComplaintStatusController = async (req, res) => {
     const io = req.app.get("io");
 
     // 🔥 Emit notification to complaint creator
+    console.log(`🔔 Notifying user ${updatedComplaint.created_by} about status update to ${updatedComplaint.status}`);
     io.to(updatedComplaint.created_by).emit("statusUpdated", {
       complaintId: updatedComplaint.complaint_id,
       status: updatedComplaint.status,

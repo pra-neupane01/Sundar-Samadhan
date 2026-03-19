@@ -33,6 +33,7 @@ const Login = () => {
           id: data.id,
           role: data.role,
           email: data.email,
+          ward_number: data.ward_number,
         },
         data.token,
       );

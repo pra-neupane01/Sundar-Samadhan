@@ -4,6 +4,7 @@ import { SocketContext } from "../../context/SocketContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
+import NotificationBell from "../../components/NotificationBell";
 import {
   ClipboardList,
   CheckCircle,
@@ -101,33 +102,10 @@ const MunicipalDashboard = () => {
     }
   }, [token, selectedWard]);
 
-  // Real-time Socket Listeners
+  // Real-time Socket Listeners are now handled globablly in SocketContext.
+  // Component-specific toast alerts removed to avoid duplicate notifications.
   useEffect(() => {
-    if (!socket) return;
-
-    const handleNewComplaint = (data) => {
-      // Show notification if it belongs to selected ward or 'all'
-      if (selectedWard === "all" || Number(selectedWard) === Number(data.ward_number)) {
-        toast.info(`New complaint lodged in Ward ${data.ward_number}: ${data.title}`);
-        // Optionally refresh stats by triggering fetch, but avoid loop:
-        // For simplicity, we'll just show the toast. 
-        // Real-time updates to chart data can be fetched or manually incremented.
-      }
-    };
-
-    const handleOverdue = (data) => {
-      if (selectedWard === "all" || Number(selectedWard) === Number(data.ward_number)) {
-        toast.error(`Overdue Alert: ${data.message} (Ward ${data.ward_number})`);
-      }
-    };
-
-    socket.on("newWardComplaint", handleNewComplaint);
-    socket.on("overdueComplaint", handleOverdue);
-
-    return () => {
-      socket.off("newWardComplaint", handleNewComplaint);
-      socket.off("overdueComplaint", handleOverdue);
-    };
+    // If we need any specific UI updates here from socket, we'd add them.
   }, [socket, selectedWard]);
 
   const dashboardStats = [
@@ -271,6 +249,7 @@ const MunicipalDashboard = () => {
         </div>
 
         <div className="navbar-user-section">
+          <NotificationBell />
           <div className="user-welcome">
             <span className="user-welcome-label">Municipal Officer</span>
             <span className="user-welcome-email">

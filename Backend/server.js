@@ -45,21 +45,30 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
+  console.log("New client connected:", socket.id);
+
   socket.on("joinUser", (userId) => {
+    console.log(`👤 User joining room: ${userId}`);
     socket.join(userId);
   });
 
   socket.on("joinWard", (wardNumber) => {
+    console.log(`🏠 User joining ward room: ward_${wardNumber}`);
     socket.join(`ward_${wardNumber}`);
   });
 
   socket.on("joinRole", (role) => {
+    console.log(`🛡️ User joining role room: ${role}_room`);
     socket.join(`${role}_room`);
     
     // If a municipal officer or admin connects, run the overdue check to send them the alerts
     if (role === "municipal" || role === "admin") {
       checkOverdueComplaints(io);
     }
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
   });
 });
 

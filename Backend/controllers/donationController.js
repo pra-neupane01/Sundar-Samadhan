@@ -118,13 +118,14 @@ const verifyPaymentController = async (req, res) => {
     const io = req.app.get("io");
 
     // 🔔 Notify admin if high donation
-    if (donation.amount > 1000) {
+    if (donation.amount >= 1000) {
+      console.log(`💰 High donation detected: ${donation.amount}. Notifying admin...`);
       io.to("admin_room").emit("highDonation", {
         amount: donation.amount,
         user: donation.user_id,
       });
 
-      console.log("🔥 highDonation emitted");
+      console.log("🔥 highDonation emitted to admin_room");
     }
 
     res.status(200).json({

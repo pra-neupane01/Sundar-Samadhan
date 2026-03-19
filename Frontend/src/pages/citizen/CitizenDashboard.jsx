@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import NotificationBell from "../../components/NotificationBell";
 import {
   ClipboardList,
   HeartHandshake,
@@ -37,7 +38,7 @@ ChartJS.register(
 );
 
 const CitizenDashboard = () => {
-  const { user, token } = useContext(AuthContext);
+  const { user, token, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [complaintCount, setComplaintCount] = useState(0);
@@ -259,6 +260,7 @@ const CitizenDashboard = () => {
         </div>
 
         <div className="navbar-user-section">
+          <NotificationBell />
           <div className="user-welcome">
             <span className="user-welcome-label">Welcome back</span>
             <span className="user-welcome-email">
@@ -266,7 +268,7 @@ const CitizenDashboard = () => {
             </span>
           </div>
 
-          <button className="logout-btn">Logout</button>
+          <button className="logout-btn" onClick={logout}>Logout</button>
         </div>
       </nav>
 

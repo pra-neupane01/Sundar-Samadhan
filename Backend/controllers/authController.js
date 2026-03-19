@@ -55,7 +55,7 @@ const registerController = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await pool.query(
-      "INSERT INTO users (full_name, email, password, ward_number) VALUES ($1, $2, $3, $4) RETURNING id, full_name, email, role",
+      "INSERT INTO users (full_name, email, password, ward_number) VALUES ($1, $2, $3, $4) RETURNING id, full_name, email, role, ward_number",
       [fullName, email, hashedPassword, wardNumber || null],
     );
 
@@ -109,6 +109,7 @@ const loginController = async (req, res) => {
       full_name: user.full_name,
       email: user.email,
       role: user.role,
+      ward_number: user.ward_number,
       token: generateToken(user.id, user.role),
     });
   } catch (error) {
