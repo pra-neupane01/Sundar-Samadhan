@@ -1,0 +1,28 @@
+.admin-dashboard {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Inherit generic dashboard styles (reusing from Municipal or Citizen css for consistency) */
+.stat-card-purple .stat-icon-wrapper {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+}
+
+.action-btn-purple {
+  background-color: #a855f7;
+  color: white;
+  border: none;
+}
+.action-btn-purple:hover {
+  background-color: #9333ea;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.mt-12 {
+  margin-top: 3rem;
+}

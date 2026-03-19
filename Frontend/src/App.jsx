@@ -16,6 +16,11 @@ import MunicipalDashboard from "./pages/municipal/MunicipalDashboard";
 import WardComplaints from "./pages/municipal/WardComplaints";
 import ManageAnnouncements from "./pages/municipal/ManageAnnouncements";
 
+// Admin
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageUsers from "./pages/admin/ManageUsers";
+import AdminDonations from "./pages/admin/AdminDonations";
+
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
 
@@ -111,11 +116,28 @@ const App = () => {
         />
 
         {/* Admin */}
+        {/* Admin Routes */}
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
-              <RolePage title="Admin Dashboard" />
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <ManageUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/donations"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDonations />
             </ProtectedRoute>
           }
         />

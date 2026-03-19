@@ -242,6 +242,7 @@ const checkOverdueComplaints = async (io) => {
     result.rows.forEach((complaint) => {
       io.to(`ward_${complaint.ward_number}`).emit("overdueComplaint", {
         complaintId: complaint.complaint_id,
+        ward_number: complaint.ward_number,
         message: "Complaint pending for more than 3 days",
       });
     });

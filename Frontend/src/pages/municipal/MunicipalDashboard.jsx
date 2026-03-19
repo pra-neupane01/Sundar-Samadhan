@@ -1,7 +1,9 @@
 import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { SocketContext } from "../../context/SocketContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import toast from "react-hot-toast";
 import {
   ClipboardList,
   CheckCircle,
@@ -37,6 +39,7 @@ ChartJS.register(
 
 const MunicipalDashboard = () => {
   const { user, token, logout } = useContext(AuthContext);
+  const { socket } = useContext(SocketContext);
   const navigate = useNavigate();
 
   const [stats, setStats] = useState({
@@ -98,6 +101,35 @@ const MunicipalDashboard = () => {
     }
   }, [token, selectedWard]);
 
+  // Real-time Socket Listeners
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewComplaint = (data) => {
+      // Show notification if it belongs to selected ward or 'all'
+      if (selectedWard === "all" || Number(selectedWard) === Number(data.ward_number)) {
+        toast.info(`New complaint lodged in Ward ${data.ward_number}: ${data.title}`);
+        // Optionally refresh stats by triggering fetch, but avoid loop:
+        // For simplicity, we'll just show the toast. 
+        // Real-time updates to chart data can be fetched or manually incremented.
+      }
+    };
+
+    const handleOverdue = (data) => {
+      if (selectedWard === "all" || Number(selectedWard) === Number(data.ward_number)) {
+        toast.error(`Overdue Alert: ${data.message} (Ward ${data.ward_number})`);
+      }
+    };
+
+    socket.on("newWardComplaint", handleNewComplaint);
+    socket.on("overdueComplaint", handleOverdue);
+
+    return () => {
+      socket.off("newWardComplaint", handleNewComplaint);
+      socket.off("overdueComplaint", handleOverdue);
+    };
+  }, [socket, selectedWard]);
+
   const dashboardStats = [
     {
       title: "Total Complaints",
@@ -128,8 +160,8 @@ const MunicipalDashboard = () => {
 
   const actions = [
     {
-      title: "Manage Ward Complaints",
-      description: "View all complaints raised in your ward and update their statuses.",
+      title: "Manage Complaints",
+      description: "View and update the statuses of complaints across all wards or a selected area.",
       icon: <ListChecks size={28} />,
       buttonText: "View Complaints",
       buttonClass: "action-btn-green",
@@ -137,7 +169,7 @@ const MunicipalDashboard = () => {
     },
     {
       title: "Announcements",
-      description: "Post and manage announcements for your ward citizens.",
+      description: "Post and manage announcements for the municipality or specific wards.",
       icon: <Megaphone size={28} />,
       buttonText: "Manage Announcements",
       buttonClass: "action-btn-blue",

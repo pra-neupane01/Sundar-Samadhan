@@ -55,9 +55,12 @@ io.on("connection", (socket) => {
 
   socket.on("joinRole", (role) => {
     socket.join(`${role}_room`);
+    
+    // If a municipal officer or admin connects, run the overdue check to send them the alerts
+    if (role === "municipal" || role === "admin") {
+      checkOverdueComplaints(io);
+    }
   });
-
-  checkOverdueComplaints(io);
 });
 
 // Make io globally available

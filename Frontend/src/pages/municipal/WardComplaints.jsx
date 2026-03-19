@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { SocketContext } from "../../context/SocketContext";
 import api from "../../services/api";
 import toast, { Toaster } from "react-hot-toast";
 import {
@@ -50,6 +51,33 @@ const WardComplaints = () => {
       fetchWardComplaints();
     }
   }, [token, selectedWard]);
+
+  // Real-time Socket Listeners
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewComplaint = (data) => {
+      if (selectedWard === "all" || Number(selectedWard) === Number(data.ward_number)) {
+        toast.info(`New complaint received: ${data.title}`);
+        // Refresh list to show new complaint
+        if (token) {
+          api.get(selectedWard === "all" ? "/complaints/get-all-complaints" : `/complaints/get-complaints-by-ward/${selectedWard}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).then(res => {
+            if (res.data.success) {
+              setComplaints(res.data.complaint || []);
+            }
+          }).catch(err => console.error("Error refreshing complaints on socket event", err));
+        }
+      }
+    };
+
+    socket.on("newWardComplaint", handleNewComplaint);
+
+    return () => {
+      socket.off("newWardComplaint", handleNewComplaint);
+    };
+  }, [socket, selectedWard, token]);
 
   const handleStatusUpdate = async (complaintId, newStatus) => {
     setUpdatingId(complaintId);
@@ -193,25 +221,34 @@ const WardComplaints = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredComplaints.map((complaint) => (
-                    <tr key={complaint.complaint_id}>
-                      <td>
-                        <div className="complaint-info">
-                          <span className="complaint-title">{complaint.title}</span>
-                          <span className="complaint-category">{complaint.category || "General"}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className="date-text">
-                          {new Date(complaint.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="ward-text" style={{ fontWeight: 600, color: '#3b82f6' }}>
+                  {filteredComplaints.map((complaint) => {
+                    const isOverdue = complaint.status === "pending" && 
+                      (Date.now() - new Date(complaint.created_at).getTime()) > 3 * 24 * 60 * 60 * 1000;
+
+                    return (
+                      <tr key={complaint.complaint_id}>
+                        <td>
+                          <div className="complaint-info">
+                            <span className="complaint-title">{complaint.title}</span>
+                            <span className="complaint-category">{complaint.category || "General"}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="date-text">
+                            {new Date(complaint.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
+                          {isOverdue && (
+                            <div style={{ marginTop: '4px' }}>
+                              <span className="badge-ward" style={{ background: '#fee2e2', color: '#b91c1c' }}>Overdue</span>
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <span className="ward-text" style={{ fontWeight: 600, color: '#3b82f6' }}>
                           Ward {complaint.ward_number}
                         </span>
                       </td>
@@ -241,7 +278,8 @@ const WardComplaints = () => {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             ) : (
