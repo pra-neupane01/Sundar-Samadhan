@@ -33,7 +33,7 @@ router.get(
 );
 
 router.delete(
-  "/delete-announcement/:announcementId",
+  "/delete-announcement/:id",
   authMiddleware,
   roleMiddleware("admin", "municipal"),
   deleteAnnouncementController,

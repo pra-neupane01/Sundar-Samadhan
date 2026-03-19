@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import api from "../../services/api";
 import toast, { Toaster } from "react-hot-toast";
-import { ArrowLeft, Megaphone, Send, Image as ImageIcon, ClipboardList } from "lucide-react";
+import { ArrowLeft, Megaphone, Send, Image as ImageIcon, ClipboardList, Trash2 } from "lucide-react";
 import "./ManageAnnouncements.css";
 
 const ManageAnnouncements = () => {
@@ -45,6 +45,22 @@ const ManageAnnouncements = () => {
 
   const handleFileChange = (e) => {
     setFormData((prev) => ({ ...prev, image: e.target.files[0] }));
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this announcement?")) return;
+    try {
+      const res = await api.delete(`/announcements/delete-announcement/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data.success) {
+        toast.success("Announcement deleted successfully!");
+        fetchAnnouncements();
+      }
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+      toast.error("Failed to delete announcement");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -214,6 +230,15 @@ const ManageAnnouncements = () => {
                         )}
                       </div>
                     </div>
+                    {(user?.role === "admin" || announcement.created_by === user?.id) && (
+                      <button 
+                        onClick={() => handleDelete(announcement.announcement_id)}
+                        className="delete-btn-rounded"
+                        title="Delete Announcement"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </div>
                   <p className="announcement-item-content">{announcement.content}</p>
                   {announcement.image_url && (

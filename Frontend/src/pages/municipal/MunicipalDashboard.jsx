@@ -53,60 +53,72 @@ const MunicipalDashboard = () => {
   const [categoryData, setCategoryData] = useState({});
   const [selectedWard, setSelectedWard] = useState("all"); // Default to 'all' or user?.ward_number
 
-  useEffect(() => {
-    const fetchWardComplaints = async () => {
-      try {
-        let endpoint = "/complaints/get-all-complaints";
-        if (selectedWard !== "all") {
-          endpoint = `/complaints/get-complaints-by-ward/${selectedWard}`;
-        }
+  const fetchWardComplaints = async () => {
+    if (!token) return;
+    try {
+      let endpoint = "/complaints/get-all-complaints";
+      if (selectedWard !== "all") {
+        endpoint = `/complaints/get-complaints-by-ward/${selectedWard}`;
+      }
+      
+      const res = await api.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data.success) {
+        const complaints = res.data.complaint || [];
         
-        const res = await api.get(endpoint, {
-          headers: { Authorization: `Bearer ${token}` },
+        let pending = 0;
+        let processing = 0;
+        let resolved = 0;
+        let categories = {};
+
+        complaints.forEach((c) => {
+          if (c.status === "pending") pending++;
+          else if (c.status === "processing") processing++;
+          else if (c.status === "resolved") resolved++;
+
+          const cat = c.category || "General";
+          if (!categories[cat]) categories[cat] = 0;
+          categories[cat]++;
         });
 
-        if (res.data.success) {
-          const complaints = res.data.complaint || [];
-          
-          let pending = 0;
-          let processing = 0;
-          let resolved = 0;
-          let categories = {};
+        setStats({
+          total: complaints.length,
+          pending,
+          processing,
+          resolved,
+        });
 
-          complaints.forEach((c) => {
-            if (c.status === "pending") pending++;
-            else if (c.status === "processing") processing++;
-            else if (c.status === "resolved") resolved++;
-
-            const cat = c.category || "General";
-            if (!categories[cat]) categories[cat] = 0;
-            categories[cat]++;
-          });
-
-          setStats({
-            total: complaints.length,
-            pending,
-            processing,
-            resolved,
-          });
-
-          setCategoryData(categories);
-        }
-      } catch (error) {
-        console.error("Error fetching ward complaints:", error);
+        setCategoryData(categories);
       }
-    };
-
-    if (token) {
-      fetchWardComplaints();
+    } catch (error) {
+      console.error("Error fetching ward complaints:", error);
     }
+  };
+
+  useEffect(() => {
+    fetchWardComplaints();
   }, [token, selectedWard]);
 
   // Real-time Socket Listeners are now handled globablly in SocketContext.
   // Component-specific toast alerts removed to avoid duplicate notifications.
+  // Real-time Socket Listeners to refresh stats
   useEffect(() => {
-    // If we need any specific UI updates here from socket, we'd add them.
-  }, [socket, selectedWard]);
+    if (!socket) return;
+    
+    const handleRefresh = () => {
+      fetchWardComplaints();
+    };
+
+    socket.on("newWardComplaint", handleRefresh);
+    socket.on("statusUpdated", handleRefresh);
+
+    return () => {
+      socket.off("newWardComplaint", handleRefresh);
+      socket.off("statusUpdated", handleRefresh);
+    };
+  }, [socket, selectedWard, token]);
 
   const dashboardStats = [
     {

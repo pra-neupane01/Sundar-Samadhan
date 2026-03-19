@@ -247,6 +247,7 @@
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -259,12 +260,27 @@
   margin-top: 8px;
 }
 
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: #64748b;
+.delete-btn-rounded {
+  background: white;
+  border: 1px solid #fee2e2;
+  color: #ef4444;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.delete-btn-rounded:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: rotate(90deg);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

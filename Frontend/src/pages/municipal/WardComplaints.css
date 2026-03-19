@@ -206,61 +206,169 @@
 
 .action-buttons {
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.view-btn-icon {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.view-btn-icon:hover {
+  background: #f1f5f9;
+  color: #3b82f6;
+  border-color: #3b82f6;
+  transform: scale(1.05);
+}
+
+/* MODAL STYLES */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+  position: relative;
+  animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.update-btn {
-  padding: 6px 12px;
-  background: #10b981;
-  color: white;
+.header-info h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.close-btn {
+  background: #f1f5f9;
   border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.update-btn:hover:not(:disabled) {
-  background: #059669;
-}
-
-.update-btn:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-/* EMPTY STATE AND LOADING */
-.loading-state, .empty-state {
-  padding: 64px 32px;
-  text-align: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.empty-state h3 {
-  color: #1e293b;
-  font-size: 18px;
-  margin: 16px 0 8px;
+.close-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
 }
 
-.loader {
-  border: 3px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 3px solid #3b82f6;
-  width: 24px;
-  height: 24px;
-  -webkit-animation: spin 1s linear infinite; /* Safari */
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
+.modal-body {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.modal-section label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 8px;
 }
 
-@media (max-width: 768px) {
-  .table-actions { flex-direction: column; }
-  .search-wrapper { max-width: 100%; }
+.modal-section p {
+  font-size: 16px;
+  color: #334155;
+  line-height: 1.6;
+  margin: 0;
 }
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.address-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eff6ff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.detail-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.status-badge-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* REUSE STATUS STYLES FROM TABLE */

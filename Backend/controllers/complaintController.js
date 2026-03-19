@@ -78,7 +78,7 @@ const getAllComplaintController = async (req, res) => {
       success: true,
       message: "Successfully fetched complaints.",
       complaintCount: complaint.rows.length,
-      ...complaintDetails,
+      complaint: complaint.rows,
     });
   } catch (error) {
     res.status(500).json({

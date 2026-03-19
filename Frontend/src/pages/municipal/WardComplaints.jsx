@@ -11,6 +11,9 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
+  X,
+  MapPin,
+  Eye,
 } from "lucide-react";
 import "./WardComplaints.css";
 
@@ -24,6 +27,8 @@ const WardComplaints = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedWard, setSelectedWard] = useState("all");
   const [updatingId, setUpdatingId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [viewComplaint, setViewComplaint] = useState(null);
 
   useEffect(() => {
     const fetchWardComplaints = async () => {
@@ -52,14 +57,12 @@ const WardComplaints = () => {
     }
   }, [token, selectedWard]);
 
-  // Real-time Socket Listeners
+  // Real-time Socket Listener
   useEffect(() => {
     if (!socket) return;
-
     const handleNewComplaint = (data) => {
+      // Refresh list to show new complaint if it matches filter
       if (selectedWard === "all" || Number(selectedWard) === Number(data.ward_number)) {
-        toast.info(`New complaint received: ${data.title}`);
-        // Refresh list to show new complaint
         if (token) {
           api.get(selectedWard === "all" ? "/complaints/get-all-complaints" : `/complaints/get-complaints-by-ward/${selectedWard}`, {
             headers: { Authorization: `Bearer ${token}` }
@@ -71,12 +74,8 @@ const WardComplaints = () => {
         }
       }
     };
-
     socket.on("newWardComplaint", handleNewComplaint);
-
-    return () => {
-      socket.off("newWardComplaint", handleNewComplaint);
-    };
+    return () => socket.off("newWardComplaint", handleNewComplaint);
   }, [socket, selectedWard, token]);
 
   const handleStatusUpdate = async (complaintId, newStatus) => {
@@ -217,7 +216,7 @@ const WardComplaints = () => {
                     <th>Ward</th>
                     <th>Citizen ID</th>
                     <th>Current Status</th>
-                    <th>Update Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -254,7 +253,7 @@ const WardComplaints = () => {
                       </td>
                       <td>
                         <span className="citizen-text" title={complaint.created_by}>
-                          {complaint.created_by.split("-")[0]}...
+                          {complaint.created_by?.split("-")[0] || "Unknown"}...
                         </span>
                       </td>
                       <td>
@@ -265,6 +264,13 @@ const WardComplaints = () => {
                       </td>
                       <td>
                         <div className="action-buttons">
+                          <button 
+                            className="view-btn-icon" 
+                            title="View Details"
+                            onClick={() => { setViewComplaint(complaint); setShowModal(true); }}
+                          >
+                            <Eye size={18} />
+                          </button>
                           <select 
                             className="status-select"
                             value={complaint.status}
@@ -296,6 +302,68 @@ const WardComplaints = () => {
           </div>
         </div>
       </div>
+
+      {/* Detail Modal */}
+      {showModal && viewComplaint && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <header className="modal-header">
+              <div className="header-info">
+                <span className={`status-badge-mini ${getStatusStyle(viewComplaint.status)}`}>
+                  {getStatusIcon(viewComplaint.status)} {viewComplaint.status}
+                </span>
+                <h2>{viewComplaint.title}</h2>
+              </div>
+              <button className="close-btn" onClick={() => setShowModal(false)}><X size={24} /></button>
+            </header>
+            
+            <div className="modal-body">
+              <div className="modal-section">
+                <label>Description</label>
+                <p>{viewComplaint.description}</p>
+              </div>
+              
+              <div className="modal-grid">
+                <div className="modal-section">
+                  <label>Category</label>
+                  <span className="badge-ward" style={{ background: '#f1f5f9', color: '#475569' }}>{viewComplaint.category || "General"}</span>
+                </div>
+                <div className="modal-section">
+                  <label>Ward</label>
+                  <span className="badge-ward">Ward {viewComplaint.ward_number}</span>
+                </div>
+                <div className="modal-section">
+                  <label>Date Filed</label>
+                  <p>{new Date(viewComplaint.created_at).toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="modal-section">
+                <label>Address & Location</label>
+                <div className="address-container">
+                  <MapPin size={16} className="text-blue-500" />
+                  <span>{viewComplaint.address || "No address provided"}</span>
+                  {viewComplaint.latitude && viewComplaint.longitude && (
+                    <span className="text-xs text-slate-400">({viewComplaint.latitude}, {viewComplaint.longitude})</span>
+                  )}
+                </div>
+              </div>
+
+              {viewComplaint.image_url && (
+                <div className="modal-section">
+                  <label>Evidence Image</label>
+                  <img 
+                    src={`http://localhost:4849${viewComplaint.image_url}`} 
+                    alt="Complaint Evidence" 
+                    className="detail-image"
+                    onError={(e) => e.target.style.display='none'}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
