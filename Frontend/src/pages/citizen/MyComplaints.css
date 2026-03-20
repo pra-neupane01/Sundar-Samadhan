@@ -1,318 +1,38 @@
-/* MyComplaints.css */
-
-.my-complaints-page {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at 10% 20%, #eff6ff, transparent 40%),
-    radial-gradient(circle at 90% 80%, #f0fdfa, transparent 40%), #f8fafc;
-  background-attachment: fixed;
-}
-
-.complaints-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-.complaints-container {
-  background: white;
-  border-radius: var(--radius-lg, 20px);
-  padding: 32px;
-  box-shadow: var(--shadow-lg, 0 16px 32px rgba(17, 17, 26, 0.1));
-  border: 1px solid rgba(226, 232, 240, 0.8);
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 40px;
-}
-
-.header-text h1 {
-  font-size: 32px;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0 0 8px 0;
-  letter-spacing: -0.02em;
-}
-
-.header-text p {
-  color: #64748b;
-  margin: 0;
-  font-size: 16px;
-}
-
-.create-btn {
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  background: linear-gradient(135deg, #4f46e5, #06b6d4);
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.create-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
-}
-
-/* Table Actions */
-.table-actions {
-  display: flex;
-  gap: 20px;
+/* MyComplaints — module styles */
+.mc-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
   margin-bottom: 24px;
 }
-
-.search-wrapper {
-  position: relative;
-  flex: 1;
+@media (max-width: 640px) {
+  .mc-stats-row { grid-template-columns: 1fr 1fr; }
 }
-
-.search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-}
-
-.search-wrapper input {
-  width: 100%;
-  padding: 12px 12px 12px 42px;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  font-size: 15px;
-  transition: all 0.2s ease;
-  background: #f8fafc;
-}
-
-.search-wrapper input:focus {
-  outline: none;
-  border-color: #4f46e5;
+.mc-mini-stat {
   background: white;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-}
-
-.filter-wrapper {
-  position: relative;
-  width: 200px;
-}
-
-.filter-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  pointer-events: none;
-}
-
-.filter-wrapper select {
-  width: 100%;
-  padding: 12px 12px 12px 42px;
-  border-radius: 12px;
   border: 1px solid #e2e8f0;
-  font-size: 15px;
-  background: #f8fafc;
-  cursor: pointer;
-  appearance: none;
-}
-
-.filter-wrapper select:focus {
-  outline: none;
-  border-color: #4f46e5;
-}
-
-/* Table Design */
-.complaints-table-container {
-  overflow-x: auto;
-  border-radius: 16px;
-  border: 1px solid #f1f5f9;
-}
-
-.complaints-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.complaints-table th {
-  background: #f8fafc;
-  padding: 16px 20px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid #f1f5f9;
-}
-
-.complaints-table td {
-  padding: 20px;
-  border-bottom: 1px solid #f1f5f9;
-  vertical-align: middle;
-}
-
-.complaint-info {
+  border-radius: 12px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
-
-.complaint-title {
+.mc-mini-val {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+.mc-mini-lbl {
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #1e293b;
-  font-size: 15px;
-  margin-bottom: 4px;
-}
-
-.complaint-category {
-  font-size: 13px;
-  color: #64748b;
-}
-
-.date-text {
-  font-size: 14px;
-  color: #475569;
-}
-
-.ward-badge {
-  padding: 6px 12px;
-  background: #f1f5f9;
-  color: #475569;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.status-pending {
-  background: #fff7ed;
-  color: #c2410c;
-}
-
-.status-processing {
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.status-resolved {
-  background: #f0fdf4;
-  color: #15803d;
-}
-
-.status-default {
-  background: #f8fafc;
-  color: #64748b;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  background: white;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.icon-btn:hover {
-  background: #f8fafc;
-  color: #4f46e5;
-  border-color: #4f46e5;
-}
-
-/* States */
-.loading-state, .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  text-align: center;
-}
-
-.loader {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #4f46e5;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.empty-state {
   color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
+.mc-yellow { border-top: 3px solid #f59e0b; }
+.mc-blue   { border-top: 3px solid #3b82f6; }
+.mc-green  { border-top: 3px solid #10b981; }
 
-.empty-state h3 {
-  color: #1e293b;
-  margin: 16px 0 8px 0;
-}
-
-.empty-state p {
-  max-width: 300px;
-  margin: 0;
-}
-
-/* Nav Link */
-.back-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #64748b;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: color 0.2s ease;
-}
-
-.back-link:hover {
-  color: #4f46e5;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .table-actions {
-    flex-direction: column;
-  }
-  
-  .filter-wrapper {
-    width: 100%;
-  }
-}
+.data-table-row-clickable { cursor: pointer; }

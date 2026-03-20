@@ -2,156 +2,74 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import NotificationBell from "../../components/NotificationBell";
 import {
-  ClipboardList,
-  HeartHandshake,
-  Star,
-  Megaphone,
-  PenLine,
-  ListChecks,
-  Coins,
-  User as UserIcon,
+  ClipboardList, HeartHandshake, Star, Megaphone,
+  PenLine, ListChecks, Coins, TrendingUp,
+  CheckCircle2, Clock, AlertCircle, Activity,
+  ArrowUpRight
 } from "lucide-react";
 import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
+  Chart as ChartJS, ArcElement, Tooltip, Legend,
+  CategoryScale, LinearScale, PointElement, LineElement, BarElement,
 } from "chart.js";
-import { Doughnut, Line, Bar } from "react-chartjs-2";
+import { Doughnut, Bar } from "react-chartjs-2";
 import "./CitizenDashboard.css";
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
 const CitizenDashboard = () => {
-  const { user, token, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [complaintCount, setComplaintCount] = useState(0);
   const [donationCount, setDonationCount] = useState(0);
   const [announcementCount, setAnnouncementCount] = useState(0);
   const [allComplaints, setAllComplaints] = useState([]);
+  const [recentComplaints, setRecentComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-      const fetchStats = async () => {
-        try {
-          // Fetch Complaints
-          const compRes = await api.get("/complaints/my-complaints", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (compRes.data.success) {
-            const complaints = compRes.data.complaint || [];
-            setComplaintCount(complaints.length);
-            setAllComplaints(complaints);
-          }
-  
-          // Fetch Donations
-          const donRes = await api.get("/donations/my-donations", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (donRes.data.success) {
-            setDonationCount(donRes.data.donationCount || donRes.data.donations?.length || 0);
-          }
-  
-          // Fetch Announcements
-          const annRes = await api.get("/announcements/get-announcements");
-          if (annRes.data.success) {
-            setAnnouncementCount(annRes.data.announcementCount || annRes.data.announcements?.length || 0);
-          }
-        } catch (error) {
-          console.error("Error fetching dashboard stats:", error);
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const compRes = await api.get("/complaints/my-complaints");
+        if (compRes.data.success) {
+          const c = compRes.data.complaint || [];
+          setComplaintCount(c.length);
+          setAllComplaints(c);
+          setRecentComplaints(c.slice(0, 5));
         }
-      };
-  
-      if (token) {
-        fetchStats();
+        const donRes = await api.get("/donations/my-donations");
+        if (donRes.data.success)
+          setDonationCount(donRes.data.donationCount || donRes.data.donations?.length || 0);
+        const annRes = await api.get("/announcements/get-announcements");
+        if (annRes.data.success)
+          setAnnouncementCount(annRes.data.announcements?.length || 0);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
-    }, [token]);
+    };
+    fetchStats();
+  }, []);
 
-  const stats = [
-    {
-      title: "My Complaints",
-      value: complaintCount,
-      icon: <ClipboardList size={28} />,
-      colorClass: "stat-card-blue",
-      onClick: () => navigate("/citizen/complaints"),
-    },
-    {
-      title: "My Donations",
-      value: donationCount,
-      icon: <HeartHandshake size={28} />,
-      colorClass: "stat-card-green",
-      onClick: () => navigate("/citizen/donations"),
-    },
-    {
-      title: "Sundar Points",
-      value: user?.sundar_points || 0,
-      icon: <Star size={28} />,
-      colorClass: "stat-card-yellow",
-    },
-    {
-      title: "Announcements",
-      value: announcementCount,
-      icon: <Megaphone size={28} />,
-      colorClass: "stat-card-purple",
-      onClick: () => navigate("/citizen/announcements"),
-    },
-  ];
+  const resolvedCount   = allComplaints.filter(c => c.status === "resolved").length;
+  const pendingCount    = allComplaints.filter(c => c.status === "pending").length;
+  const processingCount = allComplaints.filter(c => c.status === "processing").length;
+  const resolutionRate  = complaintCount ? Math.round((resolvedCount / complaintCount) * 100) : 0;
 
-  const actions = [
-    {
-      title: "Create Complaint",
-      description:
-        "Report issues in your ward and help improve your community.",
-      icon: <PenLine size={28} />,
-      buttonText: "Create Now",
-      buttonClass: "action-btn-blue",
-      onClick: () => navigate("/citizen/complaint/create"),
-    },
-    {
-      title: "View Complaints",
-      description:
-        "Track and monitor all your submitted complaints in one place.",
-      icon: <ListChecks size={28} />,
-      buttonText: "View All",
-      buttonClass: "action-btn-green",
-      onClick: () => navigate("/citizen/complaints"),
-    },
-    {
-      title: "Make a Donation",
-      description: "Support community development projects and earn points.",
-      icon: <Coins size={28} />,
-      buttonText: "Donate Now",
-      buttonClass: "action-btn-yellow",
-      onClick: () => navigate("/citizen/donate"), // Update this when donate page is ready
-    },
-  ];
+  const getStatusBadge = (status) => {
+    const map = {
+      pending:    "badge badge-pending",
+      processing: "badge badge-processing",
+      resolved:   "badge badge-resolved",
+    };
+    return map[status?.toLowerCase()] || "badge badge-default";
+  };
 
-  // Mock data for charts
-  // Calculate data from allComplaints
-  const getStatusCounts = () => {
-    let pending = 0, processing = 0, resolved = 0;
-    allComplaints.forEach(c => {
-      if (c.status === "pending") pending++;
-      else if (c.status === "processing") processing++;
-      else if (c.status === "resolved") resolved++;
-    });
-    return [pending, processing, resolved];
+  const getStatusDot = (status) => {
+    const dots = { pending: "#f59e0b", processing: "#3b82f6", resolved: "#10b981" };
+    return dots[status?.toLowerCase()] || "#94a3b8";
   };
 
   const getCategoryCounts = () => {
@@ -162,200 +80,243 @@ const CitizenDashboard = () => {
     });
     return counts;
   };
+  const catCounts = getCategoryCounts();
 
-  const statusCounts = getStatusCounts();
-  const categoryCounts = getCategoryCounts();
-
-  const statusChartData = {
-    labels: ["Pending", "In Progress", "Resolved"],
-    datasets: [
-      {
-        data: statusCounts,
-        backgroundColor: ["#f59e0b", "#3b82f6", "#10b981"],
-        borderWidth: 0,
-        hoverOffset: 4,
-      },
-    ],
+  const doughnutData = {
+    labels: ["Pending", "Processing", "Resolved"],
+    datasets: [{
+      data: [pendingCount, processingCount, resolvedCount],
+      backgroundColor: ["#f59e0b", "#3b82f6", "#10b981"],
+      borderWidth: 0, hoverOffset: 6,
+    }],
   };
 
-  const trendChartData = {
-    labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-    datasets: [
-      {
-        label: "My Complaints",
-        data: [0, 0, 0, allComplaints.length], // Simplified for now
-        borderColor: "#4f46e5",
-        backgroundColor: "rgba(79, 70, 229, 0.1)",
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
-
-  const categoryChartData = {
-    labels: Object.keys(categoryCounts).length > 0 ? Object.keys(categoryCounts) : ["No Data"],
-    datasets: [
-      {
-        label: "Issues by Category",
-        data: Object.values(categoryCounts).length > 0 ? Object.values(categoryCounts) : [0],
-        backgroundColor: "rgba(6, 182, 212, 0.85)",
-        hoverBackgroundColor: "rgba(6, 182, 212, 1)",
-        borderRadius: 4,
-        barPercentage: 0.6,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: "rgba(17, 24, 39, 0.9)",
-        padding: 12,
-        titleFont: { size: 13, family: "Inter, sans-serif" },
-        bodyFont: { size: 14, family: "Inter, sans-serif" },
-        cornerRadius: 8,
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: "rgba(241, 245, 249, 1)",
-          drawBorder: false,
-        },
-        border: { display: false },
-        ticks: {
-          font: { family: "Inter, sans-serif", size: 11 },
-          color: "#64748b",
-        },
-      },
-      x: {
-        grid: { display: false, drawBorder: false },
-        border: { display: false },
-        ticks: {
-          font: { family: "Inter, sans-serif", size: 11 },
-          color: "#64748b",
-        },
-      },
-    },
+  const barData = {
+    labels: Object.keys(catCounts).length > 0 ? Object.keys(catCounts) : ["No Data"],
+    datasets: [{
+      label: "Issues",
+      data: Object.values(catCounts).length > 0 ? Object.values(catCounts) : [0],
+      backgroundColor: "rgba(37, 99, 235, 0.8)",
+      hoverBackgroundColor: "#2563eb",
+      borderRadius: 6, barPercentage: 0.55,
+    }],
   };
 
   const pieOptions = {
-    maintainAspectRatio: false,
-    cutout: "70%",
+    maintainAspectRatio: false, cutout: "68%",
     plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          padding: 20,
-          usePointStyle: true,
-          font: { family: "Inter, sans-serif", size: 12 },
-          color: "#475569",
-        },
-      },
-      tooltip: {
-        backgroundColor: "rgba(17, 24, 39, 0.9)",
-        padding: 12,
-        titleFont: { size: 13, family: "Inter, sans-serif" },
-        bodyFont: { size: 14, family: "Inter, sans-serif", weight: "bold" },
-        cornerRadius: 8,
-        displayColors: true,
-        boxPadding: 4,
-      },
+      legend: { position: "bottom", labels: { padding: 16, usePointStyle: true, font: { size: 12, family: "Inter" }, color: "#475569" }},
+      tooltip: { backgroundColor: "#1e293b", padding: 10, cornerRadius: 8, bodyFont: { size: 13 } },
+    },
+  };
+  const barOptions = {
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: "#1e293b", padding: 10, cornerRadius: 8 } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: "#f1f5f9" }, border: { display: false }, ticks: { font: { size: 11 }, color: "#64748b" } },
+      x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11 }, color: "#64748b" } },
     },
   };
 
-  return (
-    <div className="citizen-dashboard">
-      {/* Navbar */}
-      {/* Page Content */}
+  const greeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  };
 
-      {/* Page Content */}
-      <div className="dashboard-content">
-        {/* Main Heading */}
-        <div className="dashboard-header mb-8">
-          <h2 className="dashboard-heading">Citizen Dashboard</h2>
-          <p className="dashboard-subheading">
-            Welcome back! Here's your activity overview.
-          </p>
+  return (
+    <div className="page-shell">
+      <div className="content-container">
+
+        {/* ── Welcome Header ── */}
+        <div className="cd-welcome-header">
+          <div>
+            <p className="cd-greeting">{greeting()}, {user?.full_name?.split(" ")[0]} 👋</p>
+            <h1 className="page-title">Citizen Dashboard</h1>
+            <p className="page-subtitle">Track your complaints, donations and community activities.</p>
+          </div>
+          <button className="btn btn-primary" onClick={() => navigate("/citizen/complaint/create")}>
+            <PenLine size={18} /> Lodge a Complaint
+          </button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="stats-grid">
-          {stats.map((item, index) => (
-            <div 
-              key={index} 
-              className={`stat-card ${item.colorClass} ${item.onClick ? "clickable" : ""}`}
-              onClick={item.onClick}
-            >
-              <div className="stat-card-content">
-                <div className="stat-info">
-                  <p className="stat-label">{item.title}</p>
-                  <h3 className="stat-value">{item.value}</h3>
-                </div>
+        {/* ── Stats Row ── */}
+        <div className="stats-row">
+          <div className="stat-card-v2 stat-blue" onClick={() => navigate("/citizen/complaints")}>
+            <div className="stat-icon"><ClipboardList size={24} /></div>
+            <div>
+              <div className="stat-label">Total Complaints</div>
+              <div className="stat-value">{complaintCount}</div>
+              <div className="stat-trend" style={{ color: "#2563eb" }}>↗ View all</div>
+            </div>
+          </div>
+          <div className="stat-card-v2 stat-amber">
+            <div className="stat-icon"><Clock size={24} /></div>
+            <div>
+              <div className="stat-label">Pending</div>
+              <div className="stat-value">{pendingCount}</div>
+              <div className="stat-trend" style={{ color: "#92400e" }}>Awaiting action</div>
+            </div>
+          </div>
+          <div className="stat-card-v2 stat-green">
+            <div className="stat-icon"><CheckCircle2 size={24} /></div>
+            <div>
+              <div className="stat-label">Resolved</div>
+              <div className="stat-value">{resolvedCount}</div>
+              <div className="stat-trend" style={{ color: "#065f46" }}>{resolutionRate}% resolution rate</div>
+            </div>
+          </div>
+          <div className="stat-card-v2 stat-purple" onClick={() => navigate("/citizen/donations")}>
+            <div className="stat-icon"><HeartHandshake size={24} /></div>
+            <div>
+              <div className="stat-label">My Donations</div>
+              <div className="stat-value">{donationCount}</div>
+              <div className="stat-trend" style={{ color: "#6d28d9" }}>{user?.sundar_points || 0} pts earned</div>
+            </div>
+          </div>
+        </div>
 
-                <div className="stat-icon-wrapper">{item.icon}</div>
+        {/* ── Charts & Recent ── */}
+        <div className="cd-main-grid">
+          <div className="cd-charts-col">
+
+            {/* Complaint Status Doughnut */}
+            <div className="chart-card-v2">
+              <div className="chart-title section-heading">Complaint Status Breakdown</div>
+              {complaintCount > 0 ? (
+                <div className="chart-body" style={{ height: "260px" }}>
+                  <Doughnut data={doughnutData} options={pieOptions} />
+                </div>
+              ) : (
+                <div className="empty-chart">
+                  <Activity size={40} style={{ color: "#cbd5e1" }} />
+                  <p>Submit a complaint to see analytics here.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Category Bar */}
+            <div className="chart-card-v2" style={{ marginTop: "20px" }}>
+              <div className="chart-title section-heading">Issues by Category</div>
+              <div className="chart-body" style={{ height: "220px" }}>
+                <Bar data={barData} options={barOptions} />
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Analytics Section */}
-        <div className="section-divider">
-          <h3 className="section-title">Dashboard Analytics</h3>
-        </div>
-
-        <div className="charts-grid">
-          <div className="chart-card">
-            <h4>Complaint Status</h4>
-            <div className="chart-container pie-container">
-              <Doughnut data={statusChartData} options={pieOptions} />
-            </div>
           </div>
 
-          <div className="chart-card">
-            <h4>Complaints Over Time</h4>
-            <div className="chart-container">
-              <Line data={trendChartData} options={chartOptions} />
-            </div>
-          </div>
-
-          <div className="chart-card">
-            <h4>Complaints by Category</h4>
-            <div className="chart-container">
-              <Bar data={categoryChartData} options={chartOptions} />
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions Section */}
-        <div className="section-divider">
-          <h3 className="section-title">Quick Actions</h3>
-        </div>
-
-        <div className="actions-grid">
-          {actions.map((action, index) => (
-            <div key={index} className="action-card">
-              <div className="action-card-content">
-                <div className="action-icon-container">{action.icon}</div>
-                <h3 className="action-title">{action.title}</h3>
-                <p className="action-description">{action.description}</p>
-
-                <button
-                  className={`action-btn ${action.buttonClass}`}
-                  onClick={action.onClick}
-                >
-                  {action.buttonText}
+          <div className="cd-right-col">
+            {/* Recent Complaints */}
+            <div className="chart-card-v2">
+              <div className="chart-title section-heading" style={{ marginBottom: "16px", justifyContent: "space-between" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <ClipboardList size={18} style={{ color: "#2563eb" }} /> Recent Complaints
+                </span>
+                <button className="btn btn-ghost btn-sm" onClick={() => navigate("/citizen/complaints")}
+                  style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.8rem" }}>
+                  View All <ArrowUpRight size={14} />
                 </button>
               </div>
+
+              {loading ? (
+                <div className="loading-spinner-v2"><div className="spinner-ring"></div><p>Loading...</p></div>
+              ) : recentComplaints.length > 0 ? (
+                <div className="cd-complaints-list">
+                  {recentComplaints.map((c) => (
+                    <div key={c.complaint_id} className="cd-complaint-row">
+                      <div className="cd-complaint-dot" style={{ background: getStatusDot(c.status) }}></div>
+                      <div className="cd-complaint-info">
+                        <span className="cd-complaint-title">{c.title}</span>
+                        <span className="cd-complaint-meta">{c.category} · Ward {c.ward_number} · {new Date(c.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <span className={getStatusBadge(c.status)}>
+                        <span className="badge-dot"></span>
+                        {c.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="empty-state-v2" style={{ padding: "40px 20px" }}>
+                  <div className="empty-icon"><ClipboardList size={32} /></div>
+                  <h3>No complaints yet</h3>
+                  <p>You haven't submitted any complaints. Let your voice be heard!</p>
+                  <button className="btn btn-primary btn-sm" style={{ marginTop: "16px" }}
+                    onClick={() => navigate("/citizen/complaint/create")}>
+                    Submit First Complaint
+                  </button>
+                </div>
+              )}
             </div>
-          ))}
+
+            {/* Quick Stats Panel */}
+            <div className="chart-card-v2" style={{ marginTop: "20px" }}>
+              <div className="chart-title section-heading">Your Activity</div>
+              <div className="cd-activity-row">
+                <div className="cd-activity-item">
+                  <Star size={22} style={{ color: "#f59e0b" }} />
+                  <div>
+                    <div className="cd-activity-val">{user?.sundar_points || 0}</div>
+                    <div className="cd-activity-lbl">Sundar Points</div>
+                  </div>
+                </div>
+                <div className="cd-activity-item">
+                  <Megaphone size={22} style={{ color: "#8b5cf6" }} />
+                  <div>
+                    <div className="cd-activity-val">{announcementCount}</div>
+                    <div className="cd-activity-lbl">Announcements</div>
+                  </div>
+                </div>
+                <div className="cd-activity-item">
+                  <TrendingUp size={22} style={{ color: "#10b981" }} />
+                  <div>
+                    <div className="cd-activity-val">{resolutionRate}%</div>
+                    <div className="cd-activity-lbl">Resolved Rate</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* ── Quick Actions ── */}
+        <div className="section-heading" style={{ marginTop: "40px", marginBottom: "20px" }}>Quick Actions</div>
+        <div className="quick-actions-grid">
+          <div className="quick-action-card qa-blue" onClick={() => navigate("/citizen/complaint/create")}>
+            <div className="qa-icon"><PenLine size={24} /></div>
+            <div>
+              <div className="qa-title">Lodge a Complaint</div>
+              <div className="qa-desc">Report infrastructure issues, civic problems, or municipal services in your area.</div>
+            </div>
+            <button className="btn btn-primary btn-sm">Report Now →</button>
+          </div>
+          <div className="quick-action-card qa-green" onClick={() => navigate("/citizen/complaints")}>
+            <div className="qa-icon"><ListChecks size={24} /></div>
+            <div>
+              <div className="qa-title">Track My Complaints</div>
+              <div className="qa-desc">View real-time updates for all complaints you've submitted previously.</div>
+            </div>
+            <button className="btn btn-success btn-sm">View Status →</button>
+          </div>
+          <div className="quick-action-card qa-amber" onClick={() => navigate("/citizen/donate")}>
+            <div className="qa-icon"><Coins size={24} /></div>
+            <div>
+              <div className="qa-title">Make a Donation</div>
+              <div className="qa-desc">Support community development projects and earn Sundar Points as a reward.</div>
+            </div>
+            <button className="btn btn-sm" style={{ background: "linear-gradient(135deg,#f59e0b,#fbbf24)", color: "white" }}>Donate Now →</button>
+          </div>
+          <div className="quick-action-card qa-purple" onClick={() => navigate("/citizen/announcements")}>
+            <div className="qa-icon"><Megaphone size={24} /></div>
+            <div>
+              <div className="qa-title">View Announcements</div>
+              <div className="qa-desc">Stay informed with the latest municipal news and announcements.</div>
+            </div>
+            <button className="btn btn-ghost btn-sm" style={{ border: "1px solid #e9d5ff", color: "#7c3aed" }}>Read More →</button>
+          </div>
+        </div>
+
       </div>
     </div>
   );

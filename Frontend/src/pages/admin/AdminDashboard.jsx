@@ -2,162 +2,161 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
-import NotificationBell from "../../components/NotificationBell";
 import {
-  Users,
-  ClipboardList,
-  CheckCircle,
-  Banknote,
-  UserCog,
-  ShieldCheck,
-  FileCheck,
+  Users, ClipboardList, CheckCircle, Banknote,
+  UserCog, FileCheck, TrendingUp, Activity,
+  ShieldCheck, BarChart3, ArrowUpRight
 } from "lucide-react";
 import "./AdminDashboard.css";
 
 const AdminDashboard = () => {
-  const { user, token, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const [stats, setStats] = useState({
-    totalComplaints: 0,
-    resolvedPercentage: "0",
-    activeUsers: 0,
-    totalDonationAmount: 0,
-  });
+  const [stats, setStats] = useState({ totalComplaints: 0, resolvedPercentage: "0", activeUsers: 0, totalDonationAmount: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get("/admin/stats", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+    api.get("/admin/stats")
+      .then(r => { if (r.data.success) setStats(r.data.stats); })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
-        if (res.data.success) {
-          setStats(res.data.stats);
-        }
-      } catch (error) {
-        console.error("Error fetching admin stats:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (token) fetchStats();
-  }, [token]);
-
-  const statCards = [
-    {
-      title: "Active Users",
-      value: stats.activeUsers,
-      icon: <Users size={28} />,
-      colorClass: "stat-card-blue",
-    },
-    {
-      title: "Total Complaints",
-      value: stats.totalComplaints,
-      icon: <ClipboardList size={28} />,
-      colorClass: "stat-card-yellow",
-    },
-    {
-      title: "Resolved Rate",
-      value: `${stats.resolvedPercentage}%`,
-      icon: <CheckCircle size={28} />,
-      colorClass: "stat-card-green",
-    },
-    {
-      title: "Total Donations",
-      value: `Rs. ${stats.totalDonationAmount}`,
-      icon: <Banknote size={28} />,
-      colorClass: "stat-card-purple",
-    },
-  ];
-
-  const actions = [
+  const adminModules = [
     {
       title: "Manage Users",
-      description: "View all platform users. Block accounts or upgrade roles to municipal officers.",
-      icon: <UserCog size={28} />,
-      btnText: "User Directory",
-      btnClass: "action-btn-blue",
-      onClick: () => navigate("/admin/users"),
-    },
-    {
-      title: "View Donations",
-      description: "Track all successful financial donations across the platform.",
-      icon: <Banknote size={28} />,
-      btnText: "Donation Ledger",
-      btnClass: "action-btn-green",
-      onClick: () => navigate("/admin/donations"),
-    },
-    {
-      title: "Platform Health",
-      description: "Monitor system settings, application logs, and database backups.",
-      icon: <ShieldCheck size={28} />,
-      btnText: "System Check",
-      btnClass: "action-btn-purple",
-      onClick: () => alert("System settings are operational."),
+      desc: "View, block, and manage roles for all registered citizens and officers.",
+      icon: <UserCog size={26} />,
+      color: "qa-blue",
+      href: "/admin/users",
+      stat: `${stats.activeUsers} active`,
     },
     {
       title: "Municipal Requests",
-      description: "Review documents and approve new municipal officer applications.",
-      icon: <FileCheck size={28} />,
-      btnText: "Review applications",
-      btnClass: "action-btn-blue",
-      onClick: () => navigate("/admin/municipal-requests"),
+      desc: "Review submitted documents and grant Municipal Officer privileges.",
+      icon: <FileCheck size={26} />,
+      color: "qa-green",
+      href: "/admin/municipal-requests",
+      stat: "Pending review",
+    },
+    {
+      title: "Donation Ledger",
+      desc: "Monitor all successful financial contributions across the platform.",
+      icon: <Banknote size={26} />,
+      color: "qa-amber",
+      href: "/admin/all-donations",
+      stat: `Rs. ${stats.totalDonationAmount || 0}`,
+    },
+    {
+      title: "System Health",
+      desc: "Monitor platform uptime, system settings, and database status.",
+      icon: <ShieldCheck size={26} />,
+      color: "qa-purple",
+      href: null,
+      stat: "Operational ✓",
     },
   ];
 
   return (
-    <div className="admin-dashboard">
-      <div className="dashboard-content">
-        <div className="dashboard-header mb-8">
-          <h2 className="dashboard-heading">System Overview</h2>
-          <p className="dashboard-subheading">High-level statistics and management controls for the platform.</p>
+    <div className="page-shell">
+      <div className="content-container">
+
+        {/* Welcome */}
+        <div className="cd-welcome-header">
+          <div>
+            <p className="cd-greeting" style={{ color: "#7c3aed" }}>Administrator View</p>
+            <h1 className="page-title">System Overview</h1>
+            <p className="page-subtitle">Manage users, complaints, and platform operations.</p>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div style={{ fontSize: "0.85rem", color: "#94a3b8" }}>Logged in as</div>
+            <div style={{ fontWeight: 700, color: "#1e293b" }}>{user?.email}</div>
+          </div>
         </div>
 
-        {loading ? (
-          <div className="loading-state">
-            <div className="loader"></div>
-            <p>Loading statistics...</p>
+        {/* Stats */}
+        <div className="stats-row">
+          <div className="stat-card-v2 stat-blue">
+            <div className="stat-icon"><Users size={24} /></div>
+            <div>
+              <div className="stat-label">Active Users</div>
+              <div className="stat-value">{loading ? "—" : stats.activeUsers}</div>
+              <div className="stat-trend" style={{ color: "#2563eb" }}>Registered citizens</div>
+            </div>
           </div>
-        ) : (
-          <div className="stats-grid">
-            {statCards.map((item, index) => (
-              <div key={index} className={`stat-card ${item.colorClass}`}>
-                <div className="stat-card-content">
-                  <div className="stat-info">
-                    <p className="stat-label">{item.title}</p>
-                    <h3 className="stat-value">{item.value}</h3>
-                  </div>
-                  <div className="stat-icon-wrapper">{item.icon}</div>
+          <div className="stat-card-v2 stat-amber">
+            <div className="stat-icon"><ClipboardList size={24} /></div>
+            <div>
+              <div className="stat-label">Total Complaints</div>
+              <div className="stat-value">{loading ? "—" : stats.totalComplaints}</div>
+              <div className="stat-trend" style={{ color: "#92400e" }}>Across all wards</div>
+            </div>
+          </div>
+          <div className="stat-card-v2 stat-green">
+            <div className="stat-icon"><CheckCircle size={24} /></div>
+            <div>
+              <div className="stat-label">Resolution Rate</div>
+              <div className="stat-value">{loading ? "—" : `${stats.resolvedPercentage}%`}</div>
+              <div className="stat-trend" style={{ color: "#065f46" }}>of all complaints</div>
+            </div>
+          </div>
+          <div className="stat-card-v2 stat-purple">
+            <div className="stat-icon"><Banknote size={24} /></div>
+            <div>
+              <div className="stat-label">Total Donations</div>
+              <div className="stat-value">Rs.{loading ? "—" : Math.round(stats.totalDonationAmount || 0)}</div>
+              <div className="stat-trend" style={{ color: "#6d28d9" }}>Total collected</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Resolution Progress Bar */}
+        <div className="card" style={{ marginBottom: "32px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+            <div className="section-heading" style={{ margin: 0 }}>Platform Performance</div>
+            <span style={{ fontSize: "0.85rem", color: "#64748b" }}>Overall Resolution Rate</span>
+          </div>
+          <div style={{ background: "#f1f5f9", borderRadius: "999px", height: "10px", overflow: "hidden" }}>
+            <div style={{
+              width: `${stats.resolvedPercentage || 0}%`,
+              background: "linear-gradient(90deg, #10b981, #34d399)",
+              height: "100%", borderRadius: "999px",
+              transition: "width 1s ease",
+            }}></div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "0.78rem", color: "#94a3b8" }}>
+            <span>0%</span>
+            <span style={{ color: "#10b981", fontWeight: 700 }}>{stats.resolvedPercentage}% resolved</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+        {/* Admin Modules Grid */}
+        <div className="section-heading">Administration Modules</div>
+        <div className="quick-actions-grid" style={{ marginTop: "16px" }}>
+          {adminModules.map((m) => (
+            <div
+              key={m.title}
+              className={`quick-action-card ${m.color}`}
+              onClick={() => m.href ? navigate(m.href) : alert("System operational.")}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div className="qa-icon">{m.icon}</div>
+                <span style={{ fontSize: "0.78rem", color: "#94a3b8", fontWeight: 600 }}>{m.stat}</span>
+              </div>
+              <div>
+                <div className="qa-title">{m.title}</div>
+                <div className="qa-desc">{m.desc}</div>
+              </div>
+              {m.href && (
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.85rem", fontWeight: 600, color: "#2563eb" }}>
+                  Open Module <ArrowUpRight size={15} />
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="section-divider mt-12">
-          <h3 className="section-title">Administrative Actions</h3>
-        </div>
-
-        <div className="actions-grid">
-          {actions.map((action, index) => (
-            <div key={index} className="action-card">
-              <div className="action-card-content">
-                <div className="action-icon-container">{action.icon}</div>
-                <h3 className="action-title">{action.title}</h3>
-                <p className="action-description">{action.description}</p>
-                <button
-                  className={`action-btn ${action.btnClass}`}
-                  onClick={action.onClick}
-                >
-                  {action.btnText}
-                </button>
-              </div>
+              )}
             </div>
           ))}
         </div>
+
       </div>
     </div>
   );
