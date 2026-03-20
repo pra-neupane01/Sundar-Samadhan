@@ -11,6 +11,10 @@ const {
 const {
   getAllDonationsController,
 } = require("../controllers/donationController");
+const { 
+  getAllMunicipalRequests, 
+  updateMunicipalRequestStatus 
+} = require("../controllers/municipalRequestController");
 
 router.get(
   "/all-users",
@@ -45,6 +49,21 @@ router.put(
   authMiddleware,
   roleMiddleware("admin"),
   updateUserRoleController,
+);
+
+// MUNICIPAL REQUESTS
+router.get(
+  "/municipal-requests",
+  authMiddleware,
+  roleMiddleware("admin"),
+  getAllMunicipalRequests
+);
+
+router.put(
+  "/municipal-requests/:id",
+  authMiddleware,
+  roleMiddleware("admin"),
+  updateMunicipalRequestStatus
 );
 
 module.exports = router;

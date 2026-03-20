@@ -10,6 +10,7 @@ const { complaintSchema } = require("./models/complaintsModel");
 const { announcementSchema } = require("./models/announcementModel");
 const { donationSchema } = require("./models/donationModel");
 const { notificationSchema } = require("./models/notificationModel");
+const { municipalRequestSchema } = require("./models/municipalRequestModel");
 const { checkOverdueComplaints } = require("./controllers/complaintController");
 
 const app = express();
@@ -87,6 +88,7 @@ const initializeDatabase = async () => {
     await announcementSchema();
     await donationSchema();
     await notificationSchema();
+    await municipalRequestSchema();
 
     server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

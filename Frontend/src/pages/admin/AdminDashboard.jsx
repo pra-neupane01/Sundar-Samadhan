@@ -10,6 +10,7 @@ import {
   Banknote,
   UserCog,
   ShieldCheck,
+  FileCheck,
 } from "lucide-react";
 import "./AdminDashboard.css";
 
@@ -96,6 +97,14 @@ const AdminDashboard = () => {
       btnText: "System Check",
       btnClass: "action-btn-purple",
       onClick: () => alert("System settings are operational."),
+    },
+    {
+      title: "Municipal Requests",
+      description: "Review documents and approve new municipal officer applications.",
+      icon: <FileCheck size={28} />,
+      btnText: "Review applications",
+      btnClass: "action-btn-blue",
+      onClick: () => navigate("/admin/municipal-requests"),
     },
   ];
 

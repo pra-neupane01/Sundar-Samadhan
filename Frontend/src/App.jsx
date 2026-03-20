@@ -24,6 +24,7 @@ import Notifications from "./pages/user/Notifications";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import MunicipalRequests from "./pages/admin/MunicipalRequests";
 import ManageUsers from "./pages/admin/ManageUsers";
 import AdminDonations from "./pages/admin/AdminDonations";
 
@@ -143,10 +144,18 @@ const App = () => {
           }
         />
         <Route
-          path="/admin/donations"
+          path="/admin/all-donations"
           element={
-            <ProtectedRoute allowedRoles={["admin"]}>
+            <ProtectedRoute role="admin">
               <AdminDonations />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/municipal-requests"
+          element={
+            <ProtectedRoute role="admin">
+              <MunicipalRequests />
             </ProtectedRoute>
           }
         />
