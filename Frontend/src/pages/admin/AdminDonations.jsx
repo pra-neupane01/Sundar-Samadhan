@@ -1,151 +1,125 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
 import api from "../../services/api";
 import toast, { Toaster } from "react-hot-toast";
-import { ArrowLeft, Search, Building2, Calendar, Banknote } from "lucide-react";
+import { Search, Calendar, Building2, Banknote, DollarSign } from "lucide-react";
 
 const AdminDonations = () => {
   const { token } = useContext(AuthContext);
-
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    fetchDonations();
-  }, [token]);
+  useEffect(() => { fetchDonations(); }, [token]);
 
   const fetchDonations = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/admin/all-donations", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.data.success) {
-        setDonations(res.data.donations || []);
-      }
-    } catch (error) {
-      console.error("Error fetching donations:", error);
-      toast.error("Failed to load donation history.");
-    } finally {
-      setLoading(false);
-    }
+      const res = await api.get("/admin/all-donations", { headers: { Authorization: `Bearer ${token}` } });
+      if (res.data.success) setDonations(res.data.donations || []);
+    } catch (e) { toast.error("Failed to load donation history."); }
+    finally { setLoading(false); }
   };
 
   const filteredDonations = donations.filter((d) => {
     const term = searchTerm.toLowerCase();
-    return (
-      d.full_name?.toLowerCase().includes(term) ||
-      d.email?.toLowerCase().includes(term) ||
-      d.campaign_name?.toLowerCase().includes(term)
-    );
+    return d.full_name?.toLowerCase().includes(term) || d.email?.toLowerCase().includes(term) || d.campaign_name?.toLowerCase().includes(term);
   });
 
+  const totalAmount = donations.reduce((s, d) => s + Number(d.amount || 0), 0);
+
   return (
-    <div className="manage-users-page" style={{ paddingBottom: '3rem' }}>
+    <div className="page-shell">
       <Toaster position="top-right" />
-      <nav className="dashboard-navbar" style={{ padding: "0 2rem", minHeight: "72px" }}>
-        <div className="navbar-brand">
-          <div className="logo-text-icon">
-            <span className="logo-letter">S</span><span className="logo-letter">S</span>
+      <div className="content-container">
+
+        {/* Header */}
+        <div className="page-header-row" style={{ marginBottom: "32px" }}>
+          <div>
+            <h1 className="page-title">Donation Ledger</h1>
+            <p className="page-subtitle">Full history of successful donations across the platform.</p>
           </div>
-          <span className="brand-text">Sundar Samadhan Admin</span>
-        </div>
-        <div className="navbar-user-section">
-          <Link to="/admin" className="back-link">
-            <ArrowLeft size={18} />
-            Back to Dashboard
-          </Link>
-        </div>
-      </nav>
-
-      <div className="users-content">
-        <div className="users-container">
-          <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className="header-text">
-              <h1>All Donations</h1>
-              <p>View complete history of successful donations made across the platform.</p>
+          <div style={{ display: "flex", gap: "16px" }}>
+            <div style={{ textAlign: "center", padding: "10px 20px", background: "white", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Total Collected</div>
+              <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#16a34a" }}>Rs. {Math.round(totalAmount)}</div>
             </div>
-          </header>
-
-          <div className="table-actions">
-            <div className="search-wrapper" style={{ flex: 1, maxWidth: '400px' }}>
-              <Search size={18} className="search-icon" />
-              <input 
-                type="text" 
-                placeholder="Search by name, email, or campaign..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: '100%', paddingLeft: '40px' }}
-              />
+            <div style={{ textAlign: "center", padding: "10px 20px", background: "white", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Transactions</div>
+              <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#1e293b" }}>{donations.length}</div>
             </div>
           </div>
+        </div>
 
-          <div className="users-table-container">
-            {loading ? (
-              <div className="loading-state">
-                <div className="loader"></div>
-                <p>Loading donations...</p>
-              </div>
-            ) : filteredDonations.length > 0 ? (
-              <table className="users-table">
-                <thead>
-                  <tr>
-                    <th>Donor</th>
-                    <th>Date</th>
-                    <th>Campaign</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDonations.map((d) => (
-                    <tr key={d.id}>
-                      <td>
-                        <div className="user-info">
-                          <span className="user-name">{d.full_name || "Anonymous"}</span>
-                          <span className="user-email">{d.email}</span>
+        {/* Toolbar */}
+        <div className="toolbar">
+          <div className="search-box">
+            <Search size={17} className="search-icon" />
+            <input type="text" placeholder="Search by name, email, or campaign…" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </div>
+        </div>
+
+        {/* Table */}
+        {loading ? (
+          <div className="loading-spinner-v2"><div className="spinner-ring"></div><p>Loading donations…</p></div>
+        ) : filteredDonations.length > 0 ? (
+          <div className="data-table-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Donor</th>
+                  <th>Date</th>
+                  <th>Campaign</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredDonations.map((d) => (
+                  <tr key={d.id}>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <div style={{
+                          width: "36px", height: "36px", borderRadius: "50%",
+                          background: "linear-gradient(135deg,#10b981,#34d399)",
+                          color: "white", display: "flex", alignItems: "center",
+                          justifyContent: "center", fontWeight: 800, fontSize: "0.9rem", flexShrink: 0
+                        }}>{(d.full_name || "A").charAt(0)}</div>
+                        <div>
+                          <div style={{ fontWeight: 600, color: "#1e293b" }}>{d.full_name || "Anonymous"}</div>
+                          <div style={{ fontSize: "0.78rem", color: "#94a3b8" }}>{d.email}</div>
                         </div>
-                      </td>
-                      <td>
-                        <span className="date-text" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Calendar size={14} />
-                          {new Date(d.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric', month: 'short', day: 'numeric'
-                          })}
-                        </span>
-                      </td>
-                      <td>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#475569' }}>
-                          <Building2 size={14} />
-                          {d.campaign_name || "General Fund"}
-                        </span>
-                      </td>
-                      <td>
-                        <span style={{ fontWeight: 600, color: '#16a34a' }}>
-                          Rs. {d.amount}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="status-badge active" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          <Banknote size={12} />
-                          Success
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="empty-state">
-                <Banknote size={48} />
-                <h3>No donations found</h3>
-                <p>Try adjusting your search query or no donations have been made yet.</p>
-              </div>
-            )}
+                      </div>
+                    </td>
+                    <td>
+                      <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "0.87rem" }}>
+                        <Calendar size={14} />
+                        {new Date(d.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#475569", fontSize: "0.87rem" }}>
+                        <Building2 size={14} /> {d.campaign_name || "General Fund"}
+                      </span>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: 700, color: "#16a34a", fontSize: "0.95rem" }}>Rs. {d.amount}</span>
+                    </td>
+                    <td>
+                      <span className="badge badge-resolved"><span className="badge-dot"></span> Success</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+        ) : (
+          <div className="empty-state-v2">
+            <div className="empty-icon"><Banknote size={36} /></div>
+            <h3>No donations found</h3>
+            <p>Adjust your search or no donations have been made yet.</p>
+          </div>
+        )}
       </div>
     </div>
   );

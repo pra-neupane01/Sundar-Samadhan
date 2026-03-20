@@ -64,8 +64,10 @@ const AdminDashboard = () => {
         {/* Welcome */}
         <div className="cd-welcome-header">
           <div>
-            <p className="cd-greeting" style={{ color: "#7c3aed" }}>Administrator View</p>
-            <h1 className="page-title">System Overview</h1>
+            <p className="cd-greeting" style={{ color: "#7c3aed" }}>
+              {(() => { const h=new Date().getHours(); const n=user?.full_name||""; const p=n.trim().split(" "); const d=p.length>1?`Mr. ${p[p.length-1]}`:n; return h<12?`Good morning, ${d}`:h<17?`Good afternoon, ${d}`:`Good evening, ${d}`; })()} 🏛️
+            </p>
+            <h1 className="page-title">Control Panel</h1>
             <p className="page-subtitle">Manage users, complaints, and platform operations.</p>
           </div>
           <div style={{ textAlign: "right" }}>

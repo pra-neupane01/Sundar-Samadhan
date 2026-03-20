@@ -2,6 +2,7 @@ import { useContext, useState, useRef, useEffect } from "react";
 import { SocketContext } from "../context/SocketContext";
 import { Bell, Check, Trash2, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import "./NotificationBell.css";
 
 const NotificationBell = () => {
   const { notifications, markAsRead, clearAllNotifications } = useContext(SocketContext);
@@ -17,69 +18,54 @@ const NotificationBell = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="notif-wrapper" ref={dropdownRef}>
       {/* Bell Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-full hover:bg-slate-200 transition-colors duration-200"
-      >
-        <Bell size={24} className="text-slate-700" />
+      <button className="notif-bell-btn" onClick={() => setIsOpen(!isOpen)} title="Notifications">
+        <Bell size={20} />
         {unreadCount > 0 && (
-          <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full border-2 border-white">
+          <span className="notif-badge-count">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
-      {/* Dropdown Menu */}
+      {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg shadow-slate-200 border border-slate-100 overflow-hidden z-[200]">
-          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <h3 className="font-semibold text-slate-800">Notifications</h3>
+        <div className="notif-dropdown">
+          <div className="notif-dropdown-header">
+            <h4>Notifications</h4>
             {notifications.length > 0 && (
-              <button
-                onClick={clearAllNotifications}
-                className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
-              >
-                <Trash2 size={12} /> Clear
+              <button onClick={clearAllNotifications} className="notif-clear-btn">
+                <Trash2 size={13} /> Clear all
               </button>
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto">
+          <div className="notif-dropdown-body">
             {notifications.length === 0 ? (
-              <div className="p-6 text-center text-slate-500 text-sm">
-                No notifications yet.
+              <div className="notif-empty">
+                <Bell size={28} />
+                <p>No notifications yet</p>
               </div>
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="notif-list">
                 {notifications.map((notif) => (
-                  <li
-                    key={notif.id}
-                    className={`p-4 hover:bg-slate-50 transition ${
-                      notif.isRead ? "opacity-75" : "bg-slate-50/50 font-medium"
-                    }`}
-                  >
-                    <div className="flex justify-between items-start gap-2">
-                      <div>
-                        <p className="text-sm text-slate-800">{notif.message}</p>
-                        <span className="text-xs text-slate-500 mt-1 block">
-                          {new Date(notif.id).toLocaleTimeString()}
+                  <li key={notif.id} className={`notif-item ${notif.isRead ? "read" : "unread"}`}>
+                    <div className="notif-item-content">
+                      <div className={`notif-dot ${notif.isRead ? "" : "active"}`}></div>
+                      <div className="notif-item-text">
+                        <p className="notif-message">{notif.message}</p>
+                        <span className="notif-time">
+                          {new Date(notif.id).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </span>
                       </div>
                       {!notif.isRead && (
-                        <button
-                          onClick={() => markAsRead(notif.id)}
-                          className="text-slate-400 hover:text-green-500 shrink-0"
-                          title="Mark as read"
-                        >
-                          <Check size={16} />
+                        <button onClick={() => markAsRead(notif.id)} className="notif-mark-btn" title="Mark as read">
+                          <Check size={14} />
                         </button>
                       )}
                     </div>
@@ -89,13 +75,8 @@ const NotificationBell = () => {
             )}
           </div>
 
-          <Link
-            to="/notifications"
-            onClick={() => setIsOpen(false)}
-            className="p-3 text-center block text-sm font-bold text-slate-900 bg-slate-50 hover:bg-slate-100 transition-colors border-t border-slate-100 flex items-center justify-center gap-2"
-            style={{ textDecoration: 'none' }}
-          >
-            View All <ExternalLink size={14} />
+          <Link to="/notifications" onClick={() => setIsOpen(false)} className="notif-dropdown-footer">
+            View All Notifications <ExternalLink size={13} />
           </Link>
         </div>
       )}

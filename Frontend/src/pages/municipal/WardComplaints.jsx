@@ -131,46 +131,33 @@ const WardComplaints = () => {
   });
 
   return (
-    <div className="ward-complaints-page">
+    <div className="page-shell">
       <Toaster position="top-right" />
-      {/* Navbar */}
-      <nav className="dashboard-navbar" style={{ padding: "0 2rem", minHeight: "72px" }}>
-        <div className="navbar-brand">
-          <div className="logo-text-icon">
-            <span className="logo-letter">S</span><span className="logo-letter">S</span>
-          </div>
-          <span className="brand-text">Sundar Samadhan</span>
-        </div>
-        <div className="navbar-user-section">
-          <Link to="/municipal" className="back-link">
-            <ArrowLeft size={18} />
-            Back to Dashboard
-          </Link>
-        </div>
-      </nav>
 
-      <div className="complaints-content">
+      <div className="content-container">
         <div className="complaints-container">
-          <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className="header-text">
-              <h1>
-                {selectedWard !== "all" ? `Ward ${selectedWard} Complaints` : "All Complaints"}
-              </h1>
-              <p>Manage and update complaints in the selected area.</p>
+          <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: "28px" }}>
+            <div className="flex-center gap-4">
+              <button 
+                className="btn btn-ghost btn-icon" 
+                onClick={() => navigate("/municipal")}
+                style={{ borderRadius: "10px", width: "40px", height: "40px" }}
+              >
+                <ArrowLeft size={20} />
+              </button>
+              <div className="header-text">
+                <h1 className="page-title" style={{ marginBottom: 0 }}>
+                  {selectedWard !== "all" ? `Ward ${selectedWard} Complaints` : "All Complaints Dashboard"}
+                </h1>
+                <p className="page-subtitle">Track and update active community issues.</p>
+              </div>
             </div>
             
             <div className="ward-filter">
               <select
                 value={selectedWard}
                 onChange={(e) => setSelectedWard(e.target.value)}
-                style={{
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  outline: 'none',
-                  minWidth: '150px',
-                  background: 'white',
-                }}
+                className="filter-select"
               >
                 <option value="all">All Wards</option>
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(w => (
@@ -180,8 +167,8 @@ const WardComplaints = () => {
             </div>
           </header>
 
-          <div className="table-actions">
-            <div className="search-wrapper">
+          <div className="toolbar" style={{ marginTop: "20px" }}>
+            <div className="search-box">
               <Search size={18} className="search-icon" />
               <input 
                 type="text" 
@@ -191,35 +178,34 @@ const WardComplaints = () => {
               />
             </div>
             
-            <div className="filter-wrapper">
-              <Filter size={18} className="filter-icon" />
-              <select 
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="resolved">Resolved</option>
-              </select>
-            </div>
+            <select 
+              className="filter-select"
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              style={{ minWidth: "160px" }}
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="resolved">Resolved</option>
+            </select>
           </div>
 
-          <div className="complaints-table-container">
+          <div className="data-table-wrapper" style={{ marginTop: "24px" }}>
             {loading ? (
-              <div className="loading-state">
-                <div className="loader"></div>
+              <div className="loading-spinner-v2">
+                <div className="spinner-ring"></div>
                 <p>Loading complaints...</p>
               </div>
             ) : filteredComplaints.length > 0 ? (
-              <table className="complaints-table">
+              <table className="data-table">
                 <thead>
                   <tr>
-                    <th>Title & Category</th>
+                    <th>Complaint Details</th>
                     <th>Date Filed</th>
                     <th>Ward</th>
-                    <th>Citizen ID</th>
-                    <th>Current Status</th>
+                    <th>Citizen</th>
+                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -231,79 +217,70 @@ const WardComplaints = () => {
                     return (
                       <tr key={complaint.complaint_id}>
                         <td>
-                          <div className="complaint-info">
-                            <span className="complaint-title">
+                          <div style={{ display: "flex", flexDirection: "column" }}>
+                            <span style={{ fontWeight: 700, color: "#1e293b" }}>
                               {complaint.title}
-                              {complaint.image_url && <ImageIcon size={14} style={{ marginLeft: '8px', color: '#3b82f6', display: 'inline-block', verticalAlign: 'middle' }} title="Has Evidence Image" />}
+                              {complaint.image_url && <ImageIcon size={14} style={{ marginLeft: '8px', color: '#3b82f6' }} title="Has Evidence Image" />}
                             </span>
-                            <span className="complaint-category">{complaint.category || "General"}</span>
+                            <span style={{ fontSize: "0.8rem", color: "#64748b" }}>{complaint.category || "General"}</span>
                           </div>
                         </td>
                         <td>
-                          <span className="date-text">
-                            {new Date(complaint.created_at).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
+                          <span style={{ color: "#475569", fontSize: "0.87rem" }}>
+                            {new Date(complaint.created_at).toLocaleDateString()}
                           </span>
                           {isOverdue && (
                             <div style={{ marginTop: '4px' }}>
-                              <span className="badge-ward" style={{ background: '#fee2e2', color: '#b91c1c' }}>Overdue</span>
+                                <span className="badge badge-urgent">Overdue</span>
                             </div>
                           )}
                         </td>
                         <td>
-                          <span className="ward-text" style={{ fontWeight: 600, color: '#3b82f6' }}>
-                          Ward {complaint.ward_number}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="citizen-text" title={complaint.created_by}>
-                          {complaint.created_by?.split("-")[0] || "Unknown"}...
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`status-badge ${getStatusStyle(complaint.status)}`}>
-                          {getStatusIcon(complaint.status)}
-                          {complaint.status}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button 
-                            className="view-btn-icon" 
-                            title="View Details"
-                            onClick={() => { setViewComplaint(complaint); setShowModal(true); }}
-                          >
-                            <Eye size={18} />
-                          </button>
-                          <select 
-                            className="status-select"
-                            value={complaint.status}
-                            onChange={(e) => handleStatusUpdate(complaint.complaint_id, e.target.value)}
-                            disabled={updatingId === complaint.complaint_id || complaint.status === 'resolved'}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="resolved">Resolved</option>
-                          </select>
-                        </div>
-                      </td>
-                    </tr>
+                          <span className="badge-ward" style={{ fontWeight: 700, color: '#3b82f6', background: "#eff6ff" }}>
+                            Ward {complaint.ward_number}
+                          </span>
+                        </td>
+                        <td>
+                            <span style={{ fontSize: "0.85rem", color: "#64748b" }}>{complaint.created_by?.split("-")[0]}...</span>
+                        </td>
+                        <td>
+                          <span className={getStatusBadge(complaint.status)}>
+                            <span className="badge-dot"></span>
+                            {complaint.status}
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                            <button 
+                              className="btn btn-ghost btn-sm btn-icon" 
+                              title="View Details"
+                              onClick={() => { setViewComplaint(complaint); setShowModal(true); }}
+                            >
+                              <Eye size={18} />
+                            </button>
+                            <select 
+                              className="filter-select"
+                              style={{ padding: "6px 24px 6px 12px", fontSize: "0.8rem", minWidth: "120px" }}
+                              value={complaint.status}
+                              onChange={(e) => handleStatusUpdate(complaint.complaint_id, e.target.value)}
+                              disabled={updatingId === complaint.complaint_id || complaint.status === 'resolved'}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="processing">Processing</option>
+                              <option value="resolved">Resolved</option>
+                            </select>
+                          </div>
+                        </td>
+                      </tr>
                     );
                   })}
                 </tbody>
               </table>
             ) : (
-              <div className="empty-state">
-                <AlertCircle size={48} />
+              <div className="empty-state-v2" style={{ border: "none" }}>
+                <div className="empty-icon"><AlertCircle size={32} /></div>
                 <h3>No complaints found</h3>
-                <p>
-                  {searchTerm || filterStatus !== "all" 
-                    ? "Try adjusting your filters or search terms."
-                    : "No complaints have been lodged in this ward yet."}
-                </p>
+                <p>Try adjusting your filters or search terms.</p>
               </div>
             )}
           </div>
@@ -312,61 +289,67 @@ const WardComplaints = () => {
 
       {/* Detail Modal */}
       {showModal && viewComplaint && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <header className="modal-header">
-              <div className="header-info">
-                <span className={`status-badge-mini ${getStatusStyle(viewComplaint.status)}`}>
-                  {getStatusIcon(viewComplaint.status)} {viewComplaint.status}
-                </span>
-                <h2>{viewComplaint.title}</h2>
+        <div className="modal-backdrop" onClick={() => setShowModal(false)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "640px" }}>
+            <div className="modal-header">
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                 <span className={getStatusBadge(viewComplaint.status)}>
+                    {viewComplaint.status}
+                 </span>
+                 <h3>{viewComplaint.title}</h3>
               </div>
-              <button className="close-btn" onClick={() => setShowModal(false)}><X size={24} /></button>
-            </header>
+              <button 
+                className="btn btn-ghost btn-icon" 
+                onClick={() => setShowModal(false)}
+                style={{ borderRadius: "50%" }}
+              ><X size={20} /></button>
+            </div>
             
             <div className="modal-body">
-              <div className="modal-section">
-                <label>Description</label>
-                <p>{viewComplaint.description}</p>
+              <div style={{ marginBottom: "20px" }}>
+                <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>Description</div>
+                <p style={{ color: "#475569", lineHeight: 1.6 }}>{viewComplaint.description}</p>
               </div>
               
-              <div className="modal-grid">
-                <div className="modal-section">
-                  <label>Category</label>
-                  <span className="badge-ward" style={{ background: '#f1f5f9', color: '#475569' }}>{viewComplaint.category || "General"}</span>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
+                <div>
+                  <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>Category</div>
+                  <span className="badge badge-default">{viewComplaint.category || "General"}</span>
                 </div>
-                <div className="modal-section">
-                  <label>Ward</label>
-                  <span className="badge-ward">Ward {viewComplaint.ward_number}</span>
+                <div>
+                  <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>Ward Number</div>
+                  <span className="badge badge-processing">Ward {viewComplaint.ward_number}</span>
                 </div>
-                <div className="modal-section">
-                  <label>Date Filed</label>
-                  <p>{new Date(viewComplaint.created_at).toLocaleString()}</p>
+                <div>
+                   <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>Submission Date</div>
+                   <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.9rem", color: "#475569" }}>
+                        <Clock size={16} /> {new Date(viewComplaint.created_at).toLocaleString()}
+                   </div>
                 </div>
               </div>
 
-              <div className="modal-section">
-                <label>Address & Location</label>
-                <div className="address-container">
-                  <MapPin size={16} className="text-blue-500" />
-                  <span>{viewComplaint.address || "No address provided"}</span>
-                  {viewComplaint.latitude && viewComplaint.longitude && (
-                    <span className="text-xs text-slate-400">({viewComplaint.latitude}, {viewComplaint.longitude})</span>
-                  )}
+              <div style={{ marginBottom: "20px" }}>
+                <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: "6px" }}>Location & Map</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "12px", background: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+                  <MapPin size={18} className="text-blue-500" />
+                  <span style={{ fontSize: "0.9rem", color: "#1e293b", fontWeight: 600 }}>{viewComplaint.address || "No address provided"}</span>
                 </div>
               </div>
 
               {viewComplaint.image_url && (
-                <div className="modal-section">
-                  <label>Evidence Image</label>
+                <div>
+                  <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", marginBottom: "8px" }}>Evidence Photo</div>
                   <img 
                     src={`http://localhost:4849${viewComplaint.image_url}`} 
                     alt="Complaint Evidence" 
-                    className="detail-image"
+                    style={{ width: "100%", borderRadius: "14px", border: "1px solid #e2e8f0", maxHeight: "300px", objectFit: "cover" }}
                     onError={(e) => e.target.style.display='none'}
                   />
                 </div>
               )}
+            </div>
+            <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>Close</button>
             </div>
           </div>
         </div>
@@ -374,5 +357,4 @@ const WardComplaints = () => {
     </div>
   );
 };
-
 export default WardComplaints;

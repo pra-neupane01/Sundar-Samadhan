@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { SocketContext } from "../../context/SocketContext";
-import { Bell, Check, Trash2, Clock, Info } from "lucide-react";
+import { Bell, Check, Trash2, Clock, Info, ExternalLink } from "lucide-react";
 import { markAllNotificationsAsRead } from "../../services/notificationService";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const Notifications = () => {
-  const { notifications, markAsRead, setNotifications } = useContext(SocketContext);
+  const { notifications, markAsRead, setNotifications, clearAllNotifications } = useContext(SocketContext);
 
   const handleMarkAllRead = async () => {
     try {
@@ -30,73 +30,67 @@ const Notifications = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8 font-sans">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
+    <div className="page-shell">
+      <Toaster position="top-right" />
+      <div className="content-container" style={{ maxWidth: "800px" }}>
+        
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px" }}>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Notification History</h1>
-            <p className="text-slate-500 mt-1">Stay updated with your latest alerts and activities.</p>
+            <h1 className="page-title">Notification History</h1>
+            <p className="page-subtitle">Stay updated with your latest alerts and activities.</p>
           </div>
-          {notifications.some(n => !n.isRead) && (
-            <button
-              onClick={handleMarkAllRead}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-all shadow-sm"
-            >
-              <Check size={18} /> Mark all read
-            </button>
-          )}
+          <div style={{ display: "flex", gap: "10px" }}>
+            {notifications.length > 0 && (
+                <button 
+                    onClick={clearAllNotifications}
+                    className="btn btn-ghost btn-sm text-red-600"
+                >
+                    <Trash2 size={16} /> Clear All
+                </button>
+            )}
+            {notifications.some(n => !n.isRead) && (
+                <button
+                onClick={handleMarkAllRead}
+                className="btn btn-secondary btn-sm"
+                >
+                <Check size={16} /> Mark all read
+                </button>
+            )}
+          </div>
         </div>
 
         {notifications.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-slate-100 shadow-xl shadow-slate-200/50">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 text-slate-400 rounded-full mb-6">
+          <div className="empty-state-v2 card">
+            <div className="empty-icon">
               <Bell size={40} />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No notifications yet</h3>
-            <p className="text-slate-500 max-w-xs mx-auto">When you receive alerts, updates, or messages, they will appear here.</p>
+            <h3>No notifications yet</h3>
+            <p>Your timeline is clear. Important updates and alerts will appear here.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="notif-full-list">
             {notifications.map((notif) => (
               <div
                 key={notif.id}
                 onClick={() => !notif.isRead && markAsRead(notif.id)}
-                className={`group relative bg-white p-6 rounded-2xl border transition-all duration-300 cursor-pointer ${
-                  notif.isRead 
-                    ? "border-slate-100 opacity-80" 
-                    : "border-slate-200 shadow-md shadow-slate-200/50 scale-[1.01] bg-gradient-to-r from-white to-slate-50/30"
-                }`}
+                className={`card notif-card-item ${notif.isRead ? "read" : "unread"}`}
               >
-                {!notif.isRead && (
-                  <div className="absolute top-6 left-2 w-1.5 h-1.5 bg-blue-600 rounded-full shadow-[0_0_8px_rgba(37,99,235,0.5)]"></div>
-                )}
-                
-                <div className="flex gap-5">
-                  <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
-                    notif.isRead ? "bg-slate-100 text-slate-400" : "bg-blue-50 text-blue-600"
-                  }`}>
-                    {notif.type === 'overdueComplaint' ? <Clock size={24} /> : <Info size={24} />}
+                <div className="notif-card-body">
+                  <div className={`notif-type-icon ${notif.isRead ? "read" : "unread"}`}>
+                    {notif.type === 'overdueComplaint' ? <Clock size={20} /> : <Info size={20} />}
                   </div>
 
-                  <div className="grow">
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className={`text-lg transition-colors ${notif.isRead ? "font-medium text-slate-700" : "font-bold text-slate-900"}`}>
-                        {notif.title || "Update"}
-                      </h4>
-                      <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">
-                        {getTimeAgo(notif.createdAt)}
-                      </span>
+                  <div className="notif-card-content">
+                    <div className="notif-card-header">
+                      <h4 className="notif-card-title">{notif.title || "Update"}</h4>
+                      <span className="notif-card-time">{getTimeAgo(notif.id)}</span>
                     </div>
-                    <p className={`text-base leading-relaxed ${notif.isRead ? "text-slate-500" : "text-slate-600"}`}>
-                      {notif.message}
-                    </p>
+                    <p className="notif-card-message">{notif.message}</p>
                   </div>
 
                   {!notif.isRead && (
-                    <div className="shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                        <Check size={20} />
-                      </div>
+                    <div className="notif-status-indicator">
+                        <Check size={16} />
                     </div>
                   )}
                 </div>
@@ -105,6 +99,102 @@ const Notifications = () => {
           </div>
         )}
       </div>
+
+      <style>{`
+        .notif-full-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .notif-card-item {
+            padding: 20px !important;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .notif-card-item.unread {
+            border-left: 4px solid #2563eb;
+            background: linear-gradient(to right, #ffffff, #f8fafc);
+            transform: scale(1.01);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        .notif-card-item.read {
+            opacity: 0.75;
+            background: #ffffff;
+        }
+        .notif-card-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .notif-card-body {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .notif-type-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .notif-type-icon.unread {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        .notif-type-icon.read {
+            background: #f1f5f9;
+            color: #94a3b8;
+        }
+        .notif-card-content {
+            flex: 1;
+        }
+        .notif-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .notif-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        .notif-card-time {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .notif-card-message {
+            font-size: 0.93rem;
+            line-height: 1.5;
+            color: #475569;
+            margin: 0;
+        }
+        .notif-status-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0fdf4;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.2s;
+        }
+        .notif-card-item:hover .notif-status-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+      `}</style>
     </div>
   );
 };
