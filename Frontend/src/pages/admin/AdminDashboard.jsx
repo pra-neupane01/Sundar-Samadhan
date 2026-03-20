@@ -110,23 +110,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      <nav className="dashboard-navbar">
-        <div className="navbar-brand">
-          <div className="logo-text-icon">
-            <span className="logo-letter">S</span><span className="logo-letter">S</span>
-          </div>
-          <span className="brand-text">Sundar Samadhan Admin</span>
-        </div>
-        <div className="navbar-user-section">
-          <NotificationBell />
-          <div className="user-welcome">
-            <span className="user-welcome-label">Administrator</span>
-            <span className="user-welcome-email">{user?.email}</span>
-          </div>
-          <button className="logout-btn" onClick={logout}>Logout</button>
-        </div>
-      </nav>
-
       <div className="dashboard-content">
         <div className="dashboard-header mb-8">
           <h2 className="dashboard-heading">System Overview</h2>

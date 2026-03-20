@@ -172,19 +172,6 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <nav className="dashboard-navbar" style={{ padding: "0 2rem", minHeight: "72px" }}>
-        <div className="navbar-brand">
-          <div className="logo-text-icon">
-            <span className="logo-letter">S</span><span className="logo-letter">S</span>
-          </div>
-          <span className="brand-text">Sundar Samadhan</span>
-        </div>
-        <div className="navbar-user-section">
-          <Link to={getBackLink()} className="back-link"><ArrowLeft size={18} /> Back</Link>
-          <button className="logout-btn" onClick={logout}>Logout</button>
-        </div>
-      </nav>
-
       <div className="profile-content">
         <div className="profile-grid">
           <div className="profile-card">

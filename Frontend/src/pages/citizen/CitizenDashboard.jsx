@@ -273,39 +273,7 @@ const CitizenDashboard = () => {
   return (
     <div className="citizen-dashboard">
       {/* Navbar */}
-      <nav className="dashboard-navbar">
-        <div className="navbar-brand">
-          <div className="logo-text-icon">
-            <span className="logo-letter">S</span>
-            <span className="logo-letter">S</span>
-          </div>
-          <span className="brand-text">Sundar Samadhan</span>
-        </div>
-
-        <div className="navbar-user-section">
-          <NotificationBell />
-          <button 
-            className="profile-nav-btn" 
-            onClick={() => navigate("/profile")}
-            title="My Profile"
-            style={{ 
-                marginRight: '12px',
-                padding: '8px',
-                borderRadius: '50%',
-                border: '1px solid #e2e8f0',
-                background: 'white',
-                color: '#64748b',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
-            }}
-          >
-            <UserIcon size={20} />
-          </button>
-          <button className="logout-btn" onClick={logout}>Logout</button>
-        </div>
-      </nav>
+      {/* Page Content */}
 
       {/* Page Content */}
       <div className="dashboard-content">

@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthContext } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
+import Navbar from "./components/Navbar";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -53,6 +54,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
+      <Navbar />
       <Routes>
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
