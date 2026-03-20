@@ -23,16 +23,22 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  if (!user) return null; // Don't show for guest (login/register)
+  if (!user) return null;
 
   const getDashboardLink = () => {
+    if (!user) return "/about";
     if (user.role === "admin") return "/admin";
     if (user.role === "municipal") return "/municipal";
     return "/dashboard";
   };
 
   const navLinks = [
+    { 
+      label: "About Us", 
+      path: "/about", 
+      icon: <Users size={18} />,
+      roles: ["citizen", "municipal", "admin", "guest"]
+    },
     { 
       label: "Dashboard", 
       path: getDashboardLink(), 
@@ -92,7 +98,8 @@ const Navbar = () => {
     },
   ];
 
-  const filteredLinks = navLinks.filter(link => link.roles.includes(user.role));
+  const userRole = user?.role || "guest";
+  const filteredLinks = navLinks.filter(link => link.roles.includes(userRole));
 
   const handleLogout = () => {
     logout();
@@ -105,7 +112,7 @@ const Navbar = () => {
     <nav className="main-navbar">
       <div className="navbar-container">
         {/* Branding */}
-        <Link to={getDashboardLink()} className="navbar-logo">
+        <Link to={user ? getDashboardLink() : "/about"} className="navbar-logo">
           <div className="logo-icon">SS</div>
           <span className="logo-text">Sundar Samadhan</span>
         </Link>
@@ -126,13 +133,22 @@ const Navbar = () => {
 
         {/* Actions Section */}
         <div className="navbar-actions">
-          <NotificationBell />
-          <Link to="/profile" className={`nav-icon-link profile-link ${isActive("/profile") ? "active" : ""}`} title="My Profile">
-            <User size={22} />
-          </Link>
-          <button onClick={handleLogout} className="nav-icon-link logout-btn-nav" title="Logout">
-            <LogOut size={22} />
-          </button>
+          {user ? (
+            <>
+              <NotificationBell />
+              <Link to="/profile" className={`nav-icon-link profile-link ${isActive("/profile") ? "active" : ""}`} title="My Profile">
+                <User size={22} />
+              </Link>
+              <button onClick={handleLogout} className="nav-icon-link logout-btn-nav" title="Logout">
+                <LogOut size={22} />
+              </button>
+            </>
+          ) : (
+            <div className="auth-nav-buttons">
+              <Link to="/login" className="btn btn-ghost">Login</Link>
+              <Link to="/register" className="btn btn-primary">Join us</Link>
+            </div>
+          )}
           
           {/* Mobile Menu Toggle */}
           <button 

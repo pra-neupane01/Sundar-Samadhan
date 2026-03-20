@@ -183,7 +183,7 @@ const ManageAnnouncements = () => {
                               </span>
                             </div>
                           </div>
-                          {canManage && (user?.role === "admin" || ann.created_by === user?.id) && (
+                          {canManage && (user?.role === "admin" || ann.created_by == user?.id || (user?.role === "municipal" && ann.ward_number == user?.ward_number)) && (
                             <div className="ma-ann-actions">
                               <button className="btn btn-ghost btn-sm" onClick={() => startEdit(ann)} title="Edit"><Pencil size={15} /></button>
                               <button className="btn btn-ghost btn-sm" onClick={() => handleDelete(ann.announcement_id)} title="Delete"

@@ -98,32 +98,62 @@ const getAnnouncementByWardController = async (req, res) => {
   }
 };
 
-//DELETE ANNOUNCEMENT || ADMIN & MUNICIPALITY
+// DELETE ANNOUNCEMENT || OWNER OR ADMIN
 const deleteAnnouncementController = async (req, res) => {
   try {
     const announcementId = req.params.id;
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    const userWard = req.user.ward_number;
 
-    const result = await pool.query(
-      "DELETE FROM announcements WHERE announcement_id = $1 RETURNING *",
-      [announcementId],
-    );
+    const check = await pool.query("SELECT created_by, ward_number FROM announcements WHERE announcement_id = $1", [announcementId]);
+    if (check.rows.length === 0) return res.status(404).json({ success: false, message: "Announcement not found" });
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Announcement not found",
-      });
+    const ann = check.rows[0];
+    const isOwner = String(ann.created_by) == String(userId);
+    const isWardOfficer = userRole === 'municipal' && String(ann.ward_number) == String(userWard);
+
+    if (userRole !== 'admin' && !isOwner && !isWardOfficer) {
+      return res.status(403).json({ success: false, message: "Unauthorized to delete this announcement" });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Announcement deleted successfully",
-    });
+    await pool.query("DELETE FROM announcements WHERE announcement_id = $1", [announcementId]);
+    res.status(200).json({ success: true, message: "Announcement deleted successfully" });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete announcement",
-    });
+    res.status(500).json({ success: false, message: "Failed to delete announcement" });
+  }
+};
+
+// UPDATE ANNOUNCEMENT
+const updateAnnouncementController = async (req, res) => {
+  try {
+    const announcementId = req.params.id;
+    const { title, content } = req.body;
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    const userWard = req.user.ward_number;
+
+    if (!title || !content) return res.status(400).json({ success: false, message: "Title and content are required." });
+
+    const check = await pool.query("SELECT created_by, ward_number FROM announcements WHERE announcement_id = $1", [announcementId]);
+    if (check.rows.length === 0) return res.status(404).json({ success: false, message: "Announcement not found" });
+
+    const ann = check.rows[0];
+    const isOwner = String(ann.created_by) == String(userId);
+    const isWardOfficer = userRole === 'municipal' && String(ann.ward_number) == String(userWard);
+
+    if (userRole !== 'admin' && !isOwner && !isWardOfficer) {
+      return res.status(403).json({ success: false, message: "Unauthorized to update this announcement" });
+    }
+
+    const result = await pool.query(
+      "UPDATE announcements SET title = $1, content = $2 WHERE announcement_id = $3 RETURNING *",
+      [title, content, announcementId]
+    );
+
+    res.status(200).json({ success: true, message: "Announcement updated successfully", announcement: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Failed to update announcement" });
   }
 };
 
@@ -132,4 +162,5 @@ module.exports = {
   getAnnouncementController,
   getAnnouncementByWardController,
   deleteAnnouncementController,
+  updateAnnouncementController,
 };

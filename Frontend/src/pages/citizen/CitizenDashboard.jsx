@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Doughnut, Bar } from "react-chartjs-2";
 import "./CitizenDashboard.css";
+import AboutContent from "../../components/AboutContent";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
@@ -28,6 +29,7 @@ const CitizenDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) return;
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -139,7 +141,8 @@ const CitizenDashboard = () => {
   };
 
   return (
-    <div className="page-shell">
+    <>
+      <div className="page-shell">
       <div className="content-container">
 
         {/* Welcome Header */}
@@ -327,9 +330,18 @@ const CitizenDashboard = () => {
           </div>
         </div>
 
-      </div>
+        {/* --- ADDED ABOUT US SECTIONS --- */}
+        <div style={{ marginTop: "60px", paddingTop: "40px", borderTop: "1px solid var(--gray-200)" }}>
+          <AboutContent />
+        </div>
 
-      <style>{`
+        <footer style={{ marginTop: "40px", textAlign: "center", paddingBottom: "40px", color: "#94a3b8", fontSize: "0.85rem" }}>
+           &copy; 2026 Sundar Samadhan Municipality Initiative
+        </footer>
+      </div>
+    </div>
+
+    <style>{`
         .section-head-v2 { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
         .section-head-v2 h3 { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin: 0; }
         .flex-center { display: flex; align-items: center; }
@@ -373,7 +385,7 @@ const CitizenDashboard = () => {
         .empty-state-mini { padding: 40px 20px; text-align: center; color: #cbd5e1; display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .empty-state-mini p { font-size: 0.87rem; color: #94a3b8; margin: 0; }
       `}</style>
-    </div>
+    </>
   );
 };
 

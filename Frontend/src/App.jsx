@@ -28,6 +28,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import MunicipalRequests from "./pages/admin/MunicipalRequests";
 import ManageUsers from "./pages/admin/ManageUsers";
 import AdminDonations from "./pages/admin/AdminDonations";
+import About from "./pages/public/About";
 
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
@@ -213,6 +214,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/about" element={<About />} />
 
         {/* Default */}
         <Route path="*" element={<Navigate to="/login" replace />} />

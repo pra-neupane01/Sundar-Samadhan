@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Doughnut, Bar } from "react-chartjs-2";
 import "./MunicipalDashboard.css";
+import AboutContent from "../../components/AboutContent";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
 
@@ -186,6 +187,15 @@ const MunicipalDashboard = () => {
             <button className="btn btn-primary btn-sm">Manage →</button>
           </div>
         </div>
+
+
+        <div style={{ marginTop: "60px", paddingTop: "40px", borderTop: "1px solid var(--gray-200)" }}>
+          <AboutContent />
+        </div>
+
+        <footer style={{ marginTop: "40px", textAlign: "center", paddingBottom: "40px", color: "#94a3b8", fontSize: "0.85rem" }}>
+           &copy; 2026 Sundar Samadhan Municipality Initiative
+        </footer>
 
       </div>
     </div>

@@ -27,7 +27,7 @@ const WardComplaints = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [selectedWard, setSelectedWard] = useState("all");
+  const [selectedWard, setSelectedWard] = useState(user?.role === "municipal" ? user.ward_number : "all");
   const [updatingId, setUpdatingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [viewComplaint, setViewComplaint] = useState(null);
@@ -103,17 +103,22 @@ const WardComplaints = () => {
     }
   };
 
-  const getStatusStyle = (status) => {
-    switch (status.toLowerCase()) {
-      case "pending": return "status-pending";
-      case "processing": return "status-processing";
-      case "resolved": return "status-resolved";
-      default: return "status-default";
-    }
+  const getStatusBadge = (status) => {
+    const map = {
+      pending:    "badge badge-pending",
+      processing: "badge badge-processing",
+      resolved:   "badge badge-resolved",
+    };
+    return map[status?.toLowerCase()] || "badge badge-default";
+  };
+
+  const getStatusDot = (status) => {
+    const dots = { pending: "#f59e0b", processing: "#3b82f6", resolved: "#10b981" };
+    return dots[status?.toLowerCase()] || "#94a3b8";
   };
 
   const getStatusIcon = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "pending": return <Clock size={14} />;
       case "processing": return <AlertCircle size={14} />;
       case "resolved": return <CheckCircle2 size={14} />;
@@ -245,7 +250,7 @@ const WardComplaints = () => {
                         </td>
                         <td>
                           <span className={getStatusBadge(complaint.status)}>
-                            <span className="badge-dot"></span>
+                            {getStatusIcon(complaint.status)}
                             {complaint.status}
                           </span>
                         </td>
@@ -294,7 +299,7 @@ const WardComplaints = () => {
             <div className="modal-header">
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                  <span className={getStatusBadge(viewComplaint.status)}>
-                    {viewComplaint.status}
+                    {getStatusIcon(viewComplaint.status)} {viewComplaint.status}
                  </span>
                  <h3>{viewComplaint.title}</h3>
               </div>
