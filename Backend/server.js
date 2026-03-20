@@ -9,6 +9,7 @@ const { userSchema } = require("./models/userSchema");
 const { complaintSchema } = require("./models/complaintsModel");
 const { announcementSchema } = require("./models/announcementModel");
 const { donationSchema } = require("./models/donationModel");
+const { notificationSchema } = require("./models/notificationModel");
 const { checkOverdueComplaints } = require("./controllers/complaintController");
 
 const app = express();
@@ -29,6 +30,7 @@ app.use("/api/v1/announcements", require("./routes/announcementRoute"));
 app.use("/api/v1/donations", require("./routes/donationRoute"));
 app.use("/api/v1/user", require("./routes/userRoute"));
 app.use("/api/v1/admin", require("./routes/adminRoute"));
+app.use("/api/v1/notifications", require("./routes/notificationRoute"));
 
 app.get("/", (req, res) => {
   res.status(200).send("Server is running");
@@ -84,6 +86,7 @@ const initializeDatabase = async () => {
     await complaintSchema();
     await announcementSchema();
     await donationSchema();
+    await notificationSchema();
 
     server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

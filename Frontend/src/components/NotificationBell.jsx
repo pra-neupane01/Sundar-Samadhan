@@ -1,6 +1,7 @@
 import { useContext, useState, useRef, useEffect } from "react";
 import { SocketContext } from "../context/SocketContext";
-import { Bell, Check, Trash2 } from "lucide-react";
+import { Bell, Check, Trash2, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const NotificationBell = () => {
   const { notifications, markAsRead, clearAllNotifications } = useContext(SocketContext);
@@ -87,6 +88,15 @@ const NotificationBell = () => {
               </ul>
             )}
           </div>
+
+          <Link
+            to="/notifications"
+            onClick={() => setIsOpen(false)}
+            className="p-3 text-center block text-sm font-bold text-slate-900 bg-slate-50 hover:bg-slate-100 transition-colors border-t border-slate-100 flex items-center justify-center gap-2"
+            style={{ textDecoration: 'none' }}
+          >
+            View All <ExternalLink size={14} />
+          </Link>
         </div>
       )}
     </div>

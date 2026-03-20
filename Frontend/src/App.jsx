@@ -20,6 +20,7 @@ import WardComplaints from "./pages/municipal/WardComplaints";
 import ManageAnnouncements from "./pages/municipal/ManageAnnouncements";
 
 import Profile from "./pages/user/Profile";
+import Notifications from "./pages/user/Notifications";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -189,6 +190,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <Notifications />
             </ProtectedRoute>
           }
         />

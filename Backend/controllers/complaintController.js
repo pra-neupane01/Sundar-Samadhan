@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { createNotification } = require("./notificationController");
 
 // CREATE COMPLAINT || CITIZEN
 const createComplaintController = async (req, res) => {
@@ -51,6 +52,20 @@ const createComplaintController = async (req, res) => {
       title,
       ward_number,
     });
+
+    // 🔹 Save notification for all municipal officers of this ward
+    const municipalUsers = await pool.query(
+      "SELECT id FROM users WHERE role = 'municipal' AND (ward_number = $1 OR role = 'admin')",
+      [ward_number]
+    );
+    for (const user of municipalUsers.rows) {
+      await createNotification({
+        userId: user.id,
+        title: "New Ward Complaint",
+        message: `New complaint in Ward ${ward_number}: ${title}`,
+        type: "newWardComplaint"
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -187,6 +202,14 @@ const updateComplaintStatusController = async (req, res) => {
       message: "Your complaint status has been updated",
     });
 
+    // 🔹 Save notification to DB for the citizen
+    await createNotification({
+      userId: updatedComplaint.created_by,
+      title: "Complaint Status Updated",
+      message: `Your complaint "${updatedComplaint.title}" status has been updated to ${updatedComplaint.status}.`,
+      type: "statusUpdated"
+    });
+
     res.status(200).json({
       success: true,
       message: "Complaint status updated successfully",
@@ -241,12 +264,26 @@ const checkOverdueComplaints = async (io) => {
 
     console.log("Overdue found:", result.rows);
 
-    result.rows.forEach((complaint) => {
+    result.rows.forEach(async (complaint) => {
       io.to(`ward_${complaint.ward_number}`).emit("overdueComplaint", {
         complaintId: complaint.complaint_id,
         ward_number: complaint.ward_number,
         message: "Complaint pending for more than 3 days",
       });
+
+      // 🔹 Save to DB for municipal officers
+      const municipalUsers = await pool.query(
+        "SELECT id FROM users WHERE role = 'municipal' AND (ward_number = $1 OR role = 'admin')",
+        [complaint.ward_number]
+      );
+      for (const user of municipalUsers.rows) {
+        await createNotification({
+          userId: user.id,
+          title: "Overdue Complaint",
+          message: `Complaint #${complaint.complaint_id} in Ward ${complaint.ward_number} is overdue.`,
+          type: "overdueComplaint"
+        });
+      }
     });
   } catch (error) {
     console.error("Overdue check error:", error);

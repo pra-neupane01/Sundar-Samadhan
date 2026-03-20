@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { createNotification } = require("./notificationController");
 const stripe = require("../config/stripe");
 
 /* ===============================
@@ -126,6 +127,17 @@ const verifyPaymentController = async (req, res) => {
       });
 
       console.log("🔥 highDonation emitted to admin_room");
+
+      // 🔹 Save notification to DB for all admins
+      const adminUsers = await pool.query("SELECT id FROM users WHERE role = 'admin'");
+      for (const admin of adminUsers.rows) {
+        await createNotification({
+          userId: admin.id,
+          title: "High Donation Received",
+          message: `A user donated $${donation.amount}!`,
+          type: "highDonation",
+        });
+      }
     }
 
     res.status(200).json({

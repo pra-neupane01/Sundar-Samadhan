@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
+import { getNotifications, markNotificationAsRead } from "../services/notificationService";
 
 export const SocketContext = createContext();
 
@@ -19,6 +20,28 @@ export const SocketProvider = ({ children }) => {
       }
       return;
     }
+
+    // --- FETCH INITIAL NOTIFICATIONS FROM DB ---
+    const fetchNotifications = async () => {
+      try {
+        const res = await getNotifications();
+        if (res.success) {
+          // Flatten/normalize the data from DB to match internal structure
+          const dbNotifs = res.data.map(n => ({
+            id: n.id,
+            title: n.title,
+            message: n.message,
+            type: n.type,
+            isRead: n.is_read,
+            createdAt: n.created_at
+          }));
+          setNotifications(dbNotifs);
+        }
+      } catch (error) {
+        console.error("Failed to fetch notifications from DB:", error);
+      }
+    };
+    fetchNotifications();
 
     // Connect to the backend
     const newSocket = io("http://localhost:4849");
@@ -88,10 +111,20 @@ export const SocketProvider = ({ children }) => {
     };
   }, [user]);
 
-  const markAsRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif))
-    );
+  const markAsRead = async (id) => {
+    try {
+      // 🔹 Persist in DB
+      const res = await markNotificationAsRead(id);
+      if (res.success) {
+        setNotifications((prev) =>
+          prev.map((notif) => (notif.id === id ? { ...notif, isRead: true } : notif))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to mark as read in DB:", error);
+      // Still update UI for better UX even if DB fails temporarily?
+      // For now, only if DB succeeds to keep them synced.
+    }
   };
 
   const clearAllNotifications = () => {
@@ -99,7 +132,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   return (
-    <SocketContext.Provider value={{ socket, notifications, markAsRead, clearAllNotifications }}>
+    <SocketContext.Provider value={{ socket, notifications, setNotifications, markAsRead, clearAllNotifications }}>
       {children}
     </SocketContext.Provider>
   );
