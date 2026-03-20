@@ -4,6 +4,7 @@ const {
   loginController,
   forgotPasswordController,
   resetPasswordController,
+  checkResetTokenController,
 } = require("../controllers/authController");
 
 const router = express.Router();
@@ -16,6 +17,9 @@ router.post("/login", loginController);
 
 // forgot-password : POST
 router.post("/forgot-password", forgotPasswordController);
+
+// check-reset-token : GET
+router.get("/check-reset-token/:token", checkResetTokenController);
 
 // reset-password : POST
 router.post("/reset-password", resetPasswordController);

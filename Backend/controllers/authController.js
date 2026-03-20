@@ -123,12 +123,20 @@ const loginController = async (req, res) => {
 const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
-    const userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    
+    // 🔹 Security: Don't reveal if user exists (prevents email enumeration)
+    const userResult = await pool.query("SELECT id, full_name FROM users WHERE email = $1", [email]);
+    
+    // Even if user not found, we send a success response to the client
     if (userResult.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(200).json({ 
+        success: true, 
+        message: "If an account exists with that email, a reset link has been sent." 
+      });
     }
 
-    const resetToken = crypto.randomBytes(20).toString("hex");
+    const user = userResult.rows[0];
+    const resetToken = crypto.randomBytes(32).toString("hex");
     const expiry = new Date(Date.now() + 3600000); // 1 hour
 
     await pool.query(
@@ -136,27 +144,57 @@ const forgotPasswordController = async (req, res) => {
       [resetToken, expiry, email]
     );
 
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
     
     await sendEmail({
       to: email,
-      subject: "Password Reset Request - Sundar Samadhan",
+      subject: "Reset Your Password - Sundar Samadhan",
       html: `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; border: 1px solid #eef2f6; border-radius: 16px; background: white;">
-          <h1 style="color: #3b82f6; margin-bottom: 24px; font-size: 24px;">Sundar Samadhan</h1>
-          <p style="color: #334155; font-size: 16px; line-height: 1.6;">You requested a password reset for your account. Please click the button below to set a new password:</p>
-          <div style="text-align: center; margin: 32px 0;">
-            <a href="${resetUrl}" style="display: inline-block; padding: 14px 28px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px;">Reset My Password</a>
+        <div style="font-family: 'Inter', system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #ffffff; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+          <div style="margin-bottom: 32px; text-align: center;">
+             <div style="display: inline-block; padding: 12px; background: #0f172a; border-radius: 12px; color: white; font-weight: 800; font-size: 24px; width: 40px; height: 40px; line-height: 40px;">S</div>
           </div>
-          <p style="color: #64748b; font-size: 14px; border-top: 1px solid #f1f5f9; pt: 20px;">This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.</p>
+          <h1 style="color: #0f172a; font-size: 24px; font-weight: 700; margin: 0 0 16px; text-align: center;">Reset your password</h1>
+          <p style="color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 32px; text-align: center;">
+            Hi ${user.full_name}, we received a request to reset your password. Click the button below to choose a new one.
+          </p>
+          <div style="text-align: center; margin-bottom: 32px;">
+            <a href="${resetUrl}" style="display: inline-block; padding: 14px 32px; background-color: #0f172a; color: #ffffff; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; transition: all 0.2s;">Reset Password</a>
+          </div>
+          <p style="color: #94a3b8; font-size: 14px; line-height: 1.5; margin: 0; text-align: center; border-top: 1px solid #f1f5f9; padding-top: 24px;">
+            This link will expire in 1 hour. If you didn't request this, you can safely ignore this email.
+          </p>
         </div>
       `,
     });
 
-    res.status(200).json({ success: true, message: "Password reset link sent to your email" });
+    res.status(200).json({ 
+      success: true, 
+      message: "If an account exists with that email, a reset link has been sent." 
+    });
   } catch (error) {
     console.error("FORGOT PASSWORD ERROR:", error);
-    res.status(500).json({ success: false, message: "Error in forgot password request" });
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// CHECK RESET TOKEN (Verify if token is valid without resetting)
+const checkResetTokenController = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE reset_token = $1 AND reset_token_expiry > NOW()",
+      [token]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ success: false, message: "Invalid or expired reset token" });
+    }
+
+    res.status(200).json({ success: true, message: "Token is valid" });
+  } catch (error) {
+    console.error("CHECK RESET TOKEN ERROR:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -193,5 +231,6 @@ module.exports = {
   registerController, 
   loginController, 
   forgotPasswordController, 
-  resetPasswordController 
+  resetPasswordController,
+  checkResetTokenController
 };

@@ -86,7 +86,7 @@ const Login = () => {
           >
             Password
           </label>
-          <Link to="/forgot-password" style={{ fontSize: '12px', color: '#64748b', textDecoration: 'underline' }}>
+          <Link to="/forgot-password" title="Recover Password" style={{ fontSize: '12px', color: '#475569', textDecoration: 'none', fontWeight: '500' }} className="hover:text-slate-900 hover:underline">
             Forgot password?
           </Link>
         </div>
