@@ -15,7 +15,8 @@ import {
   FileCheck,
   Megaphone,
   LayoutDashboard,
-  Star
+  Star,
+  MessageSquare
 } from "lucide-react";
 import "./Navbar.css";
 
@@ -38,7 +39,13 @@ const Navbar = () => {
       label: "About Us", 
       path: "/about", 
       icon: <Users size={18} />,
-      roles: ["citizen", "municipal", "admin", "guest"]
+      roles: ["citizen", "municipal", "guest"]
+    },
+    { 
+      label: "Contact", 
+      path: "/contact", 
+      icon: <MessageSquare size={18} />,
+      roles: ["citizen", "municipal", "guest"]
     },
     { 
         label: "Impact", 

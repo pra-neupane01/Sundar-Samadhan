@@ -201,7 +201,7 @@ const Landing = () => {
             <div className="footer-col">
               <h5>Support</h5>
               <a href="#">Help Center</a>
-              <a href="#">Contact Support</a>
+              <a href="/contact">Contact Support</a>
               <a href="#">Privacy Policy</a>
             </div>
           </div>

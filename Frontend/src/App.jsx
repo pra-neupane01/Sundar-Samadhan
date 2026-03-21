@@ -29,6 +29,7 @@ import MunicipalRequests from "./pages/admin/MunicipalRequests";
 import ManageUsers from "./pages/admin/ManageUsers";
 import AdminDonations from "./pages/admin/AdminDonations";
 import About from "./pages/public/About";
+import Contact from "./pages/public/Contact";
 import Landing from "./pages/public/Landing";
 
 const RolePage = ({ title }) => {
@@ -217,6 +218,7 @@ const App = () => {
         />
 
         <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/" element={<Landing />} />
 
         {/* Default */}
