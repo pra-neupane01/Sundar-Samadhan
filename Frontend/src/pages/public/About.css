@@ -34,7 +34,7 @@
 .text-white { color: white !important; }
 .opacity-80 { opacity: 0.8 !important; }
 .text-gradient {
-  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(90deg, #10b981, #059669);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -51,8 +51,8 @@
 
 .hero-badge {
   display: inline-block;
-  background: #eff6ff;
-  color: #2563eb;
+  background: #f0fdf4;
+  color: #10b981;
   padding: 8px 16px;
   border-radius: 999px;
   font-size: 0.875rem;
@@ -120,8 +120,8 @@
   margin-bottom: 24px;
 }
 
-.card-icon.blue { background: #eff6ff; color: #3b82f6; }
-.card-icon.purple { background: #faf5ff; color: #a855f7; }
+.card-icon.blue { background: #f0fdf4; color: #10b981; }
+.card-icon.purple { background: #ecfdf5; color: #059669; }
 
 .mission-vision h3 {
   font-size: 1.5rem;
@@ -169,11 +169,11 @@
 }
 
 .feature-icon {
-  color: #3b82f6;
+  color: #10b981;
   margin-bottom: 24px;
   display: inline-block;
   padding: 12px;
-  background: #eff6ff;
+  background: #f0fdf4;
   border-radius: 12px;
 }
 
@@ -208,7 +208,7 @@
 .benefit-dot {
   min-width: 12px;
   height: 12px;
-  background: #3b82f6;
+  background: #10b981;
   border-radius: 50%;
   margin-top: 8px;
 }
@@ -246,7 +246,7 @@
 }
 
 .trust-banner {
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #064e3b 0%, #16a34a 100%);
   border-radius: 32px;
   padding: 64px;
   display: flex;
@@ -264,7 +264,7 @@
 }
 
 .stat-box { text-align: center; }
-.stat-num { font-size: 2.5rem; font-weight: 800; color: #3b82f6; }
+.stat-num { font-size: 2.5rem; font-weight: 800; color: #6ee7b7; }
 .stat-lab { color: white; opacity: 0.7; font-size: 0.875rem; text-transform: uppercase; }
 
 @media (max-width: 992px) {

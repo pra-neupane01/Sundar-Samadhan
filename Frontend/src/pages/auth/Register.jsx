@@ -39,7 +39,9 @@ const Register = () => {
         {/* Left panel */}
         <div className="auth-panel">
           <div className="auth-panel-content">
-            <div className="auth-logo"><span>SS</span></div>
+            <div className="auth-logo-container">
+              <img src="/logo.png" alt="Sundar Samadhan Logo" className="auth-logo-image" />
+            </div>
             <h1 className="auth-panel-title">Join Sundar Samadhan</h1>
             <p className="auth-panel-subtitle">
               Become part of a transparent civic platform. Report issues, track progress, and help improve your community.

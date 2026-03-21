@@ -108,8 +108,8 @@ const CitizenDashboard = () => {
     datasets: [{
       label: "Issues",
       data: Object.values(catCounts).length > 0 ? Object.values(catCounts) : [0],
-      backgroundColor: "rgba(37, 99, 235, 0.8)",
-      hoverBackgroundColor: "#2563eb",
+      backgroundColor: "rgba(16, 185, 129, 0.8)",
+      hoverBackgroundColor: "#10b981",
       borderRadius: 6, barPercentage: 0.55,
     }],
   };
@@ -198,7 +198,7 @@ const CitizenDashboard = () => {
           <div className="cd-charts-col">
             <div className="chart-card-v2">
               <div className="section-head-v2">
-                <Activity size={18} className="text-blue-600" />
+                <Activity size={18} className="text-green-600" />
                 <h3>Complaint Analytics</h3>
               </div>
               <div className="charts-split">
@@ -291,10 +291,10 @@ const CitizenDashboard = () => {
                 </button>
             </div>
 
-            <div className="card mt-6 bg-gradient-to-br from-blue-600 to-blue-700 text-white border-none shadow-blue">
+            <div className="card mt-6 bg-gradient-to-br from-green-600 to-green-700 text-white border-none shadow-green">
                 <h4 className="text-white font-bold mb-2">Build a Sundar City</h4>
-                <p className="text-blue-100 text-sm mb-4">Your contributions directly fund localized infrastructure and health initiatives.</p>
-                <button className="btn btn-sm w-full bg-white text-blue-600 hover:bg-blue-50" onClick={() => navigate("/citizen/donate")}>
+                <p className="text-green-100 text-sm mb-4">Your contributions directly fund localized infrastructure and health initiatives.</p>
+                <button className="btn btn-sm w-full bg-white text-green-600 hover:bg-green-50" onClick={() => navigate("/citizen/donate")}>
                     Contribute Now
                 </button>
             </div>

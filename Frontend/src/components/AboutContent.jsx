@@ -30,7 +30,7 @@ const AboutContent = () => {
 
         <div className="about-card-mini" style={{ padding: "32px", background: "white", borderRadius: "20px", border: "1px solid #f1f5f9", boxShadow: "0 10px 25px -5px rgba(0,0,0,0.05)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "16px" }}>
-            <div style={{ padding: "12px", background: "#eff6ff", borderRadius: "12px", color: "#3b82f6" }}><Eye size={28} /></div>
+            <div style={{ padding: "12px", background: "#f0fdf4", borderRadius: "12px", color: "#22c55e" }}><Eye size={28} /></div>
             <h3 className="text-xl font-bold" style={{ margin: 0 }}>The Vision</h3>
           </div>
           <p className="text-gray-600 leading-relaxed">
@@ -41,7 +41,7 @@ const AboutContent = () => {
       </div>
 
       <div className="trust-banner-about" style={{ 
-        background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)", 
+        background: "linear-gradient(135deg, #064e3b 0%, #16a34a 100%)", 
         borderRadius: "24px", 
         padding: "48px", 
         color: "white",
@@ -58,11 +58,11 @@ const AboutContent = () => {
         </div>
         <div style={{ display: "flex", gap: "48px" }}>
           <div className="text-center">
-            <div className="text-4xl font-extrabold text-blue-400" style={{ fontSize: "2.5rem" }}>100%</div>
+            <div className="text-4xl font-extrabold text-green-400" style={{ fontSize: "2.5rem", color: "#4ade80" }}>100%</div>
             <div className="text-xs uppercase tracking-widest opacity-60 font-bold mt-1">Transparency</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-extrabold text-indigo-400" style={{ fontSize: "2.5rem" }}>Secure</div>
+            <div className="text-4xl font-extrabold text-emerald-400" style={{ fontSize: "2.5rem", color: "#34d399" }}>Secure</div>
             <div className="text-xs uppercase tracking-widest opacity-60 font-bold mt-1">Data Access</div>
           </div>
         </div>

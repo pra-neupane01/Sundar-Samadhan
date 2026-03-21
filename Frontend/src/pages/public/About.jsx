@@ -11,10 +11,12 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from "../../context/AuthContext";
 import './About.css';
 
 const About = () => {
   const navigate = useNavigate();
+  const { user } = React.useContext(AuthContext);
 
   return (
     <div className="about-page">
@@ -22,7 +24,7 @@ const About = () => {
       <section className="about-hero">
         <div className="content-container">
           <div className="hero-badge">About Sundar Samadhan</div>
-          <h1 className="hero-title">Empowering Citizens, <br /><span className="text-gradient">Transforming Governance</span></h1>
+          <h1 className="hero-title">Empowering Citizens, <br /><span className="text-gradient">Responsive Governance</span></h1>
           <p className="hero-description">
             Sundar Samadhan is our municipality's digital leap toward a more transparent, 
             accountable, and responsive community management system.
@@ -147,21 +149,23 @@ const About = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="about-cta">
-        <div className="content-container text-center">
-          <h2>Ready to build a better community?</h2>
-          <p>Join thousands of citizens making a difference today.</p>
-          <div className="cta-buttons">
-            <button className="btn btn-primary btn-lg" onClick={() => navigate('/register')}>
-              Get Started <ArrowRight size={18} />
-            </button>
-            <button className="btn btn-secondary btn-lg" onClick={() => navigate('/login')}>
-              Citizen Login
-            </button>
+      {/* CTA Section - Only visible if guest */}
+      {!user && (
+        <section className="about-cta">
+          <div className="content-container text-center">
+            <h2>Ready to build a better community?</h2>
+            <p>Join thousands of citizens making a difference today.</p>
+            <div className="cta-buttons">
+              <button className="btn btn-primary btn-lg" onClick={() => navigate('/register')}>
+                Get Started <ArrowRight size={18} />
+              </button>
+              <button className="btn btn-secondary btn-lg" onClick={() => navigate('/login')}>
+                Citizen Login
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <footer className="about-footer">
         <p>&copy; 2026 Sundar Samadhan. A Municipality Initiative.</p>

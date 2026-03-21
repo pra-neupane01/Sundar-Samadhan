@@ -64,7 +64,7 @@ const AdminDashboard = () => {
         {/* Welcome */}
         <div className="cd-welcome-header">
           <div>
-            <p className="cd-greeting" style={{ color: "#7c3aed" }}>
+            <p className="cd-greeting" style={{ color: "#10b981" }}>
               {(() => { const h=new Date().getHours(); const n=user?.full_name||""; const p=n.trim().split(" "); const d=p.length>1?`Mr. ${p[p.length-1]}`:n; return h<12?`Good morning, ${d}`:h<17?`Good afternoon, ${d}`:`Good evening, ${d}`; })()} 🏛️
             </p>
             <h1 className="page-title">Control Panel</h1>
@@ -83,7 +83,7 @@ const AdminDashboard = () => {
             <div>
               <div className="stat-label">Active Users</div>
               <div className="stat-value">{loading ? "—" : stats.activeUsers}</div>
-              <div className="stat-trend" style={{ color: "#2563eb" }}>Registered citizens</div>
+              <div className="stat-trend" style={{ color: "#059669" }}>Registered citizens</div>
             </div>
           </div>
           <div className="stat-card-v2 stat-amber">
@@ -151,7 +151,7 @@ const AdminDashboard = () => {
                 <div className="qa-desc">{m.desc}</div>
               </div>
               {m.href && (
-                <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.85rem", fontWeight: 600, color: "#2563eb" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.85rem", fontWeight: 600, color: "#059669" }}>
                   Open Module <ArrowUpRight size={15} />
                 </div>
               )}

@@ -76,7 +76,7 @@ const MunicipalDashboard = () => {
   const catValues = Object.values(categoryData);
   const categoryChartData = {
     labels: catLabels.length > 0 ? catLabels : ["No Data"],
-    datasets: [{ label: "Issues", data: catValues.length > 0 ? catValues : [0], backgroundColor: "rgba(37,99,235,0.8)", hoverBackgroundColor: "#2563eb", borderRadius: 6, barPercentage: 0.55 }],
+    datasets: [{ label: "Issues", data: catValues.length > 0 ? catValues : [0], backgroundColor: "rgba(16, 185, 129, 0.8)", hoverBackgroundColor: "#10b981", borderRadius: 6, barPercentage: 0.55 }],
   };
 
   const pieOptions = {

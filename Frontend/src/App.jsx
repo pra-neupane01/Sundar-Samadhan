@@ -29,6 +29,7 @@ import MunicipalRequests from "./pages/admin/MunicipalRequests";
 import ManageUsers from "./pages/admin/ManageUsers";
 import AdminDonations from "./pages/admin/AdminDonations";
 import About from "./pages/public/About";
+import Landing from "./pages/public/Landing";
 
 const RolePage = ({ title }) => {
   const { user, logout } = useContext(AuthContext);
@@ -216,9 +217,10 @@ const App = () => {
         />
 
         <Route path="/about" element={<About />} />
+        <Route path="/" element={<Landing />} />
 
         {/* Default */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

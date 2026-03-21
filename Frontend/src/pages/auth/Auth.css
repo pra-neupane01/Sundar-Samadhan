@@ -14,7 +14,7 @@
 /* ── Left Decorative Panel ── */
 .auth-panel {
   width: 42%;
-  background: linear-gradient(145deg, #1e40af, #2563eb 50%, #0ea5e9);
+  background: linear-gradient(145deg, #064e3b, #10b981 50%, #22c55e);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,21 +30,23 @@
   color: white;
 }
 
-.auth-logo {
-  width: 56px;
-  height: 56px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.35);
+.auth-logo-container {
+  width: 64px;
+  height: 64px;
+  background: white;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  font-weight: 900;
-  color: white;
-  letter-spacing: -0.05em;
   margin-bottom: 28px;
-  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.auth-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .auth-panel-title {
@@ -183,12 +185,12 @@
 
 .auth-forgot-link {
   font-size: 0.82rem;
-  color: #2563eb;
+  color: #10b981;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.15s;
 }
-.auth-forgot-link:hover { color: #1d4ed8; text-decoration: underline; }
+.auth-forgot-link:hover { color: #059669; text-decoration: underline; }
 
 /* ── Input Wrapper ── */
 .auth-input-wrapper {
@@ -223,8 +225,8 @@
 
 .auth-input-wrapper input:focus,
 .auth-input-wrapper select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
 
 .auth-input-wrapper input::placeholder { color: #94a3b8; }
@@ -253,7 +255,7 @@
   gap: 8px;
   width: 100%;
   padding: 13px 20px;
-  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  background: linear-gradient(135deg, #064e3b, #10b981);
   color: white;
   border: none;
   border-radius: 10px;
@@ -261,7 +263,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 14px rgba(6, 78, 59, 0.2);
   margin-top: 6px;
   font-family: inherit;
 }
@@ -291,12 +293,12 @@
   margin-top: 24px;
 }
 .auth-switch-text a {
-  color: #2563eb;
+  color: #10b981;
   font-weight: 700;
   text-decoration: none;
   transition: color 0.15s;
 }
-.auth-switch-text a:hover { color: #1d4ed8; text-decoration: underline; }
+.auth-switch-text a:hover { color: #059669; text-decoration: underline; }
 
 /* ── Responsive ── */
 @media (max-width: 900px) {

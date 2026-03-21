@@ -14,7 +14,8 @@ import {
   Users, 
   FileCheck,
   Megaphone,
-  LayoutDashboard
+  LayoutDashboard,
+  Star
 } from "lucide-react";
 import "./Navbar.css";
 
@@ -23,10 +24,10 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  if (!user) return null;
+  // Remove the check that hides navbar for non-logged-in users
 
   const getDashboardLink = () => {
-    if (!user) return "/about";
+    if (!user) return "/";
     if (user.role === "admin") return "/admin";
     if (user.role === "municipal") return "/municipal";
     return "/dashboard";
@@ -38,6 +39,12 @@ const Navbar = () => {
       path: "/about", 
       icon: <Users size={18} />,
       roles: ["citizen", "municipal", "admin", "guest"]
+    },
+    { 
+        label: "Impact", 
+        path: "/#impact", 
+        icon: <Star size={18} />,
+        roles: ["guest"]
     },
     { 
       label: "Dashboard", 
@@ -112,8 +119,10 @@ const Navbar = () => {
     <nav className="main-navbar">
       <div className="navbar-container">
         {/* Branding */}
-        <Link to={user ? getDashboardLink() : "/about"} className="navbar-logo">
-          <div className="logo-icon">SS</div>
+        <Link to={user ? getDashboardLink() : "/"} className="navbar-logo">
+          <div className="logo-icon">
+            <img src="/logo.png" alt="SS" />
+          </div>
           <span className="logo-text">Sundar Samadhan</span>
         </Link>
 
@@ -127,6 +136,7 @@ const Navbar = () => {
             >
               {link.icon}
               <span>{link.label}</span>
+              {isActive(link.path) && <span className="nav-indicator"></span>}
             </Link>
           ))}
         </div>
