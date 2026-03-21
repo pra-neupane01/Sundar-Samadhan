@@ -3,20 +3,10 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import NotificationBell from "./NotificationBell";
 import { 
-  Home, 
-  ClipboardList, 
-  Heart, 
-  Bell, 
   User, 
   LogOut, 
   Menu, 
-  X, 
-  Users, 
-  FileCheck,
-  Megaphone,
-  LayoutDashboard,
-  Star,
-  MessageSquare
+  X
 } from "lucide-react";
 import "./Navbar.css";
 
@@ -25,8 +15,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // Remove the check that hides navbar for non-logged-in users
 
+  // Re-routes dashboard based on user role
   const getDashboardLink = () => {
     if (!user) return "/";
     if (user.role === "admin") return "/admin";
@@ -35,81 +25,18 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { 
-      label: "About Us", 
-      path: "/about", 
-      icon: <Users size={18} />,
-      roles: ["citizen", "municipal", "guest"]
-    },
-    { 
-      label: "Contact", 
-      path: "/contact", 
-      icon: <MessageSquare size={18} />,
-      roles: ["citizen", "municipal", "guest"]
-    },
-    { 
-        label: "Impact", 
-        path: "/#impact", 
-        icon: <Star size={18} />,
-        roles: ["guest"]
-    },
-    { 
-      label: "Dashboard", 
-      path: getDashboardLink(), 
-      icon: <LayoutDashboard size={18} />,
-      roles: ["citizen", "municipal", "admin"]
-    },
-    // Citizen Links
-    { 
-      label: "Complaints", 
-      path: "/citizen/complaints", 
-      icon: <ClipboardList size={18} />,
-      roles: ["citizen"] 
-    },
-    { 
-      label: "Donate", 
-      path: "/citizen/donate", 
-      icon: <Heart size={18} />,
-      roles: ["citizen"] 
-    },
-    { 
-      label: "My Donations", 
-      path: "/citizen/donations", 
-      icon: <Heart size={18} />,
-      roles: ["citizen"] 
-    },
-    // Municipal Links
-    { 
-      label: "Manage Complaints", 
-      path: "/municipal/complaints", 
-      icon: <ClipboardList size={18} />,
-      roles: ["municipal"] 
-    },
-    { 
-      label: "Announcements", 
-      path: "/municipal/announcements", 
-      icon: <Megaphone size={18} />,
-      roles: ["municipal", "citizen"] 
-    },
-    // Admin Links
-    { 
-      label: "Manage Users", 
-      path: "/admin/users", 
-      icon: <Users size={18} />,
-      roles: ["admin"] 
-    },
-    { 
-      label: "Review Requests", 
-      path: "/admin/municipal-requests", 
-      icon: <FileCheck size={18} />,
-      roles: ["admin"] 
-    },
-    { 
-        label: "All Donations", 
-        path: "/admin/all-donations", 
-        icon: <Heart size={18} />,
-        roles: ["admin"] 
-    },
+    { label: "Home", path: "/", roles: ["guest", "citizen", "municipal"] },
+    { label: "About Us", path: "/about", roles: ["guest"] },
+    { label: "Dashboard", path: getDashboardLink(), roles: ["citizen", "municipal", "admin"] },
+    { label: "Complaints", path: "/citizen/complaints", roles: ["citizen"] },
+    { label: "Manage Complaints", path: "/municipal/complaints", roles: ["municipal"] },
+    { label: "Announcements", path: "/municipal/announcements", roles: ["municipal", "citizen"] },
+    { label: "Contact", path: "/contact", roles: ["guest", "citizen", "municipal"] },
+    
+    // Admin Specific Links (Kept for admin usability)
+    { label: "Manage Users", path: "/admin/users", roles: ["admin"] },
+    { label: "Feedback/Requests", path: "/admin/municipal-requests", roles: ["admin"] },
+    { label: "Donations", path: "/admin/all-donations", roles: ["admin"] },
   ];
 
   const userRole = user?.role || "guest";
@@ -125,15 +52,15 @@ const Navbar = () => {
   return (
     <nav className="main-navbar">
       <div className="navbar-container">
-        {/* Branding */}
+        {/* Branding (Left Side) */}
         <Link to={user ? getDashboardLink() : "/"} className="navbar-logo">
           <div className="logo-icon">
-            <img src="/logo.png" alt="SS" />
+            <img src="/logo.png" alt="Sundar Samadhan Logo" />
           </div>
           <span className="logo-text">Sundar Samadhan</span>
         </Link>
 
-        {/* Desktop Links */}
+        {/* Center Links (Text-First) */}
         <div className="navbar-links-desktop">
           {filteredLinks.map((link) => (
             <Link 
@@ -141,33 +68,46 @@ const Navbar = () => {
               to={link.path} 
               className={`nav-link ${isActive(link.path) ? "active" : ""}`}
             >
-              {link.icon}
-              <span>{link.label}</span>
-              {isActive(link.path) && <span className="nav-indicator"></span>}
+              {link.label}
             </Link>
           ))}
         </div>
 
-        {/* Actions Section */}
+        {/* Actions Section (Right Side) */}
         <div className="navbar-actions">
+          {/* Prominent Donate CTA */}
+          {userRole === "citizen" ? (
+            <Link to="/citizen/donate" className="btn-donate-cta">
+              Donate
+            </Link>
+          ) : (userRole === "guest" || !user) ? (
+            <Link to="/register" className="btn-donate-cta">
+              Donate
+            </Link>
+          ) : null}
+
           {user ? (
             <>
+              {/* Notification Bell */}
               <NotificationBell />
-              <Link to="/profile" className={`nav-icon-link profile-link ${isActive("/profile") ? "active" : ""}`} title="My Profile">
-                <User size={22} />
+              
+              {/* User Profile Avatar */}
+              <Link to="/profile" className="nav-profile-link" title="My Profile">
+                <User size={18} />
               </Link>
-              <button onClick={handleLogout} className="nav-icon-link logout-btn-nav" title="Logout">
-                <LogOut size={22} />
+              
+              {/* Logout Icon */}
+              <button onClick={handleLogout} className="nav-icon-link" title="Logout">
+                <LogOut size={18} />
               </button>
             </>
           ) : (
             <div className="auth-nav-buttons">
-              <Link to="/login" className="btn btn-ghost">Login</Link>
-              <Link to="/register" className="btn btn-primary">Join us</Link>
+              <Link to="/login" className="btn-ghost">Log in</Link>
             </div>
           )}
           
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle (Hamburger) */}
           <button 
             className="mobile-menu-toggle" 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -188,23 +128,38 @@ const Navbar = () => {
                 className={`mobile-nav-link ${isActive(link.path) ? "active" : ""}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {link.icon}
-                <span>{link.label}</span>
+                {link.label}
               </Link>
             ))}
+            
             <div className="mobile-menu-divider"></div>
-            <Link 
-              to="/profile" 
-              className="mobile-nav-link" 
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <User size={18} />
-              <span>My Profile</span>
-            </Link>
-            <button onClick={handleLogout} className="mobile-nav-link logout-text-nav">
-              <LogOut size={18} />
-              <span>Sign Out</span>
-            </button>
+            
+            {user ? (
+              <>
+                <Link 
+                  to="/profile" 
+                  className="mobile-nav-link" 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Profile
+                </Link>
+                <button 
+                  onClick={handleLogout} 
+                  className="mobile-nav-link" 
+                  style={{textAlign: "left", background: "transparent", border: "none", cursor: "pointer"}}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <Link 
+                to="/login" 
+                className="mobile-nav-link" 
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Log in
+              </Link>
+            )}
           </div>
         </div>
       )}

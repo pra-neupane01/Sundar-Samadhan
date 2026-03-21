@@ -54,16 +54,16 @@ const AboutContent = () => {
       }}>
         <div style={{ flex: 1, minWidth: "300px" }}>
           <h3 className="text-3xl font-bold mb-3 text-white">Platform of Accountability</h3>
-          <p className="text-blue-100 opacity-80 text-lg">Every interaction is logged, every progress updated, and every contribution tracked for 100% integrity in local governance.</p>
+          <p className="text-white opacity-90 text-lg">Every interaction is logged, every progress updated, and every contribution tracked for 100% integrity in local governance.</p>
         </div>
         <div style={{ display: "flex", gap: "48px" }}>
           <div className="text-center">
-            <div className="text-4xl font-extrabold text-green-400" style={{ fontSize: "2.5rem", color: "#4ade80" }}>100%</div>
-            <div className="text-xs uppercase tracking-widest opacity-60 font-bold mt-1">Transparency</div>
+            <div className="text-4xl font-extrabold text-white" style={{ fontSize: "2.5rem", color: "#ffffff" }}>100%</div>
+            <div className="text-xs uppercase tracking-widest opacity-90 font-bold mt-1">Transparency</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-extrabold text-emerald-400" style={{ fontSize: "2.5rem", color: "#34d399" }}>Secure</div>
-            <div className="text-xs uppercase tracking-widest opacity-60 font-bold mt-1">Data Access</div>
+            <div className="text-4xl font-extrabold text-white" style={{ fontSize: "2.5rem", color: "#ffffff" }}>Secure</div>
+            <div className="text-xs uppercase tracking-widest opacity-90 font-bold mt-1">Data Access</div>
           </div>
         </div>
       </div>

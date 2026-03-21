@@ -264,8 +264,8 @@
 }
 
 .stat-box { text-align: center; }
-.stat-num { font-size: 2.5rem; font-weight: 800; color: #6ee7b7; }
-.stat-lab { color: white; opacity: 0.7; font-size: 0.875rem; text-transform: uppercase; }
+.stat-num { font-size: 2.8rem; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
+.stat-lab { color: white; opacity: 0.95; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 
 @media (max-width: 992px) {
   .trust-banner { flex-direction: column; text-align: center; padding: 48px 24px; }

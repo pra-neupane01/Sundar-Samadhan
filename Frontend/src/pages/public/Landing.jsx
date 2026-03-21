@@ -10,9 +10,13 @@ import {
   Award,
   Users
 } from 'lucide-react';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 import './Landing.css';
 
 const Landing = () => {
+  const { user } = useContext(AuthContext);
+
   return (
     <div className="landing-container">
       {/* Global Navbar is handled in App.jsx */}
@@ -32,9 +36,15 @@ const Landing = () => {
               Together, we create beauty through accountability.
             </p>
             <div className="hero-actions">
-              <Link to="/register" className="cta-primary">
-                Get Started <ArrowRight size={18} />
-              </Link>
+              {user ? (
+                <Link to="/dashboard" className="cta-primary">
+                  Go to Dashboard <ArrowRight size={18} />
+                </Link>
+              ) : (
+                <Link to="/register" className="cta-primary">
+                  Get Started <ArrowRight size={18} />
+                </Link>
+              )}
               <a href="#features" className="cta-secondary">Learn More</a>
             </div>
             
@@ -169,17 +179,19 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Impact Section */}
-      <section id="impact" className="impact-section">
-        <div className="impact-container">
-          <div className="impact-card">
-            <MessageSquare size={32} color="#22c55e" />
-            <h3 className="impact-title">Join thousands of citizens making Nepal beautiful.</h3>
-            <p className="impact-text">Your small contribution leads to massive changes in accountability.</p>
-            <Link to="/register" className="impact-btn">Join Now</Link>
+      {/* Impact Section - Hidden if user already joined */}
+      {!user && (
+        <section id="impact" className="impact-section">
+          <div className="impact-container">
+            <div className="impact-card">
+              <MessageSquare size={32} color="#22c55e" />
+              <h3 className="impact-title">Join thousands of citizens making Nepal beautiful.</h3>
+              <p className="impact-text">Your small contribution leads to massive changes in accountability.</p>
+              <Link to="/register" className="impact-btn">Join Now</Link>
+           </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="landing-footer">

@@ -173,12 +173,14 @@
   font-size: 1.1rem;
   font-weight: 700;
   margin-bottom: 8px;
+  color: white;
 }
 
 .support-banner p {
   font-size: 0.95rem;
-  opacity: 0.8;
+  opacity: 1;
   line-height: 1.5;
+  color: white;
 }
 
 /* ── FORM COLUMN ── */
