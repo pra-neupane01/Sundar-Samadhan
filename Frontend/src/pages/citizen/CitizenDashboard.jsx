@@ -5,7 +5,7 @@ import api from "../../services/api";
 import {
   ClipboardList, HeartHandshake, Star, Megaphone,
   PenLine, ListChecks, Coins, Activity,
-  ArrowUpRight, Clock, MessageSquare, ChevronRight
+  ArrowUpRight, Clock, MessageSquare, ChevronRight, Search
 } from "lucide-react";
 import {
   Chart as ChartJS, ArcElement, Tooltip, Legend,
@@ -28,6 +28,7 @@ const CitizenDashboard = () => {
   const [recentComplaints, setRecentComplaints] = useState([]);
   const [liveUser, setLiveUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -79,6 +80,10 @@ const CitizenDashboard = () => {
   const pendingCount    = allComplaints.filter(c => c.status === "pending").length;
   const processingCount = allComplaints.filter(c => c.status === "processing").length;
   const resolutionRate  = complaintCount ? Math.round((resolvedCount / complaintCount) * 100) : 0;
+
+  const filteredComplaints = searchTerm 
+    ? allComplaints.filter(c => c.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    : allComplaints.slice(0, 5);
 
   const getStatusBadge = (status) => {
     const map = {
@@ -238,9 +243,21 @@ const CitizenDashboard = () => {
                     </button>
                 </div>
                 
-                {recentComplaints.length > 0 ? (
+                <div style={{ marginBottom: "16px", position: "relative" }}>
+                    <Search size={16} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+                    <input 
+                      type="text" 
+                      placeholder="Search reports by title..." 
+                      className="form-control" 
+                      style={{ paddingLeft: "36px", fontSize: "0.85rem", height: "38px", borderRadius: "10px", borderColor: "#f1f5f9" }}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+
+                {filteredComplaints.length > 0 ? (
                     <div className="cd-recent-list">
-                        {recentComplaints.map((c) => (
+                        {filteredComplaints.map((c) => (
                             <div key={c.complaint_id} className="cd-recent-item" onClick={() => navigate(`/citizen/complaints`)}>
                                 <div className="cd-status-marker" style={{ background: getStatusDot(c.status) }}></div>
                                 <div className="cd-item-details">

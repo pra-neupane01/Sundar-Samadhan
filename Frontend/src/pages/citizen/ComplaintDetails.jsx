@@ -87,6 +87,18 @@ const ComplaintDetails = () => {
                     </div>
                 </div>
 
+                {complaint.image_url && (
+                    <div className="card" style={{ padding: "32px", marginBottom: "32px" }}>
+                        <h3 style={{ marginBottom: "20px", color: "#1e293b", fontSize: "1.2rem" }}>Evidence Photo</h3>
+                        <img 
+                            src={`http://localhost:4849${complaint.image_url}`} 
+                            alt="Complaint Evidence" 
+                            style={{ width: "100%", borderRadius: "16px", border: "1px solid #e2e8f0", maxHeight: "450px", objectFit: "cover" }}
+                            onError={(e) => e.target.style.display='none'}
+                        />
+                    </div>
+                )}
+
                 <div className="card" style={{ padding: "32px" }}>
                     <h3 style={{ marginBottom: "24px", color: "#1e293b" }}>Status Timeline</h3>
                     <div className="timeline-stepper" style={{ marginLeft: "10px" }}>
