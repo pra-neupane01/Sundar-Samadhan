@@ -17,13 +17,16 @@ const createDonationController = async (req, res) => {
       });
     }
 
+    // Generate a unique transaction ID for tracking
+    const txnId = `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+
     // 1️⃣ Create donation as pending
     const donationResult = await pool.query(
       `INSERT INTO donations 
-   (user_id, amount, payment_method, status)
-   VALUES ($1, $2, $3, 'pending')
+   (user_id, amount, payment_method, status, transaction_id)
+   VALUES ($1, $2, $3, 'pending', $4)
    RETURNING *`,
-      [userId, amount, payment_method],
+      [userId, amount, payment_method, txnId],
     );
 
     const donation = donationResult.rows[0];

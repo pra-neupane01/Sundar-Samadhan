@@ -3,7 +3,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, FileText, Map as MapIcon, Megaphone, 
-  HelpCircle, Plus, Shield, ShieldAlert 
+  HelpCircle, Plus, Shield, ShieldAlert, History
 } from "lucide-react";
 import "../../components/DashboardLayout.css";
 
@@ -36,6 +36,10 @@ const CommunityMap = () => {
           <div className="nav-item active">
             <MapIcon size={20} fill="#d1fae5" />
             Community Map
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/donations")}>
+            <History size={20} />
+            Donation History
           </div>
         </nav>
 

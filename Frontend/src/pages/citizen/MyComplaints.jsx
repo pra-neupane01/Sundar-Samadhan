@@ -7,7 +7,7 @@ import {
   Search, Bell, Settings, LayoutDashboard, FileText, Map as MapIcon, Megaphone,
   Building2, HelpCircle, Plus, CheckCircle2, CircleDashed, Check,
   Clock, AlertTriangle, Trash2, Shield, ArrowRight, ExternalLink,
-  ShieldAlert, Edit3 as Pencil, X, UploadCloud
+  ShieldAlert, Edit3 as Pencil, X, UploadCloud, History
 } from "lucide-react";
 import "../../components/DashboardLayout.css";
 
@@ -171,6 +171,10 @@ const MyComplaints = () => {
           <div className="nav-item" onClick={() => navigate("/citizen/map")}>
             <MapIcon size={20} />
             Community Map
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/donations")}>
+            <History size={20} />
+            Donation History
           </div>
         </nav>
 

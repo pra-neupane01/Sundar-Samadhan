@@ -7,7 +7,7 @@ import {
   PenLine, ListChecks, Coins, Activity,
   ArrowUpRight, Clock, MessageSquare, ChevronRight, Search,
   FileText, Map as MapIcon, Shield, ShieldAlert, LayoutDashboard,
-  User as UserIcon, LogOut, Bell
+  User as UserIcon, LogOut, Bell, History
 } from "lucide-react";
 import {
   Chart as ChartJS, ArcElement, Tooltip, Legend,
@@ -180,6 +180,9 @@ const CitizenDashboard = () => {
             </div>
             <div className="nav-item" onClick={() => navigate("/citizen/map")}>
                 <MapIcon size={20} /> Community Map
+            </div>
+            <div className="nav-item" onClick={() => navigate("/citizen/donations")}>
+                <History size={20} /> Donation History
             </div>
         </nav>
 

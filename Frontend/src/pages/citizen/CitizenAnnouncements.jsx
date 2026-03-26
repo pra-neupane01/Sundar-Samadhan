@@ -4,7 +4,7 @@ import api from "../../services/api";
 import { 
   Megaphone, Clock, MapPin, Search, Filter, 
   ArrowLeft, LayoutDashboard, FileText, HelpCircle, 
-  Plus, Shield, ShieldAlert, ImageIcon, Calendar
+  Plus, Shield, ShieldAlert, ImageIcon, Calendar, History
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "../../components/DashboardLayout.css";
@@ -64,6 +64,9 @@ const CitizenAnnouncements = () => {
                     </div>
                     <div className="nav-item" onClick={() => navigate("/citizen/map")}>
                         <MapPin size={20} /> Community Map
+                    </div>
+                    <div className="nav-item" onClick={() => navigate("/citizen/donations")}>
+                        <History size={20} /> Donation History
                     </div>
                 </nav>
 

@@ -1,9 +1,14 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import api from "../../services/api";
-import { Heart, ShieldCheck, Zap, Coins, CreditCard, ArrowRight } from "lucide-react";
+import { 
+  Heart, ShieldCheck, Zap, Coins, CreditCard, ArrowRight,
+  LayoutDashboard, FileText, Megaphone, Map as MapIcon, History,
+  Plus, Shield, ShieldAlert
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import "../../components/DashboardLayout.css";
 import "./Donate.css";
 
 const Donate = () => {
@@ -27,14 +32,51 @@ const Donate = () => {
   const quickAmounts = [10, 25, 50, 100, 250, 500];
 
   return (
-    <div className="page-shell">
-      <div className="content-container">
-
-        {/* Header */}
-        <div style={{ marginBottom: "32px" }}>
-          <h1 className="page-title">Support Your Community</h1>
-          <p className="page-subtitle">Your contributions directly fund local development projects and initiatives.</p>
+    <div className="dashboard-shell">
+      {/* ── LEFT SIDEBAR ── */}
+      <aside className="sidebar-left">
+        <div className="brand-section" onClick={() => navigate("/")} style={{cursor:"pointer"}}>
+          <div className="brand-name">City of Progress</div>
+          <div className="portal-type">CITIZEN PORTAL</div>
         </div>
+
+        <nav className="sidebar-nav">
+          <div className="nav-item" onClick={() => navigate("/dashboard")}>
+            <LayoutDashboard size={20} /> Overview
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/complaints")}>
+            <FileText size={20} /> My Reports
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/announcements")}>
+            <Megaphone size={20} /> Announcements
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/map")}>
+            <MapIcon size={20} /> Community Map
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/donations")}>
+            <History size={20} /> Donation History
+          </div>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <button className="btn-new-report active" onClick={() => navigate("/citizen/donate")}>
+            <Plus size={20} strokeWidth={3} /> New Donation
+          </button>
+          <div className="legal-links">
+            <div className="legal-link"><Shield size={14} /> Privacy</div>
+            <div className="legal-link"><ShieldAlert size={14} /> Terms</div>
+          </div>
+        </div>
+      </aside>
+
+      {/* ── MAIN CONTENT ── */}
+      <main className="main-content">
+        <div className="content-container">
+          {/* Header */}
+          <div style={{ marginBottom: "32px" }}>
+            <h1 className="page-title">Support Your Community</h1>
+            <p className="page-subtitle">Your contributions directly fund local development projects and initiatives.</p>
+          </div>
 
         <div className="donate-layout">
           {/* Main Form */}
@@ -124,7 +166,8 @@ const Donate = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };

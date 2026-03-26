@@ -14,7 +14,15 @@ import {
   Filter,
   TrendingUp,
   Award,
-  Calendar
+  Calendar,
+  LayoutDashboard,
+  FileText,
+  Megaphone,
+  Plus,
+  Shield,
+  ShieldAlert,
+  History,
+  Map as MapIcon
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./MyDonations.css";
@@ -97,19 +105,52 @@ const MyDonations = () => {
   };
 
   return (
-    <div className="my-donations-container">
-      <header className="donations-page-header">
-        <div className="header-top">
-          <button className="back-btn" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft size={18} />
-            <span>Dashboard</span>
+    <div className="dashboard-shell">
+      {/* ── LEFT SIDEBAR ── */}
+      <aside className="sidebar-left">
+        <div className="brand-section" onClick={() => navigate("/")} style={{cursor:"pointer"}}>
+          <div className="brand-name">City of Progress</div>
+          <div className="portal-type">{user?.role?.toUpperCase()} PORTAL</div>
+        </div>
+
+        <nav className="sidebar-nav">
+          <div className="nav-item" onClick={() => navigate("/dashboard")}>
+            <LayoutDashboard size={20} /> Overview
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/complaints")}>
+            <FileText size={20} /> My Reports
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/announcements")}>
+            <Megaphone size={20} /> Announcements
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/map")}>
+            <MapIcon size={20} /> Community Map
+          </div>
+          <div className="nav-item active">
+            <History size={20} fill="#d1fae5" /> Donation History
+          </div>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <button className="btn-new-report" onClick={() => navigate("/citizen/donate")}>
+            <Plus size={20} strokeWidth={3} /> New Donation
           </button>
+          <div className="legal-links">
+            <div className="legal-link"><Shield size={14} /> Privacy</div>
+            <div className="legal-link"><ShieldAlert size={14} /> Terms</div>
+          </div>
         </div>
-        <div className="header-main">
-          <h1>Donation History</h1>
-          <p>Track your contributions and impact in the community.</p>
-        </div>
-      </header>
+      </aside>
+
+      {/* ── MAIN CONTENT ── */}
+      <main className="main-content">
+        <div className="content-container">
+          <header className="donations-page-header">
+            <div className="header-main">
+              <h1 className="page-title">Donation History</h1>
+              <p className="page-subtitle">Track your contributions and impact in the community.</p>
+            </div>
+          </header>
 
       <div className="donations-stats-grid">
         <div className="donation-stat-card total-donated">
@@ -141,7 +182,7 @@ const MyDonations = () => {
         </div>
       </div>
 
-      <main className="donations-content">
+      <div className="donations-content">
         <div className="table-controls">
           <div className="search-box">
             <Search size={18} />
@@ -234,7 +275,7 @@ const MyDonations = () => {
                       </div>
                     </td>
                     <td className="id-cell">
-                      <code>{donation.transaction_id || "TXN-PENDING"}</code>
+                      <code>{donation.transaction_id || `DNTN-${donation.donation_id.toString().padStart(6, '0')}`}</code>
                     </td>
                     <td>
                       <span className={`status-pill ${donation.status}`}>
@@ -248,6 +289,8 @@ const MyDonations = () => {
             </table>
           </div>
         )}
+        </div>
+      </div>
       </main>
     </div>
   );
