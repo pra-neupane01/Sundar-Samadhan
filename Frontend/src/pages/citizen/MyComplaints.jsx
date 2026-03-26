@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast, { Toaster } from "react-hot-toast";
 import {
-  Search, Bell, Settings, LayoutDashboard, FileText, Map as MapIcon,
+  Search, Bell, Settings, LayoutDashboard, FileText, Map as MapIcon, Megaphone,
   Building2, HelpCircle, Plus, CheckCircle2, CircleDashed, Check,
   Clock, AlertTriangle, Trash2, Shield, ArrowRight, ExternalLink,
   ShieldAlert, Edit3 as Pencil, X, UploadCloud
@@ -145,7 +145,8 @@ const MyComplaints = () => {
   };
 
   return (
-    <div className="dashboard-shell">
+    <>
+      <div className="dashboard-shell">
       <Toaster position="top-right" />
       {/* ── LEFT SIDEBAR ── */}
       <aside className="sidebar-left">
@@ -163,13 +164,13 @@ const MyComplaints = () => {
             <FileText size={20} fill="#d1fae5" />
             My Reports
           </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/announcements")}>
+            <Megaphone size={20} /> 
+            Announcements
+          </div>
           <div className="nav-item" onClick={() => navigate("/citizen/map")}>
             <MapIcon size={20} />
             Community Map
-          </div>
-          <div className="nav-item" onClick={() => navigate("/contact")}>
-            <HelpCircle size={20} />
-            Support
           </div>
         </nav>
 
@@ -526,6 +527,7 @@ const MyComplaints = () => {
           .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; }
       `}</style>
     </div>
+    </>
   );
 };
 

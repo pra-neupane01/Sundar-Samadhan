@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { 
-  LayoutDashboard, FileText, Map as MapIcon, 
+  LayoutDashboard, FileText, Map as MapIcon, Megaphone, 
   HelpCircle, Plus, Shield, ShieldAlert 
 } from "lucide-react";
 import "../../components/DashboardLayout.css";
@@ -29,13 +29,13 @@ const CommunityMap = () => {
             <FileText size={20} />
             My Reports
           </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/announcements")}>
+            <Megaphone size={20} />
+            Announcements
+          </div>
           <div className="nav-item active">
             <MapIcon size={20} fill="#d1fae5" />
             Community Map
-          </div>
-          <div className="nav-item" onClick={() => navigate("/contact")}>
-            <HelpCircle size={20} />
-            Support
           </div>
         </nav>
 

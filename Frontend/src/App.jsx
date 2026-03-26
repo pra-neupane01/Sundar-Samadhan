@@ -14,6 +14,7 @@ import CreateComplaint from "./pages/citizen/CreateComplaint";
 import MyComplaints from "./pages/citizen/MyComplaints";
 import MyDonations from "./pages/citizen/MyDonations";
 import ComplaintDetails from "./pages/citizen/ComplaintDetails";
+import CitizenAnnouncements from "./pages/citizen/CitizenAnnouncements";
 import Donate from "./pages/citizen/Donate";
 import CommunityMap from "./pages/citizen/CommunityMap";
 import PaymentSuccess from "./pages/payment/PaymentSuccess";
@@ -214,7 +215,7 @@ const App = () => {
           path="/citizen/announcements"
           element={
             <ProtectedRoute>
-              <ManageAnnouncements />
+              <CitizenAnnouncements />
             </ProtectedRoute>
           }
         />

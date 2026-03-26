@@ -5,7 +5,9 @@ import api from "../../services/api";
 import {
   ClipboardList, HeartHandshake, Star, Megaphone,
   PenLine, ListChecks, Coins, Activity,
-  ArrowUpRight, Clock, MessageSquare, ChevronRight, Search
+  ArrowUpRight, Clock, MessageSquare, ChevronRight, Search,
+  FileText, Map as MapIcon, Shield, ShieldAlert, LayoutDashboard,
+  User as UserIcon, LogOut, Bell
 } from "lucide-react";
 import {
   Chart as ChartJS, ArcElement, Tooltip, Legend,
@@ -13,6 +15,7 @@ import {
 } from "chart.js";
 import { Doughnut, Bar } from "react-chartjs-2";
 import "./CitizenDashboard.css";
+import "../../components/DashboardLayout.css";
 import AboutContent from "../../components/AboutContent";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement);
@@ -157,8 +160,43 @@ const CitizenDashboard = () => {
 
   return (
     <>
-      <div className="page-shell">
-      <div className="content-container">
+      <div className="dashboard-shell">
+      {/* ── LEFT SIDEBAR ── */}
+      <aside className="sidebar-left">
+        <div className="brand-section" onClick={() => navigate("/")} style={{cursor:"pointer"}}>
+            <div className="brand-name">City of Progress</div>
+            <div className="portal-type">CITIZEN PORTAL</div>
+        </div>
+
+        <nav className="sidebar-nav">
+            <div className="nav-item active">
+                <LayoutDashboard size={20} fill="#d1fae5" /> Overview
+            </div>
+            <div className="nav-item" onClick={() => navigate("/citizen/complaints")}>
+                <FileText size={20} /> My Reports
+            </div>
+            <div className="nav-item" onClick={() => navigate("/citizen/announcements")}>
+                <Megaphone size={20} /> Announcements
+            </div>
+            <div className="nav-item" onClick={() => navigate("/citizen/map")}>
+                <MapIcon size={20} /> Community Map
+            </div>
+        </nav>
+
+        <div className="sidebar-bottom">
+            <button className="btn-new-report" onClick={() => navigate("/citizen/complaint/create")}>
+                <PenLine size={20} strokeWidth={3} /> New Report
+            </button>
+            <div className="legal-links">
+                <div className="legal-link"><Shield size={14} /> Privacy</div>
+                <div className="legal-link"><ShieldAlert size={14} /> Terms</div>
+            </div>
+        </div>
+      </aside>
+
+      {/* ── MAIN CONTENT ── */}
+      <main className="main-content">
+        <div className="content-container">
 
         {/* Welcome Header */}
         <div className="cd-welcome-header">
@@ -292,7 +330,7 @@ const CitizenDashboard = () => {
                         <Megaphone size={18} className="text-amber-600" />
                         <h3>Community Updates</h3>
                     </div>
-                    <button className="btn btn-ghost btn-sm" onClick={() => navigate("/municipal/announcements")}>
+                    <button className="btn btn-ghost btn-sm" onClick={() => navigate("/citizen/announcements")}>
                         <ArrowUpRight size={14} />
                     </button>
                 </div>
@@ -313,7 +351,7 @@ const CitizenDashboard = () => {
                     )}
                 </div>
                 
-                <button className="btn btn-secondary btn-sm w-full mt-4" onClick={() => navigate("/municipal/announcements")}>
+                <button className="btn btn-secondary btn-sm w-full mt-4" onClick={() => navigate("/citizen/announcements")}>
                     Read All Announcements
                 </button>
             </div>
@@ -365,7 +403,8 @@ const CitizenDashboard = () => {
         <footer style={{ marginTop: "40px", textAlign: "center", paddingBottom: "40px", color: "#94a3b8", fontSize: "0.85rem" }}>
            &copy; 2026 Sundar Samadhan Municipality Initiative
         </footer>
-      </div>
+        </div>
+      </main>
     </div>
 
     <style>{`

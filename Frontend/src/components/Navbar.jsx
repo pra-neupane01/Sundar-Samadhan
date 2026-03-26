@@ -30,7 +30,8 @@ const Navbar = () => {
     { label: "Dashboard", path: getDashboardLink(), roles: ["citizen", "municipal", "admin"] },
     { label: "Complaints", path: "/citizen/complaints", roles: ["citizen"] },
     { label: "Manage Complaints", path: "/municipal/complaints", roles: ["municipal"] },
-    { label: "Announcements", path: "/municipal/announcements", roles: ["municipal", "citizen"] },
+    { label: "Announcements", path: "/citizen/announcements", roles: ["citizen"] },
+    { label: "Announcements", path: "/municipal/announcements", roles: ["municipal"] },
     { label: "Contact", path: "/contact", roles: ["guest", "citizen", "municipal"] },
     
     // Admin Specific Links (Kept for admin usability)
