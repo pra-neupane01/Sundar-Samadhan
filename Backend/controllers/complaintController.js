@@ -374,6 +374,104 @@ const checkOverdueComplaints = async (io) => {
   }
 };
 
+// UPDATE COMPLAINT BY USER || CITIZEN
+const updateComplaintByUserController = async (req, res) => {
+  try {
+    const complaintId = req.params.id;
+    const userId = req.user.id;
+    const { title, description, category, ward_number, address, latitude, longitude } = req.body;
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+    // 1. Find complaint
+    const findResult = await pool.query(
+      "SELECT * FROM complaints WHERE complaint_id = $1",
+      [complaintId]
+    );
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Complaint not found" });
+    }
+
+    const complaint = findResult.rows[0];
+
+    // 2. Check ownership
+    if (complaint.created_by !== userId) {
+      return res.status(403).json({ success: false, message: "You can only edit your own complaints" });
+    }
+
+    // 3. Check status (Only allow edit if pending)
+    if (complaint.status !== "pending") {
+      return res.status(400).json({ success: false, message: "Only pending complaints can be edited" });
+    }
+
+    // 4. Update
+    const updateResult = await pool.query(
+      `UPDATE complaints 
+       SET title = COALESCE($1, title), 
+           description = COALESCE($2, description), 
+           category = COALESCE($3, category), 
+           ward_number = COALESCE($4, ward_number), 
+           address = COALESCE($5, address), 
+           latitude = COALESCE($6, latitude), 
+           longitude = COALESCE($7, longitude),
+           image_url = COALESCE($8, image_url)
+       WHERE complaint_id = $9
+       RETURNING *`,
+      [title, description, category, ward_number, address, latitude, longitude, imagePath, complaintId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint updated successfully",
+      complaint: updateResult.rows[0]
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to update complaint" });
+  }
+};
+
+// DELETE COMPLAINT BY USER || CITIZEN
+const deleteComplaintByUserController = async (req, res) => {
+  try {
+    const complaintId = req.params.id;
+    const userId = req.user.id;
+
+    // 1. Find complaint
+    const findResult = await pool.query(
+      "SELECT * FROM complaints WHERE complaint_id = $1",
+      [complaintId]
+    );
+
+    if (findResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Complaint not found" });
+    }
+
+    const complaint = findResult.rows[0];
+
+    // 2. Check ownership
+    if (complaint.created_by !== userId) {
+      return res.status(403).json({ success: false, message: "You can only delete your own complaints" });
+    }
+
+    // 3. Check status (Only allow delete if pending)
+    if (complaint.status !== "pending") {
+      return res.status(400).json({ success: false, message: "Logged complaints cannot be deleted once they are being processed" });
+    }
+
+    // 4. Delete
+    await pool.query("DELETE FROM complaints WHERE complaint_id = $1", [complaintId]);
+
+    res.status(200).json({
+      success: true,
+      message: "Complaint deleted successfully"
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to delete complaint" });
+  }
+};
+
 module.exports = {
   createComplaintController,
   getAllComplaintController,
@@ -381,5 +479,7 @@ module.exports = {
   getComplaintByUserController,
   updateComplaintStatusController,
   deleteComplaintController,
+  updateComplaintByUserController,
+  deleteComplaintByUserController,
   checkOverdueComplaints,
 };

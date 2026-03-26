@@ -2,11 +2,12 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import toast, { Toaster } from "react-hot-toast";
 import {
   Search, Bell, Settings, LayoutDashboard, FileText, Map as MapIcon,
   Building2, HelpCircle, Plus, CheckCircle2, CircleDashed, Check,
   Clock, AlertTriangle, Trash2, Shield, ArrowRight, ExternalLink,
-  ShieldAlert
+  ShieldAlert, Edit3 as Pencil, X, UploadCloud
 } from "lucide-react";
 import "../../components/DashboardLayout.css";
 
@@ -18,8 +19,35 @@ const MyComplaints = () => {
   const [search, setSearch] = useState("");
   const [selectedComplaintId, setSelectedComplaintId] = useState(null);
 
+  // Edit Modal State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingComplaint, setEditingComplaint] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    title: "",
+    category: "",
+    description: "",
+    ward_number: "",
+    address: ""
+  });
+  const [editFile, setEditFile] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Delete Modal State
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingComplaint, setDeletingComplaint] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const categories = [
+    "Roads & Infrastructure",
+    "Water & Sanitation",
+    "Electricity & Power",
+    "Waste Management",
+    "Public Services",
+    "Other",
+  ];
+
   useEffect(() => {
-    api.get(`/complaints/my-complaints?limit=30`, { headers: { Authorization: `Bearer ${token}` } })
+    api.get(`/complaints/my-complaints?limit=all`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         if (res.data.success) {
           setComplaints(res.data.complaint || []);
@@ -47,8 +75,78 @@ const MyComplaints = () => {
     activeReport = complaints.find(c => c.status !== "resolved") || complaints[0];
   }
 
+  const handleDelete = async () => {
+    if (!deletingComplaint) return;
+    setIsDeleting(true);
+    try {
+      const id = deletingComplaint.complaint_id;
+      const res = await api.delete(`/complaints/delete-my-complaint/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.success) {
+        toast.success("Complaint deleted successfully");
+        setComplaints(prev => prev.filter(c => c.complaint_id !== id));
+        if (selectedComplaintId === id) setSelectedComplaintId(null);
+        setIsDeleteModalOpen(false);
+      }
+    } catch (e) {
+      toast.error(e.response?.data?.message || "Failed to delete complaint");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const openDeleteModal = (complaint) => {
+    setDeletingComplaint(complaint);
+    setIsDeleteModalOpen(true);
+  };
+
+
+  const openEditModal = (complaint) => {
+    setEditingComplaint(complaint);
+    setEditFormData({
+      title: complaint.title,
+      category: complaint.category,
+      description: complaint.description,
+      ward_number: complaint.ward_number,
+      address: complaint.address || ""
+    });
+    setEditFile(null);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    try {
+      const data = new FormData();
+      Object.keys(editFormData).forEach(key => {
+        data.append(key, editFormData[key]);
+      });
+      if (editFile) data.append("image", editFile);
+
+      const res = await api.put(`/complaints/update-complaint/${editingComplaint.complaint_id}`, data, {
+        headers: { 
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}` 
+        }
+      });
+
+      if (res.data.success) {
+        toast.success("Complaint updated successfully");
+        setComplaints(prev => prev.map(c => c.complaint_id === editingComplaint.complaint_id ? res.data.complaint : c));
+        setIsEditModalOpen(false);
+      }
+    } catch (e) {
+      toast.error(e.response?.data?.message || "Failed to update complaint");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   return (
     <div className="dashboard-shell">
+      <Toaster position="top-right" />
       {/* ── LEFT SIDEBAR ── */}
       <aside className="sidebar-left">
         <div className="brand-section" onClick={() => navigate("/")} style={{cursor:"pointer"}}>
@@ -97,6 +195,18 @@ const MyComplaints = () => {
           </p>
         </div>
 
+        <div style={{ marginBottom: "24px", position: "relative" }}>
+          <Search size={20} style={{ position: "absolute", left: "16px", top: "50%", transform: "translateY(-50%)", color: "#64748b" }} />
+          <input 
+            type="text" 
+            placeholder="Search reports by title..." 
+            className="form-control" 
+            style={{ paddingLeft: "48px", borderRadius: "12px", border: "1px solid #e2e8f0", background: "white", width: "100%", height: "48px", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }} 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
         <div className="filter-pills">
           <button className={`pill ${filterStatus === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All</button>
           <button className={`pill ${filterStatus === 'processing' ? 'active' : ''}`} onClick={() => setFilter('processing')}>In Progress</button>
@@ -106,14 +216,31 @@ const MyComplaints = () => {
         {activeReport && (
           <div className="active-report-card">
             <div className="ar-header">
-              <div>
+              <div style={{ flex: 1 }}>
                 <div className="ar-tag">ACTIVE REPORT</div>
                 <h2 className="ar-title">#SS-{(activeReport.id || activeReport.complaint_id).toString().substring(0, 6).toUpperCase()}: {activeReport.title}</h2>
                 <div className="ar-date">Submitted on {new Date(activeReport.created_at).toLocaleString()}</div>
               </div>
-              <span className="pill" style={{ background: "#e2e8f0", color: "#475569", borderRadius:"8px", fontSize:"0.8rem", textTransform: "capitalize" }}>
-                {activeReport.status === 'processing' ? 'In Progress' : activeReport.status}
-              </span>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px" }}>
+                <span className="pill" style={{ background: "#e2e8f0", color: "#475569", borderRadius:"8px", fontSize:"0.8rem", textTransform: "capitalize" }}>
+                    {activeReport.status === 'processing' ? 'In Progress' : activeReport.status}
+                </span>
+                
+                {activeReport.status === 'pending' && (
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button 
+                        onClick={() => openEditModal(activeReport)}
+                        className="btn-icon-ar edit" title="Edit Report">
+                        <Pencil size={16} />
+                    </button>
+                    <button 
+                        onClick={() => openDeleteModal(activeReport)}
+                        className="btn-icon-ar delete" title="Delete Report">
+                        <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="timeline-stepper">
@@ -246,6 +373,158 @@ const MyComplaints = () => {
           <a href="#" className="res-link">FAQs <ExternalLink size={14} /></a>
         </div>
       </aside>
+
+      {/* ── EDIT MODAL ── */}
+      {isEditModalOpen && (
+          <div className="modal-overlay">
+              <div className="modal-card">
+                  <div className="modal-header">
+                      <h3>Edit Complaint</h3>
+                      <button className="btn-close" onClick={() => setIsEditModalOpen(false)}><X size={20} /></button>
+                  </div>
+                  <form onSubmit={handleUpdate} className="modal-form">
+                      <div className="form-group">
+                          <label>Title</label>
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            value={editFormData.title} 
+                            onChange={(e) => setEditFormData({...editFormData, title: e.target.value})}
+                            required
+                          />
+                      </div>
+                      <div className="form-row">
+                          <div className="form-group">
+                              <label>Category</label>
+                              <select 
+                                className="form-control" 
+                                value={editFormData.category} 
+                                onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}
+                                required
+                              >
+                                  {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                              </select>
+                          </div>
+                          <div className="form-group">
+                              <label>Ward</label>
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                value={editFormData.ward_number} 
+                                onChange={(e) => setEditFormData({...editFormData, ward_number: e.target.value})}
+                                required
+                              />
+                          </div>
+                      </div>
+                      <div className="form-group">
+                          <label>Address</label>
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            value={editFormData.address} 
+                            onChange={(e) => setEditFormData({...editFormData, address: e.target.value})}
+                            required
+                          />
+                      </div>
+                      <div className="form-group">
+                          <label>Description</label>
+                          <textarea 
+                            className="form-control" 
+                            rows="4"
+                            value={editFormData.description} 
+                            onChange={(e) => setEditFormData({...editFormData, description: e.target.value})}
+                            required
+                          />
+                      </div>
+                      <div className="form-group">
+                          <label>Update Photo</label>
+                          <div className="modal-upload">
+                              <input type="file" id="edit-img" hidden onChange={(e) => setEditFile(e.target.files[0])} />
+                              <label htmlFor="edit-img">
+                                <UploadCloud size={20} />
+                                <span>{editFile ? editFile.name : "Choose new photo"}</span>
+                              </label>
+                          </div>
+                      </div>
+                      <div className="modal-actions">
+                          <button type="button" className="btn btn-secondary" onClick={() => setIsEditModalOpen(false)}>Cancel</button>
+                          <button type="submit" className="btn btn-primary" disabled={isUpdating}>
+                              {isUpdating ? "Saving..." : "Save Changes"}
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      )}
+      
+      {/* ── DELETE CONFIRMATION MODAL ── */}
+      {isDeleteModalOpen && (
+          <div className="modal-overlay">
+              <div className="modal-card" style={{ maxWidth: "450px" }}>
+                  <div className="modal-header">
+                      <h3>Confirm Deletion</h3>
+                      <button className="btn-close" onClick={() => setIsDeleteModalOpen(false)}><X size={20} /></button>
+                  </div>
+                  <div className="modal-body" style={{ padding: "24px", textAlign: "center" }}>
+                      <div style={{ width: "64px", height: "64px", background: "#fef2f2", color: "#ef4444", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                          <Trash2 size={32} />
+                      </div>
+                      <h4 style={{ fontSize: "1.1rem", marginBottom: "8px", color: "#1e293b" }}>Are you sure?</h4>
+                      <p style={{ color: "#64748b", fontSize: "0.95rem", lineHeight: "1.5" }}>
+                          This will permanently delete the report <strong>"{deletingComplaint?.title}"</strong>. This action cannot be reversed.
+                      </p>
+                  </div>
+                  <div className="modal-footer" style={{ padding: "16px 24px", background: "#f8fafc", display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                      <button className="btn btn-secondary" onClick={() => setIsDeleteModalOpen(false)} disabled={isDeleting}>Cancel</button>
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ background: "#ef4444", borderColor: "#ef4444" }} 
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                      >
+                          {isDeleting ? "Deleting..." : "Delete Permanently"}
+                      </button>
+                  </div>
+              </div>
+          </div>
+      )}
+      
+      <style>{`
+          .btn-icon-ar {
+              width: 34px; height: 34px; border-radius: 8px; border: 1px solid #e2e8f0;
+              display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;
+              background: white;
+          }
+          .btn-icon-ar.edit { color: var(--brand-primary); }
+          .btn-icon-ar.edit:hover { background: #eff6ff; border-color: #3b82f6; }
+          .btn-icon-ar.delete { color: #ef4444; }
+          .btn-icon-ar.delete:hover { background: #fef2f2; border-color: #ef4444; }
+
+          .modal-overlay {
+              position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+              background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+              display: flex; align-items: center; justify-content: center; z-index: 1000;
+              padding: 20px;
+          }
+          .modal-card {
+              background: white; width: 100%; max-width: 550px; border-radius: 16px;
+              box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden;
+              animation: modalSlide 0.3s ease-out;
+          }
+          @keyframes modalSlide { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+          .modal-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+          .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+          .btn-close { background: transparent; border: none; color: #94a3b8; cursor: pointer; }
+
+          .modal-form { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+          .form-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
+          .modal-upload label {
+              display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px dashed #e2e8f0;
+              border-radius: 8px; cursor: pointer; color: #64748b; font-size: 0.9rem;
+          }
+          .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; }
+      `}</style>
     </div>
   );
 };

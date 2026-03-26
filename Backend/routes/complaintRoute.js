@@ -15,8 +15,9 @@ const {
   getComplaintByUserController,
   updateComplaintStatusController,
   deleteComplaintController,
+  updateComplaintByUserController,
+  deleteComplaintByUserController,
 } = require("../controllers/complaintController");
-const { route } = require("./testRoute");
 
 const router = express.Router();
 
@@ -28,6 +29,24 @@ router.post(
   upload.single("image"),
   createComplaintController,
 );
+
+// UPDATE COMPLAINT BY USER : PUT
+router.put(
+  "/update-complaint/:id",
+  authMiddleware,
+  roleMiddleware("citizen"),
+  upload.single("image"),
+  updateComplaintByUserController
+);
+
+// DELETE COMPLAINT BY USER : DELETE
+router.delete(
+  "/delete-my-complaint/:id",
+  authMiddleware,
+  roleMiddleware("citizen"),
+  deleteComplaintByUserController
+);
+
 
 // // GET ALL COMPLAINTS : GET
 router.get(

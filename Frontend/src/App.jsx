@@ -13,6 +13,7 @@ import CitizenDashboard from "./pages/citizen/CitizenDashboard";
 import CreateComplaint from "./pages/citizen/CreateComplaint";
 import MyComplaints from "./pages/citizen/MyComplaints";
 import MyDonations from "./pages/citizen/MyDonations";
+import ComplaintDetails from "./pages/citizen/ComplaintDetails";
 import Donate from "./pages/citizen/Donate";
 import CommunityMap from "./pages/citizen/CommunityMap";
 import PaymentSuccess from "./pages/payment/PaymentSuccess";
@@ -100,6 +101,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <CommunityMap />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/citizen/complaint/:id"
+          element={
+            <ProtectedRoute>
+              <ComplaintDetails />
             </ProtectedRoute>
           }
         />
