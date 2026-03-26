@@ -32,7 +32,7 @@
   letter-spacing: 0.04em;
 }
 .mc-yellow { border-top: 3px solid #f59e0b; }
-.mc-blue   { border-top: 3px solid #3b82f6; }
+.mc-blue   { border-top: 3px solid var(--brand-secondary); }
 .mc-green  { border-top: 3px solid #10b981; }
 
 .data-table-row-clickable { cursor: pointer; }

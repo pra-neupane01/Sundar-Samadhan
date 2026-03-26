@@ -19,7 +19,7 @@
 .ma-header-icon {
   width: 40px; height: 40px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #2563eb, #60a5fa);
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
   color: white;
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 4px 10px rgba(37,99,235,0.25);

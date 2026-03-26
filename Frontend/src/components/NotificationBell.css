@@ -125,7 +125,7 @@
 }
 .notif-item:last-child { border-bottom: none; }
 .notif-item:hover { background: #f8fafc; }
-.notif-item.unread { background: #eff6ff; }
+.notif-item.unread { background: var(--surface-base); }
 .notif-item.unread:hover { background: #dbeafe; }
 
 .notif-item-content {
@@ -143,7 +143,7 @@
   flex-shrink: 0;
   margin-top: 6px;
 }
-.notif-dot.active { background: #2563eb; }
+.notif-dot.active { background: var(--brand-primary); }
 
 .notif-item-text {
   flex: 1;
@@ -188,13 +188,13 @@
   padding: 12px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #2563eb;
+  color: var(--brand-primary);
   background: #fafbfc;
   border-top: 1px solid #f1f5f9;
   text-decoration: none;
   transition: background 0.1s;
 }
-.notif-dropdown-footer:hover { background: #eff6ff; }
+.notif-dropdown-footer:hover { background: var(--surface-base); }
 
 @media (max-width: 400px) {
   .notif-dropdown { width: calc(100vw - 32px); right: -60px; }

@@ -1,176 +1,251 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import {
-  Search, Filter, PenLine, Clock, CheckCircle2,
-  AlertCircle, ClipboardX, Eye, Hash
+  Search, Bell, Settings, LayoutDashboard, FileText, Map as MapIcon,
+  Building2, HelpCircle, Plus, CheckCircle2, CircleDashed, Check,
+  Clock, AlertTriangle, Trash2, Shield, ArrowRight, ExternalLink,
+  ShieldAlert
 } from "lucide-react";
-import "./MyComplaints.css";
-
-const StatusBadge = ({ status }) => {
-  const map = {
-    pending:    { cls: "badge badge-pending",    dot: "#f59e0b", label: "Pending" },
-    processing: { cls: "badge badge-processing", dot: "#3b82f6", label: "In Progress" },
-    resolved:   { cls: "badge badge-resolved",   dot: "#10b981", label: "Resolved" },
-  };
-  const s = map[status?.toLowerCase()] || { cls: "badge badge-default", dot: "#94a3b8", label: status };
-  return (
-    <span className={s.cls}>
-      <span className="badge-dot" style={{ background: s.dot }}></span>
-      {s.label}
-    </span>
-  );
-};
+import "../../components/DashboardLayout.css";
 
 const MyComplaints = () => {
-  const { token } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const navigate = useNavigate();
   const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [search, setSearch]     = useState("");
   const [filterStatus, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [selectedComplaintId, setSelectedComplaintId] = useState(null);
 
   useEffect(() => {
-    api.get("/complaints/my-complaints", { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => { if (r.data.success) setComplaints(r.data.complaint || []); })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    api.get(`/complaints/my-complaints?limit=30`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => {
+        if (res.data.success) {
+          setComplaints(res.data.complaint || []);
+        }
+      })
+      .catch(console.error);
   }, [token]);
 
-  const total     = complaints.length;
-  const pending   = complaints.filter(c => c.status === "pending").length;
-  const resolved  = complaints.filter(c => c.status === "resolved").length;
-  const inProgress = complaints.filter(c => c.status === "processing").length;
+  // Aggregation for metrics
+  const activeCount = complaints.filter(c => c.status === "processing" || c.status === "pending").length;
+  const resolvedCount = complaints.filter(c => c.status === "resolved").length;
 
   const filtered = complaints.filter(c => {
-    const match = c.title.toLowerCase().includes(search.toLowerCase()) ||
-                  c.category?.toLowerCase().includes(search.toLowerCase());
-    const byStatus = filterStatus === "all" || c.status.toLowerCase() === filterStatus;
-    return match && byStatus;
+    const sMatch = search ? c.title.toLowerCase().includes(search.toLowerCase()) : true;
+    const fMatch = filterStatus === "all" ? true : c.status.toLowerCase() === filterStatus;
+    return sMatch && fMatch;
   });
 
+  // Dynamically setup the active report based on user interaction
+  let activeReport = null;
+  if (selectedComplaintId) {
+    activeReport = complaints.find(c => c.complaint_id === selectedComplaintId);
+  }
+  if (!activeReport) {
+    activeReport = complaints.find(c => c.status !== "resolved") || complaints[0];
+  }
+
   return (
-    <div className="page-shell">
-      <div className="content-container">
+    <div className="dashboard-shell">
+      {/* ── LEFT SIDEBAR ── */}
+      <aside className="sidebar-left">
+        <div className="brand-section" onClick={() => navigate("/")} style={{cursor:"pointer"}}>
+          <div className="brand-name">City of Progress</div>
+          <div className="portal-type">{user?.role === 'municipal' ? 'MUNICIPAL' : user?.role === 'admin' ? 'ADMIN' : 'CITIZEN'} PORTAL</div>
+        </div>
 
-        {/* Header */}
-        <div className="page-header-row" style={{ marginBottom: "32px" }}>
-          <div>
-            <h1 className="page-title">My Complaints</h1>
-            <p className="page-subtitle">Track all issues you've reported to the municipality.</p>
+        <nav className="sidebar-nav">
+          <div className="nav-item" onClick={() => navigate("/dashboard")}>
+            <LayoutDashboard size={20} />
+            Overview
           </div>
-          <button className="btn btn-primary" onClick={() => navigate("/citizen/complaint/create")}>
-            <PenLine size={18} /> New Complaint
+          <div className="nav-item active">
+            <FileText size={20} fill="#d1fae5" />
+            My Reports
+          </div>
+          <div className="nav-item" onClick={() => navigate("/citizen/map")}>
+            <MapIcon size={20} />
+            Community Map
+          </div>
+          <div className="nav-item" onClick={() => navigate("/contact")}>
+            <HelpCircle size={20} />
+            Support
+          </div>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <button className="btn-new-report" onClick={() => navigate("/citizen/complaint/create")}>
+            <Plus size={20} strokeWidth={3} />
+            New Report
           </button>
-        </div>
-
-        {/* Mini Stats */}
-        <div className="mc-stats-row">
-          <div className="mc-mini-stat">
-            <span className="mc-mini-val">{total}</span>
-            <span className="mc-mini-lbl">Total Filed</span>
-          </div>
-          <div className="mc-mini-stat mc-yellow">
-            <span className="mc-mini-val" style={{ color: "#92400e" }}>{pending}</span>
-            <span className="mc-mini-lbl">Pending</span>
-          </div>
-          <div className="mc-mini-stat mc-blue">
-            <span className="mc-mini-val" style={{ color: "#1d4ed8" }}>{inProgress}</span>
-            <span className="mc-mini-lbl">In Progress</span>
-          </div>
-          <div className="mc-mini-stat mc-green">
-            <span className="mc-mini-val" style={{ color: "#065f46" }}>{resolved}</span>
-            <span className="mc-mini-lbl">Resolved</span>
+          
+          <div className="legal-links">
+            <div className="legal-link"><Shield size={14} /> Privacy</div>
+            <div className="legal-link"><ShieldAlert size={14} /> Terms</div>
           </div>
         </div>
+      </aside>
 
-        {/* Toolbar */}
-        <div className="toolbar">
-          <div className="search-box">
-            <Search size={17} className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search by title or category…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-          <select className="filter-select" value={filterStatus} onChange={e => setFilter(e.target.value)}>
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="processing">In Progress</option>
-            <option value="resolved">Resolved</option>
-          </select>
+      {/* ── MAIN CONTENT ── */}
+      <main className="main-content">
+        <div>
+          <h1 className="ar-title" style={{ fontSize: "2.2rem" }}>My Reports</h1>
+          <p style={{ color: "#64748b", fontSize: "0.95rem", marginBottom: "32px" }}>
+            Track the status of your submitted complaints and community requests in real-time.
+          </p>
         </div>
 
-        {/* Records */}
-        {loading ? (
-          <div className="loading-spinner-v2"><div className="spinner-ring"></div><p>Loading your complaints…</p></div>
-        ) : filtered.length > 0 ? (
-          <div className="data-table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Complaint</th>
-                  <th>Category</th>
-                  <th>Ward</th>
-                  <th>Date Filed</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((c, i) => (
-                  <tr key={c.complaint_id} className="data-table-row-clickable" onClick={() => {}}>
-                    <td style={{ color: "#94a3b8", fontWeight: 600, width: "50px" }}>#{i + 1}</td>
-                    <td>
-                      <div style={{ fontWeight: 600, color: "#1e293b", fontSize: "0.93rem" }}>{c.title}</div>
-                      {c.description && (
-                        <div style={{ fontSize: "0.78rem", color: "#94a3b8", marginTop: "3px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "300px" }}>
-                          {c.description}
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <span style={{ background: "#eff6ff", color: "#2563eb", padding: "3px 10px", borderRadius: "999px", fontSize: "0.78rem", fontWeight: 600 }}>
-                        {c.category || "General"}
-                      </span>
-                    </td>
-                    <td>
-                      <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "#64748b", fontSize: "0.87rem" }}>
-                        <Hash size={13} /> Ward {c.ward_number}
-                      </span>
-                    </td>
-                    <td style={{ color: "#64748b", fontSize: "0.87rem" }}>
-                      {new Date(c.created_at).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
-                    </td>
-                    <td><StatusBadge status={c.status} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="empty-state-v2">
-            <div className="empty-icon">
-              {search || filterStatus !== "all" ? <Filter size={36} /> : <ClipboardX size={36} />}
+        <div className="filter-pills">
+          <button className={`pill ${filterStatus === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All</button>
+          <button className={`pill ${filterStatus === 'processing' ? 'active' : ''}`} onClick={() => setFilter('processing')}>In Progress</button>
+          <button className={`pill ${filterStatus === 'resolved' ? 'active' : ''}`} onClick={() => setFilter('resolved')}>Resolved</button>
+        </div>
+
+        {activeReport && (
+          <div className="active-report-card">
+            <div className="ar-header">
+              <div>
+                <div className="ar-tag">ACTIVE REPORT</div>
+                <h2 className="ar-title">#SS-{(activeReport.id || activeReport.complaint_id).toString().substring(0, 6).toUpperCase()}: {activeReport.title}</h2>
+                <div className="ar-date">Submitted on {new Date(activeReport.created_at).toLocaleString()}</div>
+              </div>
+              <span className="pill" style={{ background: "#e2e8f0", color: "#475569", borderRadius:"8px", fontSize:"0.8rem", textTransform: "capitalize" }}>
+                {activeReport.status === 'processing' ? 'In Progress' : activeReport.status}
+              </span>
             </div>
-            <h3>{search || filterStatus !== "all" ? "No matches found" : "No complaints yet"}</h3>
-            <p>
-              {search || filterStatus !== "all"
-                ? "Try a different search term or remove the status filter."
-                : "You haven't filed any complaints yet. Click below to get started."}
-            </p>
-            {!search && filterStatus === "all" && (
-              <button className="btn btn-primary btn-sm" style={{ marginTop: "16px" }}
-                onClick={() => navigate("/citizen/complaint/create")}>
-                <PenLine size={16} /> File Your First Complaint
+
+            <div className="timeline-stepper">
+              <div className="step-line" style={{ background: activeReport.status === 'resolved' ? '#059669' : '#e2e8f0' }}></div>
+              
+              <div className="timeline-step">
+                <div className="step-icon bg-green"><Check size={16} strokeWidth={3} /></div>
+                <div className="step-content">
+                  <h4>Reported</h4>
+                  <p>Ticket created and initial evidence uploaded.</p>
+                </div>
+              </div>
+              
+              <div className="timeline-step">
+                <div className={`step-icon ${activeReport.status !== 'pending' ? 'bg-green' : 'bg-gray'}`}>
+                  {(activeReport.status !== 'pending') ? <Check size={16} strokeWidth={3} /> : <CircleDashed size={16} />}
+                </div>
+                <div className="step-content">
+                  <h4 style={{ color: activeReport.status !== 'pending' ? '#1e293b' : '#94a3b8' }}>Assigned</h4>
+                  <p>Assigned to Municipal Ward {activeReport.ward_number} Department.</p>
+                </div>
+              </div>
+
+              <div className="timeline-step">
+                <div className={`step-icon ${activeReport.status === 'processing' || activeReport.status === 'resolved' ? 'bg-light-green' : 'bg-gray'}`}>
+                  {activeReport.status === 'processing' ? <CircleDashed size={16} className="text-emerald-700" /> : <Check size={16} />}
+                </div>
+                <div className="step-content">
+                  <h4 style={{ color: activeReport.status === 'processing' || activeReport.status === 'resolved' ? '#1e293b' : '#94a3b8' }}>In Progress</h4>
+                  <p>Technicians are evaluating or currently on-site performing repairs.</p>
+                </div>
+              </div>
+
+              <div className="timeline-step" style={{ paddingBottom: 0 }}>
+                <div className={`step-icon ${activeReport.status === 'resolved' ? 'bg-green' : 'bg-gray'}`}>
+                  <CheckCircle2 size={16} />
+                </div>
+                <div className="step-content">
+                  <h4 style={{ color: activeReport.status === 'resolved' ? '#1e293b' : '#94a3b8' }}>Resolved</h4>
+                  <p>Inspection completed and service restored.</p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ borderTop: "1px solid #e2e8f0", paddingTop: "24px", marginTop: "16px", textAlign: "right" }}>
+              <button 
+                onClick={() => navigate(`/citizen/complaint/${activeReport.id || activeReport.complaint_id}`)}
+                style={{ background: "transparent", border: "none", color: "#0f172a", fontSize: "0.9rem", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
+                View Full Incident History <ArrowRight size={16} />
               </button>
-            )}
+            </div>
           </div>
         )}
-      </div>
+
+        <h3 className="section-title">Past Submissions</h3>
+        <div className="submission-list">
+          {filtered.map(c => (
+            <div 
+              key={c.complaint_id} 
+              className="sub-card" 
+              onClick={() => {
+                setSelectedComplaintId(c.complaint_id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              style={{ border: activeReport && activeReport.complaint_id === c.complaint_id ? '2px solid var(--brand-primary)' : '2px solid transparent' }}
+            >
+              <div className="sub-icon">
+                {c.category?.toLowerCase()?.includes('road') || c.category?.toLowerCase()?.includes('pothole') ? <AlertTriangle size={24} color="#b91c1c" /> : 
+                 c.category?.toLowerCase()?.includes('waste') ? <Trash2 size={24} color="#059669" /> : 
+                 c.category?.toLowerCase()?.includes('light') ? <CircleDashed size={24} color="#0f172a" /> : 
+                 <FileText size={24} color="#475569" />}
+              </div>
+              <div className="sub-details">
+                <h4>#SS-{(c.id || c.complaint_id).toString().substring(0, 6).toUpperCase()}: {c.title}</h4>
+                <p>{c.category} • {new Date(c.created_at).toLocaleDateString()}</p>
+              </div>
+              <span className={`sub-status ${c.status === 'pending' ? 'status-urgent' : 'status-resolved'}`} style={{ textTransform: "capitalize" }}>
+                {c.status}
+              </span>
+              <ArrowRight size={18} color="#94a3b8" />
+            </div>
+          ))}
+          {filtered.length === 0 && <p style={{color:"#94a3b8"}}>No past submissions match your criteria.</p>}
+        </div>
+      </main>
+
+      {/* ── RIGHT SIDEBAR ── */}
+      <aside className="sidebar-right">
+        <div className="metrics-card">
+          <h3 className="metric-title">Performance Metrics</h3>
+          
+          <div className="metric-item">
+            <div className="m-icon" style={{ background: "#d1fae5", color: "#059669" }}><AlertTriangle size={20} /></div>
+            <div className="m-info">
+              <h5>ACTIVE REPORTS</h5>
+              <span className="m-val">{activeCount}</span>
+            </div>
+          </div>
+
+          <div className="metric-item">
+            <div className="m-icon" style={{ background: "#e2e8f0", color: "#475569" }}><CheckCircle2 size={20} /></div>
+            <div className="m-info">
+              <h5>RESOLVED ALL TIME</h5>
+              <span className="m-val">{resolvedCount}</span>
+            </div>
+          </div>
+
+          <div className="metric-item">
+            <div className="m-icon" style={{ background: "#fee2e2", color: "#b91c1c" }}><Clock size={20} /></div>
+            <div className="m-info">
+              <h5>AVG. RESOLUTION TIME</h5>
+              <span className="m-val">3.2</span><span className="m-sub">Days</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="community-card">
+          <span className="cf-tag">COMMUNITY FOCUS</span>
+          <h3>How your reports shape our city.</h3>
+          <p>
+            In the last 30 days, 85% of citizen reports in your neighborhood were resolved within 48 hours. Thank you for contributing to a better community!
+          </p>
+          <button className="btn-learn">Learn More</button>
+        </div>
+
+        <h3 className="metric-title" style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#64748b" }}>RESOURCES</h3>
+        <div className="resources-list">
+          <a href="#" className="res-link">Submission Guidelines <ExternalLink size={14} /></a>
+          <a href="#" className="res-link">Contact City Hall <ExternalLink size={14} /></a>
+          <a href="#" className="res-link">FAQs <ExternalLink size={14} /></a>
+        </div>
+      </aside>
     </div>
   );
 };

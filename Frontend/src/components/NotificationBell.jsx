@@ -60,7 +60,9 @@ const NotificationBell = () => {
                       <div className="notif-item-text">
                         <p className="notif-message">{notif.message}</p>
                         <span className="notif-time">
-                          {new Date(notif.id).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          {notif.createdAt || notif.created_at 
+                            ? new Date(notif.createdAt || notif.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: "2-digit", minute: "2-digit" }) 
+                            : "Just now"}
                         </span>
                       </div>
                       {!notif.isRead && (

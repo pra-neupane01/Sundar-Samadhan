@@ -34,7 +34,7 @@
     width: 100px;
     height: 100px;
     border-radius: 36px;
-    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,7 +68,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
-.role-citizen { background: #eff6ff; color: #2563eb; }
+.role-citizen { background: var(--surface-base); color: var(--brand-primary); }
 .role-municipal { background: #f0fdf4; color: #16a34a; }
 .role-admin { background: #fdf2f8; color: #be185d; }
 
@@ -147,7 +147,7 @@
     background: white;
 }
 .form-control-v2:disabled { background: #f8fafc; color: #94a3b8; border-color: #f1f5f9; cursor: not-allowed; }
-.form-control-v2:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08); }
+.form-control-v2:focus { border-color: var(--brand-secondary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.08); }
 
 .form-row-v2 {
     display: flex;
@@ -221,12 +221,12 @@
 .history-info { display: flex; flex-direction: column; gap: 2px; }
 .history-date { font-size: 0.72rem; color: #94a3b8; font-weight: 500; }
 .history-reason { font-size: 0.85rem; font-weight: 600; color: #475569; }
-.history-pts { font-size: 0.95rem; font-weight: 800; color: #2563eb; }
+.history-pts { font-size: 0.95rem; font-weight: 800; color: var(--brand-primary); }
 
 .view-more-history {
     background: none;
     border: none;
-    color: #2563eb;
+    color: var(--brand-primary);
     font-size: 0.82rem;
     font-weight: 700;
     padding: 8px;

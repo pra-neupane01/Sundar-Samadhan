@@ -37,7 +37,7 @@
   margin-bottom: 18px;
   transition: border 0.15s;
 }
-.donate-amount-box:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+.donate-amount-box:focus-within { border-color: var(--brand-primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
 
 .donate-currency {
   font-size: 1.8rem;
@@ -76,8 +76,8 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.donate-quick-btn:hover { border-color: #bfdbfe; background: #eff6ff; color: #2563eb; }
-.donate-quick-btn.active { border-color: #2563eb; background: #eff6ff; color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+.donate-quick-btn:hover { border-color: var(--brand-accent); background: var(--surface-base); color: var(--brand-primary); }
+.donate-quick-btn.active { border-color: var(--brand-primary); background: var(--surface-base); color: var(--brand-primary); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
 
 /* Payment method */
 .donate-method-bar {
@@ -91,10 +91,10 @@
 }
 .donate-method-icon {
   width: 40px; height: 40px;
-  background: #eff6ff;
+  background: var(--surface-base);
   border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
-  color: #2563eb;
+  color: var(--brand-primary);
 }
 
 .donate-secure-text {
@@ -136,7 +136,7 @@
 }
 .donate-bullet {
   width: 6px; height: 6px;
-  background: #2563eb;
+  background: var(--brand-primary);
   border-radius: 50%;
   flex-shrink: 0;
 }

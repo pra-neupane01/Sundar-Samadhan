@@ -31,20 +31,23 @@ const WardComplaints = () => {
   const [updatingId, setUpdatingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [viewComplaint, setViewComplaint] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchWardComplaints = async () => {
       try {
         setLoading(true);
-        let endpoint = "/complaints/get-all-complaints";
+        let endpoint = `/complaints/get-all-complaints?page=${page}&limit=10`;
         if (selectedWard !== "all") {
-          endpoint = `/complaints/get-complaints-by-ward/${selectedWard}`;
+          endpoint = `/complaints/get-complaints-by-ward/${selectedWard}?page=${page}&limit=10`;
         }
         const response = await api.get(endpoint, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data.success) {
           setComplaints(response.data.complaint || []);
+          setTotalPages(response.data.totalPages || 1);
         }
       } catch (error) {
         console.error("Error fetching complaints:", error);
@@ -57,7 +60,7 @@ const WardComplaints = () => {
     if (token) {
       fetchWardComplaints();
     }
-  }, [token, selectedWard]);
+  }, [token, selectedWard, page]);
 
   // Real-time Socket Listener
   useEffect(() => {
@@ -66,11 +69,12 @@ const WardComplaints = () => {
       // Refresh list to show new complaint if it matches filter
       if (selectedWard === "all" || Number(selectedWard) === Number(data.ward_number)) {
         if (token) {
-          api.get(selectedWard === "all" ? "/complaints/get-all-complaints" : `/complaints/get-complaints-by-ward/${selectedWard}`, {
+          api.get(selectedWard === "all" ? `/complaints/get-all-complaints?page=${page}&limit=10` : `/complaints/get-complaints-by-ward/${selectedWard}?page=${page}&limit=10`, {
             headers: { Authorization: `Bearer ${token}` }
           }).then(res => {
             if (res.data.success) {
               setComplaints(res.data.complaint || []);
+              setTotalPages(res.data.totalPages || 1);
             }
           }).catch(err => console.error("Error refreshing complaints on socket event", err));
         }
@@ -78,7 +82,7 @@ const WardComplaints = () => {
     };
     socket.on("newWardComplaint", handleNewComplaint);
     return () => socket.off("newWardComplaint", handleNewComplaint);
-  }, [socket, selectedWard, token]);
+  }, [socket, selectedWard, token, page]);
 
   const handleStatusUpdate = async (complaintId, newStatus) => {
     setUpdatingId(complaintId);
@@ -113,7 +117,7 @@ const WardComplaints = () => {
   };
 
   const getStatusDot = (status) => {
-    const dots = { pending: "#f59e0b", processing: "#3b82f6", resolved: "#10b981" };
+    const dots = { pending: "#f59e0b", processing: "var(--brand-secondary)", resolved: "#10b981" };
     return dots[status?.toLowerCase()] || "#94a3b8";
   };
 
@@ -161,7 +165,7 @@ const WardComplaints = () => {
             <div className="ward-filter">
               <select
                 value={selectedWard}
-                onChange={(e) => setSelectedWard(e.target.value)}
+                onChange={(e) => { setSelectedWard(e.target.value); setPage(1); }}
                 className="filter-select"
               >
                 <option value="all">All Wards</option>
@@ -225,7 +229,7 @@ const WardComplaints = () => {
                           <div style={{ display: "flex", flexDirection: "column" }}>
                             <span style={{ fontWeight: 700, color: "#1e293b" }}>
                               {complaint.title}
-                              {complaint.image_url && <ImageIcon size={14} style={{ marginLeft: '8px', color: '#3b82f6' }} title="Has Evidence Image" />}
+                              {complaint.image_url && <ImageIcon size={14} style={{ marginLeft: '8px', color: 'var(--brand-secondary)' }} title="Has Evidence Image" />}
                             </span>
                             <span style={{ fontSize: "0.8rem", color: "#64748b" }}>{complaint.category || "General"}</span>
                           </div>
@@ -241,7 +245,7 @@ const WardComplaints = () => {
                           )}
                         </td>
                         <td>
-                          <span className="badge-ward" style={{ fontWeight: 700, color: '#3b82f6', background: "#eff6ff" }}>
+                          <span className="badge-ward" style={{ fontWeight: 700, color: 'var(--brand-secondary)', background: "var(--surface-base)" }}>
                             Ward {complaint.ward_number}
                           </span>
                         </td>
@@ -286,6 +290,28 @@ const WardComplaints = () => {
                 <div className="empty-icon"><AlertCircle size={32} /></div>
                 <h3>No complaints found</h3>
                 <p>Try adjusting your filters or search terms.</p>
+              </div>
+            )}
+            
+            {filteredComplaints.length > 0 && totalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "20px", gap: "10px" }}>
+                <button 
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  Previous
+                </button>
+                <span style={{ fontSize: "0.9rem", color: "#64748b" }}>
+                  Page <strong style={{color:"#0f172a"}}>{page}</strong> of <strong style={{color:"#0f172a"}}>{totalPages}</strong>
+                </span>
+                <button 
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                >
+                  Next
+                </button>
               </div>
             )}
           </div>

@@ -85,14 +85,40 @@ const createComplaintController = async (req, res) => {
 // GET ALL COMPLAINT || ADMIN, MUNICIPAL
 const getAllComplaintController = async (req, res) => {
   try {
-    const complaint = await pool.query(`SELECT * FROM complaints`);
+    const isAll = req.query.limit === 'all';
+    
+    if (isAll) {
+      const complaint = await pool.query('SELECT * FROM complaints ORDER BY created_at DESC');
+      return res.status(200).json({
+        success: true,
+        message: "Successfully fetched complaints.",
+        complaintCount: complaint.rows.length,
+        totalComplaints: complaint.rows.length,
+        totalPages: 1,
+        currentPage: 1,
+        complaint: complaint.rows,
+      });
+    }
 
-    const complaintDetails = complaint.rows;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const countResult = await pool.query('SELECT COUNT(*) FROM complaints');
+    const totalComplaints = parseInt(countResult.rows[0].count);
+
+    const complaint = await pool.query(
+      `SELECT * FROM complaints ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
 
     res.status(200).json({
       success: true,
       message: "Successfully fetched complaints.",
       complaintCount: complaint.rows.length,
+      totalComplaints,
+      totalPages: Math.ceil(totalComplaints / limit),
+      currentPage: page,
       complaint: complaint.rows,
     });
   } catch (error) {
@@ -108,16 +134,43 @@ const getAllComplaintController = async (req, res) => {
 const getComplaintByWardController = async (req, res) => {
   try {
     const wardNumber = req.params.wardNumber;
+    const isAll = req.query.limit === 'all';
+
+    if (isAll) {
+      const complaint = await pool.query('SELECT * FROM complaints WHERE ward_number=$1 ORDER BY created_at DESC', [wardNumber]);
+      return res.status(200).json({
+        success: true,
+        message: "Successfully fetched complaint.",
+        complaintCount: complaint.rows.length,
+        totalComplaints: complaint.rows.length,
+        totalPages: 1,
+        currentPage: 1,
+        complaint: complaint.rows,
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const countResult = await pool.query(
+      'SELECT COUNT(*) FROM complaints WHERE ward_number=$1',
+      [wardNumber]
+    );
+    const totalComplaints = parseInt(countResult.rows[0].count);
 
     const complaint = await pool.query(
-      `SELECT * FROM complaints WHERE ward_number=$1`,
-      [wardNumber],
+      `SELECT * FROM complaints WHERE ward_number=$1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+      [wardNumber, limit, offset],
     );
 
     res.status(200).json({
       success: true,
       message: "Successfully fetched complaint.",
       complaintCount: complaint.rows.length,
+      totalComplaints,
+      totalPages: Math.ceil(totalComplaints / limit),
+      currentPage: page,
       complaint: complaint.rows,
     });
   } catch (error) {
@@ -140,15 +193,46 @@ const getComplaintByUserController = async (req, res) => {
       });
     }
 
+    const isAll = req.query.limit === 'all';
+
+    if (isAll) {
+      const complaint = await pool.query(
+        'SELECT * FROM complaints WHERE created_by=$1 ORDER BY created_at DESC',
+        [userId]
+      );
+      return res.status(200).json({
+        success: true,
+        message: "Successfully fetched complaints.",
+        complaintCount: complaint.rows.length,
+        totalComplaints: complaint.rows.length,
+        totalPages: 1,
+        currentPage: 1,
+        complaint: complaint.rows,
+      });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const countResult = await pool.query(
+      'SELECT COUNT(*) FROM complaints WHERE created_by=$1',
+      [userId]
+    );
+    const totalComplaints = parseInt(countResult.rows[0].count);
+
     const complaint = await pool.query(
-      `SELECT * FROM complaints WHERE created_by=$1`,
-      [userId],
+      `SELECT * FROM complaints WHERE created_by=$1 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+      [userId, limit, offset],
     );
 
     res.status(200).json({
       success: true,
       message: "Successfully fetched complaint.",
       complaintCount: complaint.rows.length,
+      totalComplaints,
+      totalPages: Math.ceil(totalComplaints / limit),
+      currentPage: page,
       complaint: complaint.rows,
     });
   } catch (error) {

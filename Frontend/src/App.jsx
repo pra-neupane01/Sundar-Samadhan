@@ -14,6 +14,7 @@ import CreateComplaint from "./pages/citizen/CreateComplaint";
 import MyComplaints from "./pages/citizen/MyComplaints";
 import MyDonations from "./pages/citizen/MyDonations";
 import Donate from "./pages/citizen/Donate";
+import CommunityMap from "./pages/citizen/CommunityMap";
 import PaymentSuccess from "./pages/payment/PaymentSuccess";
 import PaymentCancel from "./pages/payment/PaymentCancel";
 import MunicipalDashboard from "./pages/municipal/MunicipalDashboard";
@@ -90,6 +91,15 @@ const App = () => {
           element={
             <ProtectedRoute>
               <MyComplaints />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/citizen/map"
+          element={
+            <ProtectedRoute>
+              <CommunityMap />
             </ProtectedRoute>
           }
         />

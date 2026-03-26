@@ -26,6 +26,7 @@ const CitizenDashboard = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [allComplaints, setAllComplaints] = useState([]);
   const [recentComplaints, setRecentComplaints] = useState([]);
+  const [liveUser, setLiveUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,8 +34,15 @@ const CitizenDashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // My Complaints
-        const compRes = await api.get("/complaints/my-complaints");
+
+        // Fetch Fresh User Profile for Sundar Points
+        const userRes = await api.get("/user/profile");
+        if (userRes.data.success) {
+          setLiveUser(userRes.data.user);
+        }
+
+        // My Complaints (Fetch all for accurate analytics)
+        const compRes = await api.get("/complaints/my-complaints?limit=all");
         if (compRes.data.success) {
           const c = compRes.data.complaint || [];
           setComplaintCount(c.length);
@@ -45,7 +53,9 @@ const CitizenDashboard = () => {
         // My Donations
         const donRes = await api.get("/donations/my-donations");
         if (donRes.data.success) {
-          setDonationCount(donRes.data.donationCount || donRes.data.donations?.length || 0);
+          const donations = donRes.data.donations || [];
+          const successfulDonations = donations.filter(d => d.status === "success" || d.status === "completed");
+          setDonationCount(successfulDonations.length);
         }
         
         // Get Ward or Global announcements
@@ -80,7 +90,7 @@ const CitizenDashboard = () => {
   };
 
   const getStatusDot = (status) => {
-    const dots = { pending: "#f59e0b", processing: "#3b82f6", resolved: "#10b981" };
+    const dots = { pending: "#f59e0b", processing: "var(--brand-secondary)", resolved: "#10b981" };
     return dots[status?.toLowerCase()] || "#94a3b8";
   };
 
@@ -98,7 +108,7 @@ const CitizenDashboard = () => {
     labels: ["Pending", "Processing", "Resolved"],
     datasets: [{
       data: [pendingCount, processingCount, resolvedCount],
-      backgroundColor: ["#f59e0b", "#3b82f6", "#10b981"],
+      backgroundColor: ["#f59e0b", "var(--brand-secondary)", "#10b981"],
       borderWidth: 0, hoverOffset: 6,
     }],
   };
@@ -117,7 +127,7 @@ const CitizenDashboard = () => {
   const pieOptions = {
     maintainAspectRatio: false, cutout: "68%",
     plugins: {
-      legend: { position: "bottom", labels: { padding: 16, usePointStyle: true, font: { size: 12, family: "Inter" }, color: "#475569" }},
+      legend: { position: "bottom", labels: { padding: 16, usePointStyle: true, font: { size: 12, family: "Public Sans" }, color: "#475569" }},
       tooltip: { backgroundColor: "#1e293b", padding: 10, cornerRadius: 8, bodyFont: { size: 13 } },
     },
   };
@@ -187,7 +197,7 @@ const CitizenDashboard = () => {
             <div className="stat-icon"><Star size={24} /></div>
             <div>
               <div className="stat-label">Sundar Points</div>
-              <div className="stat-value">{user?.sundar_points || 0}</div>
+              <div className="stat-value">{(liveUser || user)?.sundar_points || 0}</div>
               <div className="stat-trend" style={{ color: "#6d28d9" }}>{donationCount} donations made</div>
             </div>
           </div>
@@ -363,7 +373,7 @@ const CitizenDashboard = () => {
             background: #f8fafc; border-radius: 12px; cursor: pointer; transition: all 0.2s;
             border: 1px solid transparent;
         }
-        .cd-recent-item:hover { background: #eff6ff; border-color: #dbeafe; transform: translateX(4px); }
+        .cd-recent-item:hover { background: var(--surface-base); border-color: #dbeafe; transform: translateX(4px); }
         .cd-status-marker { width: 4px; height: 32px; border-radius: 4px; flex-shrink: 0; }
         .cd-item-details { flex: 1; min-width: 0; }
         .cd-item-title { font-size: 0.95rem; font-weight: 700; color: #1e293b; display: block; margin-bottom: 2px;
@@ -371,13 +381,13 @@ const CitizenDashboard = () => {
         .cd-item-meta { display: flex; align-items: center; gap: 10px; font-size: 0.78rem; color: #94a3b8; }
         .dot-sep.small { width: 3px; height: 3px; background: #cbd5e1; border-radius: 50%; }
         .cd-item-arrow { color: #cbd5e1; opacity: 0; transition: all 0.2s; }
-        .cd-recent-item:hover .cd-item-arrow { opacity: 1; transform: translateX(2px); color: #2563eb; }
+        .cd-recent-item:hover .cd-item-arrow { opacity: 1; transform: translateX(2px); color: var(--brand-primary); }
 
         /* Announcements sidebar */
         .cd-ann-list { display: flex; flex-direction: column; gap: 16px; }
         .cd-ann-item { border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
         .cd-ann-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .cd-ann-date { font-size: 0.7rem; font-weight: 700; color: #2563eb; background: #eff6ff;
+        .cd-ann-date { font-size: 0.7rem; font-weight: 700; color: var(--brand-primary); background: var(--surface-base);
             padding: 2px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; }
         .cd-ann-title { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 0 0 4px 0; }
         .cd-ann-snippet { font-size: 0.85rem; color: #64748b; line-height: 1.5; margin: 0; }

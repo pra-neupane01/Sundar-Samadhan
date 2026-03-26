@@ -27,8 +27,8 @@ const MunicipalDashboard = () => {
   const fetchWardComplaints = async () => {
     if (!token) return;
     try {
-      let endpoint = "/complaints/get-all-complaints";
-      if (selectedWard !== "all") endpoint = `/complaints/get-complaints-by-ward/${selectedWard}`;
+      let endpoint = "/complaints/get-all-complaints?limit=all";
+      if (selectedWard !== "all") endpoint = `/complaints/get-complaints-by-ward/${selectedWard}?limit=all`;
       const res = await api.get(endpoint, { headers: { Authorization: `Bearer ${token}` } });
       if (res.data.success) {
         const complaints = res.data.complaint || [];
@@ -70,7 +70,7 @@ const MunicipalDashboard = () => {
 
   const statusChartData = {
     labels: ["Pending", "In Progress", "Resolved"],
-    datasets: [{ data: [stats.pending, stats.processing, stats.resolved], backgroundColor: ["#f59e0b", "#3b82f6", "#10b981"], borderWidth: 0, hoverOffset: 6 }],
+    datasets: [{ data: [stats.pending, stats.processing, stats.resolved], backgroundColor: ["#f59e0b", "var(--brand-secondary)", "#10b981"], borderWidth: 0, hoverOffset: 6 }],
   };
   const catLabels = Object.keys(categoryData);
   const catValues = Object.values(categoryData);
@@ -82,7 +82,7 @@ const MunicipalDashboard = () => {
   const pieOptions = {
     maintainAspectRatio: false, cutout: "68%",
     plugins: {
-      legend: { position: "bottom", labels: { padding: 16, usePointStyle: true, font: { size: 12, family: "Inter" }, color: "#475569" } },
+      legend: { position: "bottom", labels: { padding: 16, usePointStyle: true, font: { size: 12, family: "Public Sans" }, color: "#475569" } },
       tooltip: { backgroundColor: "#1e293b", padding: 10, cornerRadius: 8 },
     },
   };

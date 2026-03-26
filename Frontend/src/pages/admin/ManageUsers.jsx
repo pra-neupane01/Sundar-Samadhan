@@ -8,7 +8,7 @@ import { Search, ShieldAlert, UserCheck, UserX, Users, ChevronDown } from "lucid
 const Badge = ({ role }) => {
   const map = {
     admin:     { bg: "#f3e8ff", color: "#7c3aed", label: "Admin" },
-    municipal: { bg: "#eff6ff", color: "#2563eb", label: "Municipal" },
+    municipal: { bg: "var(--surface-base)", color: "var(--brand-primary)", label: "Municipal" },
     citizen:   { bg: "#f0fdf4", color: "#16a34a", label: "Citizen" },
   };
   const s = map[role] || { bg: "#f1f5f9", color: "#64748b", label: role };
@@ -119,7 +119,7 @@ const ManageUsers = () => {
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                         <div style={{
                           width: "38px", height: "38px", borderRadius: "50%",
-                          background: "linear-gradient(135deg,#2563eb,#60a5fa)",
+                          background: "linear-gradient(135deg,var(--brand-primary),var(--brand-accent))",
                           color: "white", display: "flex", alignItems: "center",
                           justifyContent: "center", fontWeight: 800, fontSize: "1rem", flexShrink: 0
                         }}>{u.full_name?.charAt(0)}</div>
@@ -135,7 +135,7 @@ const ManageUsers = () => {
                           style={{
                             appearance: "none", border: "none", background: "transparent",
                             fontWeight: 700, fontSize: "0.85rem", cursor: "pointer",
-                            color: u.role === "admin" ? "#7c3aed" : u.role === "municipal" ? "#2563eb" : "#16a34a",
+                            color: u.role === "admin" ? "#7c3aed" : u.role === "municipal" ? "var(--brand-primary)" : "#16a34a",
                             paddingRight: "16px",
                           }}
                           value={u.role}

@@ -94,7 +94,7 @@ const Donate = () => {
           {/* Sidebar Info */}
           <div className="donate-sidebar">
             <div className="card donate-info-card">
-              <div className="donate-info-icon" style={{ background: "linear-gradient(135deg, #2563eb, #60a5fa)" }}>
+              <div className="donate-info-icon" style={{ background: "linear-gradient(135deg, var(--brand-primary), var(--brand-accent))" }}>
                 <Zap size={22} />
               </div>
               <h4>Why Donate?</h4>

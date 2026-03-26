@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2.5rem 1.5rem;
-  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-family: 'Public Sans', -apple-system, system-ui, sans-serif;
   color: #334155;
   background-color: #f8fafc;
   min-height: 100vh;
@@ -88,7 +88,7 @@
 
 .total-donated .stat-icon-bg { background-color: #ecfdf5; color: #059669; }
 .points-earned .stat-icon-bg { background-color: #fffbeb; color: #d97706; }
-.contribution-count .stat-icon-bg { background-color: #eff6ff; color: #2563eb; }
+.contribution-count .stat-icon-bg { background-color: var(--surface-base); color: var(--brand-primary); }
 
 .stat-label {
   display: block;
@@ -143,7 +143,7 @@
 
 .search-box input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--brand-secondary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -239,7 +239,7 @@
 }
 
 .amount-cell {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Public Sans', sans-serif;
 }
 
 .amount-cell .currency {
@@ -303,7 +303,7 @@
   width: 48px;
   height: 48px;
   border: 3px solid #f1f5f9;
-  border-top-color: #3b82f6;
+  border-top-color: var(--brand-secondary);
   border-radius: 50%;
   margin: 0 auto 1.5rem;
   animation: rotate 0.8s linear infinite;
@@ -338,7 +338,7 @@
 }
 
 .primary-action-btn {
-  background: #3b82f6;
+  background: var(--brand-secondary);
   color: white;
   padding: 0.875rem 2rem;
   border-radius: 0.75rem;
@@ -350,7 +350,7 @@
 }
 
 .primary-action-btn:hover {
-  background: #2563eb;
+  background: var(--brand-primary);
   transform: translateY(-2px);
   box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
 }

@@ -5,7 +5,7 @@
   justify-content: center;
   background: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
   padding: 2rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Public Sans', sans-serif;
 }
 
 .status-card {
@@ -60,7 +60,7 @@
 }
 
 .spinner-icon {
-  color: #3b82f6;
+  color: var(--brand-secondary);
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
@@ -145,7 +145,7 @@ h2 {
 .primary-btn {
   width: 100%;
   padding: 1rem;
-  background: #3b82f6;
+  background: var(--brand-secondary);
   color: white;
   border: none;
   border-radius: 14px;
@@ -161,7 +161,7 @@ h2 {
 }
 
 .primary-btn:hover {
-  background: #2563eb;
+  background: var(--brand-primary);
   transform: translateY(-2px);
   box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.3);
 }

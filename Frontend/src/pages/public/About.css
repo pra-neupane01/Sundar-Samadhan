@@ -1,304 +1,263 @@
-/* =========================================
-   ABOUT US PAGE (Sundar Samadhan)
-========================================= */
+/* EMERALD CIVIC DESIGN SYSTEM - About Page */
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap');
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap");
+:root {
+  --primary: #004d34;
+  --primary-container: #006747;
+  --on-surface: #191c1c;
+  --on-surface-variant: #3f4943;
+  --surface: #f8f9f9;
+  --surface-container-low: #f3f4f4;
+  --surface-container-lowest: #ffffff;
+  --outline-variant: rgba(190, 201, 193, 0.2);
+  --shadow-ambient: 0px 12px 32px rgba(25, 28, 28, 0.06);
+}
 
 .about-page {
-  font-family: "Inter", sans-serif;
-  color: #1e293b;
-  line-height: 1.6;
-  background-color: white;
-  overflow-x: hidden;
+  font-family: 'Public Sans', sans-serif;
+  background-color: var(--surface);
+  color: var(--on-surface);
+  min-height: 100vh;
 }
 
 .content-container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 5%;
 }
 
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 40px;
+  gap: 4rem;
 }
 
-@media (max-width: 768px) {
-  .grid-2 {
-    grid-template-columns: 1fr;
-  }
+.align-center {
+  align-items: center;
 }
 
-.text-center { text-align: center; }
-.text-white { color: white !important; }
-.opacity-80 { opacity: 0.8 !important; }
-.text-gradient {
-  background: linear-gradient(90deg, #10b981, #059669);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Base Cards */
+.card, .feature-item, .trust-banner, .about-card-mini, .visual-card {
+  background: var(--surface-container-lowest) !important;
+  border: none !important;
+  box-shadow: var(--shadow-ambient) !important;
+  border-radius: 20px !important;
+  padding: 32px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover, .feature-item:hover, .about-card-mini:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 16px 40px rgba(25, 28, 28, 0.08) !important;
+}
+
+/* Typography */
+.section-title {
+  font-size: 2.25rem;
   font-weight: 800;
+  color: var(--on-surface);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
 }
 
-/* 1. HERO SECTION */
+.section-subtitle {
+  font-size: 1.15rem;
+  color: var(--on-surface-variant);
+  line-height: 1.5;
+}
+
+p {
+  color: var(--on-surface-variant);
+  line-height: 1.6;
+}
+
+/* Hero */
 .about-hero {
+  background-color: var(--surface-container-low);
+  padding: 8rem 0 6rem;
+  text-align: center;
   position: relative;
-  padding: 120px 0 80px;
-  background: white;
-  overflow: hidden;
 }
 
 .hero-badge {
   display: inline-block;
-  background: #f0fdf4;
-  color: #10b981;
+  background: var(--surface-container-lowest);
   padding: 8px 16px;
   border-radius: 999px;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
+  color: var(--primary);
   margin-bottom: 24px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-ambient);
 }
 
 .hero-title {
-  font-family: "Outfit", sans-serif;
   font-size: 3.5rem;
   font-weight: 800;
-  line-height: 1.2;
+  color: var(--on-surface);
   margin-bottom: 24px;
-  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.hero-title .text-gradient {
+  color: var(--primary);
 }
 
 .hero-description {
-  font-size: 1.25rem;
-  color: #64748b;
+  font-size: 1.15rem;
   max-width: 600px;
-  margin-bottom: 40px;
+  margin: 0 auto;
 }
 
-.about-hero::after {
-  content: "";
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-  z-index: 1;
-}
-
-@media (max-width: 768px) {
-  .hero-title { font-size: 2.5rem; }
-  .about-hero { padding: 80px 0 60px; }
-}
-
-/* 2. MISSION & VISION CARD SECTION */
-.mission-vision {
-  padding: 60px 0;
-  margin-top: -60px;
-  position: relative;
-  z-index: 5;
-}
-
-.card {
-  background: white;
-  border: 1px solid #f1f5f9;
-  border-radius: 24px;
-  padding: 48px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04);
-}
+/* Sections */
+.mission-vision { padding: 6rem 0; }
+.system-features { padding: 6rem 0; background: var(--surface-container-low); }
+.benefits-section { padding: 6rem 0; }
 
 .card-icon {
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
+  color: var(--primary);
+  background: var(--surface-container-low);
 }
 
-.card-icon.blue { background: #f0fdf4; color: #10b981; }
-.card-icon.purple { background: #ecfdf5; color: #059669; }
-
-.mission-vision h3 {
+.card h3 {
   font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 16px;
-  color: #0f172a;
-}
-
-/* 3. SYSTEM FEATURES SECTION */
-.system-features {
-  padding: 100px 0;
-  background: #f8fafc;
-}
-
-.section-title {
-  font-family: "Outfit", sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
+  color: var(--on-surface);
   margin-bottom: 16px;
 }
 
-.section-subtitle {
-  color: #64748b;
-  font-size: 1.1rem;
-  margin-bottom: 60px;
-}
-
+/* Features grid */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 32px;
-}
-
-.feature-item {
-  background: white;
-  padding: 40px;
-  border-radius: 24px;
-  transition: transform 0.3s;
-  border: 1px solid #f1f5f9;
-}
-
-.feature-item:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  margin-top: 4rem;
 }
 
 .feature-icon {
-  color: #10b981;
-  margin-bottom: 24px;
-  display: inline-block;
-  padding: 12px;
-  background: #f0fdf4;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--primary);
+  background: #f0fdf4;
 }
 
 .feature-item h4 {
   font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 12px;
+  color: var(--on-surface);
 }
 
-@media (max-width: 768px) {
-  .features-grid { grid-template-columns: 1fr; }
-}
-
-/* 4. BENEFITS LIST SECTION */
-.benefits-section {
-  padding: 120px 0;
-}
-
+/* Benefits list */
 .benefits-list {
   list-style: none;
   padding: 0;
-  margin-top: 32px;
+  margin-top: 2rem;
 }
 
 .benefits-list li {
   display: flex;
   gap: 16px;
   margin-bottom: 24px;
-  font-size: 1.1rem;
 }
 
 .benefit-dot {
-  min-width: 12px;
+  width: 12px;
   height: 12px;
-  background: #10b981;
   border-radius: 50%;
-  margin-top: 8px;
+  background: var(--primary);
+  margin-top: 6px;
+  flex-shrink: 0;
 }
 
-.visual-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 32px;
-  box-shadow: -20px 30px 60px -15px rgba(0, 0, 0, 0.15);
-  max-width: 400px;
-  margin-left: auto;
+.benefits-list strong {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--on-surface);
+  margin-bottom: 4px;
 }
 
-.visual-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 24px;
-  font-weight: 600;
-}
-
-.skeleton-line {
-  height: 12px;
-  background: #f1f5f9;
-  border-radius: 999px;
-  margin-bottom: 12px;
-}
-
-.skeleton-line.short { width: 60%; }
-
-/* 5. TRUST BANNER SECTION */
-.trust-section {
-  padding: 60px 0;
-}
-
+/* Trust Banner */
 .trust-banner {
-  background: linear-gradient(135deg, #064e3b 0%, #16a34a 100%);
-  border-radius: 32px;
-  padding: 64px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 40px;
+  flex-wrap: wrap;
+  gap: 32px;
 }
 
-.trust-info { flex: 1.5; }
+.trust-banner .text-white { color: #fff !important; }
+.trust-banner p { color: rgba(255,255,255,0.8); }
+
 .trust-stats {
   display: flex;
-  gap: 40px;
-  flex: 1;
-  justify-content: flex-end;
+  gap: 48px;
 }
 
-.stat-box { text-align: center; }
-.stat-num { font-size: 2.8rem; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
-.stat-lab { color: white; opacity: 0.95; font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-
-@media (max-width: 992px) {
-  .trust-banner { flex-direction: column; text-align: center; padding: 48px 24px; }
-  .trust-stats { justify-content: center; }
-}
-
-/* 6. CTA & FOOTER */
-.about-cta {
-  padding: 120px 0;
-  background: white;
-}
-
-.cta-buttons {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 40px;
-}
-
-.btn-lg {
-  padding: 16px 32px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.about-footer {
-  padding: 60px 0;
+.stat-box {
   text-align: center;
-  border-top: 1px solid #f1f5f9;
-  color: #94a3b8;
-  font-size: 0.9rem;
+}
+
+.stat-num {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.stat-lab {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--primary) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  padding: 14px 28px !important;
+  box-shadow: var(--shadow-ambient) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-secondary {
+  background: transparent !important;
+  color: var(--primary) !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+
+/* Footer */
+.about-footer {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--on-surface-variant);
+  border-top: 1px solid var(--surface-container-low);
+  margin-top: 60px;
+}
+
+@media (max-width: 768px) {
+  .grid-2, .features-grid { grid-template-columns: 1fr; }
+  .trust-banner { flex-direction: column; text-align: center; }
+  .hero-title { font-size: 2.5rem; }
 }

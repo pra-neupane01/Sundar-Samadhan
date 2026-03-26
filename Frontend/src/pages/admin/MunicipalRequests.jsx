@@ -270,9 +270,9 @@ const MunicipalRequests = () => {
                     transition: all 0.15s;
                 }
                 .mr-doc-link:hover {
-                    border-color: #3b82f6;
-                    background: #eff6ff;
-                    color: #2563eb;
+                    border-color: var(--brand-secondary);
+                    background: var(--surface-base);
+                    color: var(--brand-primary);
                 }
                 .mr-external-icon {
                     margin-left: auto;

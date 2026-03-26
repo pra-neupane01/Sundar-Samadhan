@@ -114,7 +114,7 @@ const Notifications = () => {
             overflow: hidden;
         }
         .notif-card-item.unread {
-            border-left: 4px solid #2563eb;
+            border-left: 4px solid var(--brand-primary);
             background: linear-gradient(to right, #ffffff, #f8fafc);
             transform: scale(1.01);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
@@ -142,8 +142,8 @@ const Notifications = () => {
             flex-shrink: 0;
         }
         .notif-type-icon.unread {
-            background: #eff6ff;
-            color: #2563eb;
+            background: var(--surface-base);
+            color: var(--brand-primary);
         }
         .notif-type-icon.read {
             background: #f1f5f9;
