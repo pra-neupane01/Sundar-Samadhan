@@ -4,7 +4,7 @@ import { SocketContext } from "../../context/SocketContext";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import {
-  ClipboardList, CheckCircle, Clock, Settings, ListChecks, Megaphone, TrendingUp, Activity
+  ClipboardList, CheckCircle, Clock, Settings, ListChecks, Megaphone, TrendingUp, Activity, HeartHandshake, Coins
 } from "lucide-react";
 import {
   Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement, BarElement,
@@ -37,7 +37,8 @@ const MunicipalDashboard = () => {
           if (c.status === "pending") pending++;
           else if (c.status === "processing") processing++;
           else if (c.status === "resolved") resolved++;
-          const cat = c.category || "General";
+          const isNullString = c.category === "null" || c.category === "undefined";
+          const cat = (!c.category || isNullString) ? "General" : c.category;
           categories[cat] = (categories[cat] || 0) + 1;
         });
         setStats({ total: complaints.length, pending, processing, resolved });
@@ -61,11 +62,9 @@ const MunicipalDashboard = () => {
   const getGreeting = () => {
     const h = new Date().getHours();
     const name = user?.full_name || "";
-    const parts = name.trim().split(" ");
-    const displayName = parts.length > 1 ? `Sir ${parts[parts.length - 1]}` : name;
-    if (h < 12) return `Good morning, ${displayName}`;
-    if (h < 17) return `Good afternoon, ${displayName}`;
-    return `Good evening, ${displayName}`;
+    if (h < 12) return `Good morning, ${name} sir`;
+    if (h < 17) return `Good afternoon, ${name} sir`;
+    return `Good evening, ${name} sir`;
   };
 
   const statusChartData = {
@@ -185,6 +184,14 @@ const MunicipalDashboard = () => {
               <div className="qa-desc">Post and manage announcements for the municipality or specific wards.</div>
             </div>
             <button className="btn btn-primary btn-sm">Manage →</button>
+          </div>
+          <div className="quick-action-card qa-amber" onClick={() => navigate("/municipal/donate")}>
+            <div className="qa-icon"><Coins size={24} /></div>
+            <div>
+              <div className="qa-title">Impact Donation</div>
+              <div className="qa-desc">Fund community projects and view your donation history.</div>
+            </div>
+            <button className="btn btn-sm" style={{ background: "#f59e0b", color: "white" }}>Donate Funds</button>
           </div>
         </div>
 

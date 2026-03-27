@@ -212,6 +212,22 @@ const App = () => {
           }
         />
         <Route
+          path="/municipal/donations"
+          element={
+            <ProtectedRoute>
+              <MyDonations />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/municipal/donate"
+          element={
+            <ProtectedRoute>
+              <Donate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/citizen/announcements"
           element={
             <ProtectedRoute>

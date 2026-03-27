@@ -105,7 +105,8 @@ const CitizenDashboard = () => {
   const getCategoryCounts = () => {
     const counts = {};
     allComplaints.forEach(c => {
-      const cat = c.category || "General";
+      const isNullString = c.category === "null" || c.category === "undefined";
+      const cat = (!c.category || isNullString) ? "General" : c.category;
       counts[cat] = (counts[cat] || 0) + 1;
     });
     return counts;

@@ -128,7 +128,7 @@ const deleteAnnouncementController = async (req, res) => {
 const updateAnnouncementController = async (req, res) => {
   try {
     const announcementId = req.params.id;
-    const { title, content } = req.body;
+    const { title, content, ward_number } = req.body;
     const userId = req.user.id;
     const userRole = req.user.role;
     const userWard = req.user.ward_number;
@@ -147,8 +147,8 @@ const updateAnnouncementController = async (req, res) => {
     }
 
     const result = await pool.query(
-      "UPDATE announcements SET title = $1, content = $2 WHERE announcement_id = $3 RETURNING *",
-      [title, content, announcementId]
+      "UPDATE announcements SET title = $1, content = $2, ward_number = $3 WHERE announcement_id = $4 RETURNING *",
+      [title, content, ward_number || null, announcementId]
     );
 
     res.status(200).json({ success: true, message: "Announcement updated successfully", announcement: result.rows[0] });

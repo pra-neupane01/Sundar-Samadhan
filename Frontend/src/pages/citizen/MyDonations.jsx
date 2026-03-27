@@ -114,25 +114,27 @@ const MyDonations = () => {
         </div>
 
         <nav className="sidebar-nav">
-          <div className="nav-item" onClick={() => navigate("/dashboard")}>
+          <div className="nav-item" onClick={() => navigate(user?.role === 'municipal' ? "/municipal" : "/dashboard")}>
             <LayoutDashboard size={20} /> Overview
           </div>
-          <div className="nav-item" onClick={() => navigate("/citizen/complaints")}>
+          <div className="nav-item" onClick={() => navigate(user?.role === 'municipal' ? "/municipal/complaints" : "/citizen/complaints")}>
             <FileText size={20} /> My Reports
           </div>
-          <div className="nav-item" onClick={() => navigate("/citizen/announcements")}>
+          <div className="nav-item" onClick={() => navigate(user?.role === 'municipal' ? "/municipal/announcements" : "/citizen/announcements")}>
             <Megaphone size={20} /> Announcements
           </div>
-          <div className="nav-item" onClick={() => navigate("/citizen/map")}>
-            <MapIcon size={20} /> Community Map
-          </div>
+          {user?.role !== 'municipal' && (
+            <div className="nav-item" onClick={() => navigate("/citizen/map")}>
+              <MapIcon size={20} /> Community Map
+            </div>
+          )}
           <div className="nav-item active">
             <History size={20} fill="#d1fae5" /> Donation History
           </div>
         </nav>
 
         <div className="sidebar-bottom">
-          <button className="btn-new-report" onClick={() => navigate("/citizen/donate")}>
+          <button className="btn-new-report" onClick={() => navigate(user?.role === 'municipal' ? "/municipal/donate" : "/citizen/donate")}>
             <Plus size={20} strokeWidth={3} /> New Donation
           </button>
           <div className="legal-links">
