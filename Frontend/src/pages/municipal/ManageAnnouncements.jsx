@@ -68,8 +68,16 @@ const ManageAnnouncements = () => {
     try {
       if (editingId) {
         // UPDATE
-        const updateData = { title: formData.title, content: formData.content, ward_number: formData.ward_number === "all" ? null : formData.ward_number };
-        const res = await api.put(`/announcements/update-announcement/${editingId}`, updateData, { headers: { Authorization: `Bearer ${token}` } });
+        const data = new FormData();
+        data.append("title", formData.title);
+        data.append("content", formData.content);
+        data.append("ward_number", formData.ward_number === "all" ? "" : formData.ward_number);
+        if (formData.image) data.append("image", formData.image);
+
+        const res = await api.put(`/announcements/update-announcement/${editingId}`, data, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+        });
+
         if (res.data.success) {
           toast.success("Announcement updated!");
           cancelEdit();
@@ -283,6 +291,23 @@ const ManageAnnouncements = () => {
                     <option value="all">All Wards (Public)</option>
                     {Array.from({ length: 15 }, (_, i) => i + 1).map(w => <option key={w} value={w}>Ward {w} Only</option>)}
                   </select>
+                </div>
+                <div className="form-group" style={{ marginTop: "16px" }}>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: "0.85rem" }}>Announcement Image (Optional)</label>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px", background: "#f8f9fa", border: "1px dashed #cbd5e1", borderRadius: "12px" }}>
+                    <ImageIcon size={20} color="#64748b" />
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleFileChange} 
+                      style={{ fontSize: "0.8rem", color: "#64748b" }} 
+                    />
+                  </div>
+                  {formData.image && (
+                    <p style={{ fontSize: "0.75rem", color: "var(--brand-primary)", marginTop: "4px", fontWeight: 600 }}>
+                      Selected: {formData.image.name}
+                    </p>
+                  )}
                 </div>
                 <button type="submit" className="btn-new-report" disabled={loading} style={{ width: "100%", marginTop: "24px", padding: "14px", background: "var(--brand-primary)" }}>
                   {loading ? (editingId ? "Updating..." : "Posting...") : (editingId ? "Save Changes" : "Broadcast Announcement")}

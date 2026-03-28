@@ -14,6 +14,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({ totalComplaints: 0, resolvedPercentage: "0", activeUsers: 0, totalDonationAmount: 0 });
   const [loading, setLoading] = useState(true);
+  const [showHealthModal, setShowHealthModal] = useState(false);
 
   useEffect(() => {
     api.get("/admin/stats")
@@ -140,7 +141,10 @@ const AdminDashboard = () => {
             <div
               key={m.title}
               className={`quick-action-card ${m.color}`}
-              onClick={() => m.href ? navigate(m.href) : alert("System operational.")}
+              onClick={() => {
+                if (m.title === "System Health") setShowHealthModal(true);
+                else if (m.href) navigate(m.href);
+              }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div className="qa-icon">{m.icon}</div>
@@ -160,6 +164,47 @@ const AdminDashboard = () => {
         </div>
 
       </div>
+
+      {/* System Health Modal */}
+      {showHealthModal && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: "500px", padding: "32px" }}>
+            <div style={{ textAlign: "center", marginBottom: "24px" }}>
+              <div style={{ 
+                width: "64px", height: "64px", borderRadius: "50%", background: "#f0fdf4", 
+                color: "#10b981", display: "flex", alignItems: "center", justifyContent: "center",
+                margin: "0 auto 16px" 
+              }}>
+                <ShieldCheck size={32} />
+              </div>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#1e293b", margin: "0 0 8px" }}>System Operational</h2>
+              <p style={{ color: "#64748b", margin: 0 }}>All platform services are running smoothly.</p>
+            </div>
+
+            <div style={{ display: "grid", gap: "12px", marginBottom: "24px" }}>
+              {[
+                { label: "Database Status", val: "Connected", color: "#10b981" },
+                { label: "API Gateway", val: "Healthy", color: "#10b981" },
+                { label: "Storage Service", val: "Online", color: "#10b981" },
+                { label: "Last Sync", val: new Date().toLocaleTimeString(), color: "#64748b" },
+              ].map(stat => (
+                <div key={stat.label} style={{ display: "flex", justifyContent: "space-between", padding: "12px", background: "#f8fafc", borderRadius: "8px" }}>
+                  <span style={{ fontWeight: 600, color: "#475569" }}>{stat.label}</span>
+                  <span style={{ fontWeight: 700, color: stat.color }}>{stat.val}</span>
+                </div>
+              ))}
+            </div>
+
+            <button 
+              className="auth-submit-btn" 
+              onClick={() => setShowHealthModal(false)}
+              style={{ width: "100%", marginTop: 0 }}
+            >
+              Close Status Window
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

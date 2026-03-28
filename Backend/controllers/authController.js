@@ -4,19 +4,22 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const sendEmail = require("../utils/emailService");
 
-//GENERATE TOKEN
+/**
+ * Generates a JWT token for authenticated users
+ */
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
 };
 
-// REGISTER USER
+/**
+ * Handles new citizen registration
+ */
 const registerController = async (req, res) => {
   try {
     const { fullName, email, password, wardNumber } = req.body;
 
-    // 🔹 Basic field validation
     if (!fullName || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -24,7 +27,6 @@ const registerController = async (req, res) => {
       });
     }
 
-    // 🔹 Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({
@@ -33,7 +35,6 @@ const registerController = async (req, res) => {
       });
     }
 
-    // 🔹 Password strength check
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
@@ -41,7 +42,6 @@ const registerController = async (req, res) => {
       });
     }
 
-    // 🔹 Check duplicate email
     const userExists = await pool.query(
       "SELECT * FROM users WHERE email = $1",
       [email],
@@ -77,7 +77,10 @@ const registerController = async (req, res) => {
     });
   }
 };
-//LOGIN USER
+
+/**
+ * Handles user login and session creation
+ */
 const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -119,15 +122,16 @@ const loginController = async (req, res) => {
   }
 };
 
-// FORGOT PASSWORD
+/**
+ * Initiates password reset flow by sending a tokenized link via email
+ */
 const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
     
-    // 🔹 Security: Don't reveal if user exists (prevents email enumeration)
+    // Check if user exists but don't reveal status for security
     const userResult = await pool.query("SELECT id, full_name FROM users WHERE email = $1", [email]);
     
-    // Even if user not found, we send a success response to the client
     if (userResult.rows.length === 0) {
       return res.status(200).json({ 
         success: true, 
@@ -178,7 +182,9 @@ const forgotPasswordController = async (req, res) => {
   }
 };
 
-// CHECK RESET TOKEN (Verify if token is valid without resetting)
+/**
+ * Validates reset token without performing password update
+ */
 const checkResetTokenController = async (req, res) => {
   try {
     const { token } = req.params;
@@ -198,12 +204,13 @@ const checkResetTokenController = async (req, res) => {
   }
 };
 
-// RESET PASSWORD
+/**
+ * Finalizes password reset with a new password
+ */
 const resetPasswordController = async (req, res) => {
   try {
     const { token, newPassword } = req.body;
     
-    // Find user with valid token and not expired
     const userResult = await pool.query(
       "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expiry > NOW()",
       [token]

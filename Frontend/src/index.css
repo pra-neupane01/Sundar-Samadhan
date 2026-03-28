@@ -630,8 +630,9 @@ input, select, textarea { font-family: var(--font-base); }
   background: rgba(15,23,42,0.5);
   backdrop-filter: blur(4px);
   z-index: 500;
-  display: flex; align-items: center; justify-content: center;
-  padding: var(--space-4);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: var(--space-10) var(--space-4);
+  overflow-y: auto;
   animation: fadeIn 0.15s ease;
 }
 .modal-box {
@@ -641,15 +642,21 @@ input, select, textarea { font-family: var(--font-base); }
   width: 100%;
   max-width: 540px;
   animation: slideUp 0.2s ease;
-  overflow: hidden;
 }
+
 .modal-header {
   padding: var(--space-5) var(--space-6);
   border-bottom: 1px solid var(--gray-100);
   display: flex; align-items: center; justify-content: space-between;
 }
+
 .modal-header h3 { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
-.modal-body   { padding: var(--space-6); }
+
+.modal-body { 
+  padding: var(--space-6);
+  max-height: 70vh;
+  overflow-y: auto;
+}
 .modal-footer { padding: var(--space-4) var(--space-6); background: var(--gray-50); border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; gap: var(--space-3); }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

@@ -15,15 +15,14 @@ const { checkOverdueComplaints } = require("./controllers/complaintController");
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-// Serve uploaded images
+// Static route for serving uploaded complaint/announcement images
 app.use("/uploads", express.static("uploads"));
 
-// Routes
+// API Routes
 app.use("/api/v1/test", require("./routes/testRoute"));
 app.use("/api/v1/auth", require("./routes/authRoute"));
 app.use("/api/v1/complaints", require("./routes/complaintRoute"));
@@ -34,53 +33,46 @@ app.use("/api/v1/admin", require("./routes/adminRoute"));
 app.use("/api/v1/notifications", require("./routes/notificationRoute"));
 
 app.get("/", (req, res) => {
-  res.status(200).send("Server is running");
+  res.status(200).send("Sundar Samadhan API is running");
 });
 
-// Create HTTP server
 const server = http.createServer(app);
 
-// Initialize Socket.io
+// Socket.io initialization for real-time alerts and notifications
 const io = new Server(server, {
   cors: {
-    origin: "*", // change in production
+    origin: "*", 
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
 });
 
 io.on("connection", (socket) => {
-  console.log("New client connected:", socket.id);
-
   socket.on("joinUser", (userId) => {
-    console.log(`👤 User joining room: ${userId}`);
     socket.join(userId);
   });
 
   socket.on("joinWard", (wardNumber) => {
-    console.log(`🏠 User joining ward room: ward_${wardNumber}`);
     socket.join(`ward_${wardNumber}`);
   });
 
   socket.on("joinRole", (role) => {
-    console.log(`🛡️ User joining role room: ${role}_room`);
     socket.join(`${role}_room`);
     
-    // If a municipal officer or admin connects, run the overdue check to send them the alerts
+    // Trigger overdue check when officers/admin connect
     if (role === "municipal" || role === "admin") {
       checkOverdueComplaints(io);
     }
   });
-
-  socket.on("disconnect", () => {
-    console.log("Client disconnected:", socket.id);
-  });
 });
 
-// Make io globally available
+// Inject io into app to access it from controllers
 app.set("io", io);
 
 const PORT = process.env.PORT || 4849;
 
+/**
+ * Initializes database schemas and starts the server
+ */
 const initializeDatabase = async () => {
   try {
     await userSchema();
@@ -94,7 +86,7 @@ const initializeDatabase = async () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Error initializing database schema:", error.message);
+    console.error("CRITICAL: Error initializing database schema:", error.message);
     process.exit(1);
   }
 };

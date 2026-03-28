@@ -1,62 +1,47 @@
 const pool = require("../config/db");
 
-// CREATE ANNOUNCEMENT || (MUNICIPAL, ADMIN)
+/**
+ * Creates a new public announcement.
+ * Accessible by Municipal officers and Admins.
+ */
 const createAnnouncementController = async (req, res) => {
   try {
     const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
-
     const userId = req.user?.id;
+
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authorized.",
-      });
+      return res.status(401).json({ success: false, message: "User not authorized." });
     }
 
     const { title, content, ward_number } = req.body;
 
-    // 🔹 Basic field validation
     if (!title || !content) {
-      return res.status(400).json({
-        success: false,
-        message: "All required fields must be provided",
-      });
+      return res.status(400).json({ success: false, message: "All required fields must be provided" });
     }
 
     const announcement = await pool.query(
-      `INSERT INTO announcements 
-  (title, content, image_url, ward_number, created_by) 
-  VALUES ($1, $2, $3, $4, $5) 
-  RETURNING *`,
+      `INSERT INTO announcements (title, content, image_url, ward_number, created_by) 
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [title, content, imagePath, ward_number || null, userId],
     );
-
-    const announcementDetails = announcement.rows[0];
 
     res.status(201).json({
       success: true,
       message: "Announcements Successfully Posted.",
-      announcementCount: announcement.rows.length,
-      ...announcementDetails,
+      ...announcement.rows[0],
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to post announcement.",
-      error,
-    });
+    console.error("CREATE ANNOUNCEMENT ERROR:", error);
+    res.status(500).json({ success: false, message: "Failed to post announcement." });
   }
 };
 
-// GET ANNOUNCEMENT || (PUBLIC)
+/**
+ * Fetches all announcements globally.
+ */
 const getAnnouncementController = async (req, res) => {
   try {
-    const announcement = await pool.query(
-      `SELECT * FROM announcements ORDER BY created_at DESC`,
-    );
-    const announcementDetails = announcement.rows;
-
+    const announcement = await pool.query(`SELECT * FROM announcements ORDER BY created_at DESC`);
     res.status(200).json({
       success: true,
       message: "Announcement fetched successfully.",
@@ -64,23 +49,19 @@ const getAnnouncementController = async (req, res) => {
       announcementCount: announcement.rows.length,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      success: false,
-      message: "Error in Get Announcement API.",
-    });
+    res.status(500).json({ success: false, message: "Error fetching announcements." });
   }
 };
 
-// GET ANNOUNCEMENT BY WARD  || (PUBLIC)
+/**
+ * Fetches announcements for a specific ward or general city-wide notices.
+ */
 const getAnnouncementByWardController = async (req, res) => {
   try {
     const wardNumber = req.params.wardNumber;
 
     const announcement = await pool.query(
-      `SELECT * FROM announcements 
-       WHERE ward_number = $1 OR ward_number IS NULL
-       ORDER BY created_at DESC`,
+      `SELECT * FROM announcements WHERE ward_number = $1 OR ward_number IS NULL ORDER BY created_at DESC`,
       [wardNumber],
     );
 
@@ -91,14 +72,14 @@ const getAnnouncementByWardController = async (req, res) => {
       announcementCount: announcement.rows.length,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error in Get Announcement By Ward API.",
-    });
+    res.status(500).json({ success: false, message: "Error fetching ward announcements." });
   }
 };
 
-// DELETE ANNOUNCEMENT || OWNER OR ADMIN
+/**
+ * Deletes an announcement.
+ * Only the owner, a ward-matching municipal officer, or an admin can delete.
+ */
 const deleteAnnouncementController = async (req, res) => {
   try {
     const announcementId = req.params.id;
@@ -124,7 +105,10 @@ const deleteAnnouncementController = async (req, res) => {
   }
 };
 
-// UPDATE ANNOUNCEMENT
+/**
+ * Updates an existing announcement.
+ * Supports image updates via multipart form data.
+ */
 const updateAnnouncementController = async (req, res) => {
   try {
     const announcementId = req.params.id;
@@ -146,10 +130,19 @@ const updateAnnouncementController = async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized to update this announcement" });
     }
 
-    const result = await pool.query(
-      "UPDATE announcements SET title = $1, content = $2, ward_number = $3 WHERE announcement_id = $4 RETURNING *",
-      [title, content, ward_number || null, announcementId]
-    );
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
+    
+    let query = "UPDATE announcements SET title = $1, content = $2, ward_number = $3";
+    let params = [title, content, ward_number || null, announcementId];
+    
+    if (imagePath !== undefined) {
+      query += ", image_url = $5";
+      params.push(imagePath);
+    }
+    
+    query += " WHERE announcement_id = $4 RETURNING *";
+
+    const result = await pool.query(query, params);
 
     res.status(200).json({ success: true, message: "Announcement updated successfully", announcement: result.rows[0] });
   } catch (error) {

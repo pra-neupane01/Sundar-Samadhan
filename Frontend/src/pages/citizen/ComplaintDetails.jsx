@@ -93,7 +93,7 @@ const ComplaintDetails = () => {
                         <img 
                             src={`http://localhost:4849${complaint.image_url}`} 
                             alt="Complaint Evidence" 
-                            style={{ width: "100%", borderRadius: "16px", border: "1px solid #e2e8f0", maxHeight: "450px", objectFit: "cover" }}
+                            style={{ width: "100%", borderRadius: "16px", border: "1px solid #e2e8f0", maxHeight: "500px", objectFit: "contain", background: "#f8fafc" }}
                             onError={(e) => e.target.style.display='none'}
                         />
                     </div>

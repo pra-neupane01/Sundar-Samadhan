@@ -27,7 +27,13 @@ const Login = () => {
     try {
       const data = await loginUser(form);
       login(
-        { id: data.id, role: data.role, email: data.email, ward_number: data.ward_number },
+        {
+          id: data.id,
+          role: data.role,
+          email: data.email,
+          full_name: data.full_name, // Added this line
+          ward_number: data.ward_number
+        },
         data.token,
       );
       if (data.role === "admin") navigate("/admin");
@@ -135,7 +141,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Scrollable About Content */}
       <div className="auth-about-footer" style={{ background: "#f8fafc", padding: "40px 20px" }}>
         <div className="content-container">

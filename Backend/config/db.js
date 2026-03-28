@@ -2,7 +2,7 @@ const { Pool } = require("pg");
 
 const dotenv = require("dotenv");
 
-dotenv.config(); //  load variables from .env
+dotenv.config();
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -12,7 +12,7 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
-// Test database connection
+
 pool
   .query("SELECT NOW()")
   .then(() => {

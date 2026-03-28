@@ -44,6 +44,7 @@ router.put(
   "/update-announcement/:id",
   authMiddleware,
   roleMiddleware("admin", "municipal"),
+  upload.single("image"),
   updateAnnouncementController,
 );
 

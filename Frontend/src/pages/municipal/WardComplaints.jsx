@@ -373,7 +373,15 @@ const WardComplaints = () => {
                   <img 
                     src={`http://localhost:4849${viewComplaint.image_url}`} 
                     alt="Complaint Evidence" 
-                    style={{ width: "100%", borderRadius: "14px", border: "1px solid #e2e8f0", maxHeight: "300px", objectFit: "cover" }}
+                    style={{ 
+                      width: "100%", 
+                      borderRadius: "14px", 
+                      border: "1px solid #e2e8f0", 
+                      maxHeight: "600px", 
+                      objectFit: "contain", 
+                      background: "#f1f5f9",
+                      marginTop: "12px"
+                    }}
                     onError={(e) => e.target.style.display='none'}
                   />
                 </div>
